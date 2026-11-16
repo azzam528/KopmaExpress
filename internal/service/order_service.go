@@ -24,20 +24,20 @@ const (
 // WIB: zona waktu untuk tanggal nomor pesanan.
 var wib = time.FixedZone("WIB", 7*60*60)
 
-// Interface repository khusus order.
-type orderProductRepository interface {
+// Service hanya butuh satu method dari repo produk dan anggota, jadi memakai
+// interface sempit (bukan domain.ProductRepository/MemberRepository penuh).
+type productFinder interface {
 	FindByCode(ctx context.Context, code string) (*domain.Product, error)
 }
 
-type orderMemberRepository interface {
+type memberFinder interface {
 	FindByNIM(ctx context.Context, nim string) (*domain.Member, error)
 }
 
-// Order service.
 type orderService struct {
 	orders   domain.OrderRepository
-	products orderProductRepository
-	members  orderMemberRepository
+	products productFinder
+	members  memberFinder
 }
 
 var _ domain.OrderService = (*orderService)(nil)
@@ -45,8 +45,8 @@ var _ domain.OrderService = (*orderService)(nil)
 // Constructor order service.
 func NewOrderService(
 	orders domain.OrderRepository,
-	products orderProductRepository,
-	members orderMemberRepository,
+	products productFinder,
+	members memberFinder,
 ) domain.OrderService {
 	return &orderService{
 		orders:   orders,

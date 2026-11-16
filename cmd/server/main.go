@@ -98,21 +98,13 @@ func main() {
 		})
 	})
 
-	// Order routes
+		// Order routes (Orang 3)
 	if db != nil {
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)
 		memberRepo := mongorepo.NewMemberRepo(db)
-
-		orderSvc := service.NewOrderService(
-			orderRepo,
-			productRepo,
-			memberRepo,
-		)
-
+		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
-
-		log.Println("[ORDER] Order routes registered")
 	}
 
 	// 7. Start Server in Goroutine
