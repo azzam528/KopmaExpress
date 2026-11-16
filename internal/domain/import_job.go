@@ -52,3 +52,4 @@ type ETLService interface {
 	ListJobs(ctx context.Context, page, limit int) ([]ImportJob, int64, error)
 	GenerateDummyExcel(items, months int, dirty bool, seed int64) ([]byte, error)
 }
+

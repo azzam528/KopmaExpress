@@ -56,3 +56,4 @@ func TestLoadCustomEnv(t *testing.T) {
 		t.Errorf("expected Workers 8, got %d", cfg.Workers)
 	}
 }
+

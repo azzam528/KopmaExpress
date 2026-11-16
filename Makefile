@@ -20,3 +20,4 @@ docker-down:
 
 clean:
 	rm -rf bin/
+

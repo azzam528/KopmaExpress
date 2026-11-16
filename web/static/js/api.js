@@ -85,3 +85,4 @@ const formatNumber = (val) => {
 window.apiClient = apiClient;
 window.formatCurrency = formatCurrency;
 window.formatNumber = formatNumber;
+

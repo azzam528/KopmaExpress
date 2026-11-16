@@ -60,3 +60,4 @@ type ProductService interface {
 	Update(ctx context.Context, code string, req *UpdateProductRequest) (*Product, error)
 	Delete(ctx context.Context, code string) error
 }
+

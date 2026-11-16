@@ -80,3 +80,4 @@ func TestErrorHandler(t *testing.T) {
 		t.Errorf("expected status 404, got %d", resp3.StatusCode)
 	}
 }
+

@@ -61,3 +61,4 @@ func WriteError(c *fiber.Ctx, statusCode int, code string, message string, detai
 		},
 	})
 }
+

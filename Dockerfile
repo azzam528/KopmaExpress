@@ -33,3 +33,4 @@ COPY .env.example /app/.env.example
 EXPOSE 3000
 
 ENTRYPOINT ["/app/smartcoop"]
+

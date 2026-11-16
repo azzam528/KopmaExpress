@@ -55,3 +55,4 @@ type MemberService interface {
 	Update(ctx context.Context, nim string, req *UpdateMemberRequest) (*Member, error)
 	Delete(ctx context.Context, nim string) error
 }
+

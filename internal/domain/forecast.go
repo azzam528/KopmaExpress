@@ -61,3 +61,4 @@ type ForecastService interface {
 	GetByProductCode(ctx context.Context, code string) (*ForecastResult, error)
 	GetSummary(ctx context.Context) (map[RestockStatus]int64, error)
 }
+

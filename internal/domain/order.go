@@ -78,3 +78,4 @@ type OrderService interface {
 	GetByOrderNo(ctx context.Context, orderNo string) (*Order, error)
 	Cancel(ctx context.Context, orderNo string) error
 }
+

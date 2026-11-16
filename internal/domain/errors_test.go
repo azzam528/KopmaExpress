@@ -41,3 +41,4 @@ func TestAppErrors(t *testing.T) {
 		t.Errorf("unexpected stock error: %+v", errStock)
 	}
 }
+

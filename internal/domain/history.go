@@ -75,3 +75,4 @@ type AnalyticsService interface {
 	GetSummary(ctx context.Context) (*DashboardSummary, error)
 	GetMonthlyTrend(ctx context.Context, productCode string) ([]MonthlyTrendItem, error)
 }
+

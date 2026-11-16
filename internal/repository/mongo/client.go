@@ -153,3 +153,4 @@ func EnsureIndexes(ctx context.Context, db *mongo.Database) error {
 	log.Println("[MONGO] All database indexes created/verified successfully")
 	return nil
 }
+

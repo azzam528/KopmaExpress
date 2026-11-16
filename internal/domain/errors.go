@@ -80,3 +80,4 @@ func NewFileTooLargeError(message string) *AppError {
 func NewInternalError(message string) *AppError {
 	return NewAppError(http.StatusInternalServerError, CodeInternal, message, nil)
 }
+

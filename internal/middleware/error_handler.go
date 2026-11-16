@@ -79,3 +79,4 @@ func isMongoDuplicateKeyError(err error) bool {
 	}
 	return strings.Contains(err.Error(), "E11000")
 }
+
