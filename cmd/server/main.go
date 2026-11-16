@@ -17,9 +17,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"smartcoop/internal/config"
+	"smartcoop/internal/handler"
 	"smartcoop/internal/httpx"
 	"smartcoop/internal/middleware"
 	mongorepo "smartcoop/internal/repository/mongo"
+	"smartcoop/internal/service"
 )
 
 func main() {
@@ -65,11 +67,32 @@ func main() {
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
 
-	// 5. Static Files & Web Routes
+	// 5. Static Files & Web Page Routes (PRD §6.7)
 	app.Static("/static", "./web/static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/index.html")
+		return c.SendFile("./web/templates/dashboard.html")
+	})
+	app.Get("/dashboard", func(c *fiber.Ctx) error {
+		return c.Redirect("/")
+	})
+	app.Get("/products", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/products.html")
+	})
+	app.Get("/members", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/members.html")
+	})
+	app.Get("/import", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/import.html")
+	})
+	app.Get("/orders", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/orders.html")
+	})
+	app.Get("/orders/new", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/orders.html")
+	})
+	app.Get("/forecast", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/forecast.html")
 	})
 
 	// 6. Base API Group
@@ -96,6 +119,15 @@ func main() {
 		})
 	})
 
+		// Order routes (Orang 3)
+	if db != nil {
+		orderRepo := mongorepo.NewOrderRepo(client, db)
+		productRepo := mongorepo.NewProductRepo(db)
+		memberRepo := mongorepo.NewMemberRepo(db)
+		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
+		handler.RegisterOrderRoutes(api, orderSvc)
+	}
+
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	go func() {
@@ -105,7 +137,7 @@ func main() {
 		}
 	}()
 
-	// 8. Graceful Shutdown
+	// 9. Graceful Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
@@ -127,4 +159,3 @@ func main() {
 
 	log.Println("[SHUTDOWN] Server exited cleanly.")
 }
-
