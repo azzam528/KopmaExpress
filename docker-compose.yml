@@ -1,0 +1,35 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: smartcoop-mongo
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "try { rs.status().ok } catch(e) { rs.initiate().ok }"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build: .
+    container_name: smartcoop-app
+    restart: unless-stopped
+    environment:
+      PORT: "3000"
+      MONGO_URI: "mongodb://mongo:27017/?replicaSet=rs0"
+      DB_NAME: "smartcoop"
+      MAX_UPLOAD_MB: "50"
+      WORKERS: "4"
+      APP_ENV: "production"
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo_data:
