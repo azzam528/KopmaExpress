@@ -67,11 +67,32 @@ func main() {
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
 
-	// 5. Static Files & Web Routes
+	// 5. Static Files & Web Page Routes (PRD §6.7)
 	app.Static("/static", "./web/static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/index.html")
+		return c.SendFile("./web/templates/dashboard.html")
+	})
+	app.Get("/dashboard", func(c *fiber.Ctx) error {
+		return c.Redirect("/")
+	})
+	app.Get("/products", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/products.html")
+	})
+	app.Get("/members", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/members.html")
+	})
+	app.Get("/import", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/import.html")
+	})
+	app.Get("/orders", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/orders.html")
+	})
+	app.Get("/orders/new", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/orders.html")
+	})
+	app.Get("/forecast", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/forecast.html")
 	})
 
 	// 6. Base API Group
