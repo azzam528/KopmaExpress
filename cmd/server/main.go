@@ -98,20 +98,16 @@ func main() {
 		})
 	})
 
-	// 7. Register Orang 4 analytics and forecasting modules when MongoDB is available.
+		// Order routes (Orang 3)
 	if db != nil {
-		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
-		forecastRepo := mongorepo.NewForecastRepo(db)
-
-		analyticsService := service.NewAnalyticsService(analyticsRepo)
-		forecastService := service.NewForecastService(forecastRepo, cfg.Workers, 10)
-
-		handler.NewAnalyticsHandler(analyticsService).RegisterRoutes(api)
-		handler.NewForecastHandler(forecastService).RegisterRoutes(api)
-		log.Println("[INIT] Analytics and forecasting routes registered")
+		orderRepo := mongorepo.NewOrderRepo(client, db)
+		productRepo := mongorepo.NewProductRepo(db)
+		memberRepo := mongorepo.NewMemberRepo(db)
+		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
+		handler.RegisterOrderRoutes(api, orderSvc)
 	}
 
-	// 8. Start Server in Goroutine
+	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	go func() {
 		log.Printf("[SERVER] KOPMA Express listening on %s\n", addr)
