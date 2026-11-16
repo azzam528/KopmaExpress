@@ -1,0 +1,5 @@
+/* Page Specific Styles: Orders / Kasir */
+.receipt-paper {
+  background-image: radial-gradient(circle at 10px -5px, transparent 12px, #ffffff 13px);
+  background-size: 20px 20px;
+}

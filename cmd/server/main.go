@@ -71,28 +71,28 @@ func main() {
 	app.Static("/static", "./web/static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/dashboard.html")
+		return c.SendFile("./web/templates/dashboard/index.html")
 	})
 	app.Get("/dashboard", func(c *fiber.Ctx) error {
 		return c.Redirect("/")
 	})
 	app.Get("/products", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/products.html")
+		return c.SendFile("./web/templates/products/index.html")
 	})
 	app.Get("/members", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/members.html")
+		return c.SendFile("./web/templates/members/index.html")
 	})
 	app.Get("/import", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/import.html")
+		return c.SendFile("./web/templates/import/index.html")
 	})
 	app.Get("/orders", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/orders.html")
+		return c.SendFile("./web/templates/orders/index.html")
 	})
 	app.Get("/orders/new", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/orders.html")
+		return c.SendFile("./web/templates/orders/new.html")
 	})
 	app.Get("/forecast", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/forecast.html")
+		return c.SendFile("./web/templates/forecast/index.html")
 	})
 
 	handler.RegisterOrderPages(app)
@@ -121,7 +121,7 @@ func main() {
 		})
 	})
 
-		// Order routes (Orang 3)
+	// Order routes (Orang 3)
 	if db != nil {
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)

@@ -1,0 +1,54 @@
+<!-- Sidebar Navigation Component -->
+<aside class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+  <div class="flex flex-col gap-space-lg">
+    <div class="flex items-center gap-space-sm px-space-sm pt-space-xs">
+      <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm">
+        <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span>
+      </div>
+      <div class="flex flex-col">
+        <span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span>
+        <span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data Analytics</span>
+      </div>
+    </div>
+    <nav class="flex flex-col gap-1" data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl">
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="dashboard" href="/">
+        <span class="material-symbols-outlined text-[20px]">grid_view</span>
+        <span class="font-label-lg text-label-lg">Dashboard</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-barang" href="/products">
+        <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+        <span class="font-label-lg text-label-lg">Master Barang</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-anggota" href="/members">
+        <span class="material-symbols-outlined text-[20px]">group</span>
+        <span class="font-label-lg text-label-lg">Master Anggota</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="import-excel-etl" href="/import">
+        <span class="material-symbols-outlined text-[20px]">upload_file</span>
+        <span class="font-label-lg text-label-lg">Import Excel ETL</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="form-pesanan" href="/orders">
+        <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+        <span class="font-label-lg text-label-lg">Form Pesanan</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="forecast-restock" href="/forecast">
+        <span class="material-symbols-outlined text-[20px]">insights</span>
+        <span class="font-label-lg text-label-lg">Forecast &amp; Restock</span>
+      </a>
+    </nav>
+  </div>
+  <div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm">
+    <div class="flex items-center justify-between">
+      <span class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI Engine</span>
+      <span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span>
+    </div>
+    <div class="flex flex-col">
+      <span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span>
+      <p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi suplai.</p>
+    </div>
+    <a class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center" data-path="forecast-restock" href="/forecast">
+      <span>Lihat Analitik</span>
+      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+    </a>
+  </div>
+</aside>
