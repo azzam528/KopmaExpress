@@ -34,6 +34,13 @@ type ForecastResult struct {
 	CalculatedAt    time.Time          `bson:"calculated_at"    json:"calculated_at"`
 }
 
+// ForecastDetail combines the latest forecast with the historical monthly
+// observations used as its input, so the client can render the trend chart.
+type ForecastDetail struct {
+	ForecastResult
+	History []MonthlySalesHistory `json:"riwayat_bulanan"`
+}
+
 type ForecastFilter struct {
 	Status RestockStatus
 	Query  string
@@ -51,6 +58,7 @@ type ForecastRepository interface {
 	UpsertForecasts(ctx context.Context, results []ForecastResult) error
 	FindAll(ctx context.Context, filter ForecastFilter) ([]ForecastResult, int64, error)
 	FindByProductCode(ctx context.Context, code string) (*ForecastResult, error)
+	FindSalesHistory(ctx context.Context, code string) ([]MonthlySalesHistory, error)
 	GetStatusSummary(ctx context.Context) (map[RestockStatus]int64, error)
 	LoadProductSales(ctx context.Context) ([]ProductSalesData, error)
 }
@@ -58,7 +66,6 @@ type ForecastRepository interface {
 type ForecastService interface {
 	Recalculate(ctx context.Context) error
 	List(ctx context.Context, filter ForecastFilter) ([]ForecastResult, int64, error)
-	GetByProductCode(ctx context.Context, code string) (*ForecastResult, error)
+	GetByProductCode(ctx context.Context, code string) (*ForecastDetail, error)
 	GetSummary(ctx context.Context) (map[RestockStatus]int64, error)
 }
-

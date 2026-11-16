@@ -17,9 +17,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"smartcoop/internal/config"
+	"smartcoop/internal/handler"
 	"smartcoop/internal/httpx"
 	"smartcoop/internal/middleware"
 	mongorepo "smartcoop/internal/repository/mongo"
+	"smartcoop/internal/service"
 )
 
 func main() {
@@ -96,7 +98,20 @@ func main() {
 		})
 	})
 
-	// 7. Start Server in Goroutine
+	// 7. Register Orang 4 analytics and forecasting modules when MongoDB is available.
+	if db != nil {
+		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
+		forecastRepo := mongorepo.NewForecastRepo(db)
+
+		analyticsService := service.NewAnalyticsService(analyticsRepo)
+		forecastService := service.NewForecastService(forecastRepo, cfg.Workers, 10)
+
+		handler.NewAnalyticsHandler(analyticsService).RegisterRoutes(api)
+		handler.NewForecastHandler(forecastService).RegisterRoutes(api)
+		log.Println("[INIT] Analytics and forecasting routes registered")
+	}
+
+	// 8. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	go func() {
 		log.Printf("[SERVER] KOPMA Express listening on %s\n", addr)
@@ -105,7 +120,7 @@ func main() {
 		}
 	}()
 
-	// 8. Graceful Shutdown
+	// 9. Graceful Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
@@ -127,4 +142,3 @@ func main() {
 
 	log.Println("[SHUTDOWN] Server exited cleanly.")
 }
-

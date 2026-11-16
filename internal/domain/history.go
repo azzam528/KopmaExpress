@@ -63,7 +63,7 @@ type HistoryRepository interface {
 }
 
 type AnalyticsRepository interface {
-	GetTopSelling(ctx context.Context, fromYear, fromMonth, limit int) ([]TopSellingProduct, error)
+	GetTopSelling(ctx context.Context, fromYear, fromMonth, toYear, toMonth, limit int) ([]TopSellingProduct, error)
 	GetTopStock(ctx context.Context, limit int) ([]TopStockProduct, int64, error)
 	GetSummary(ctx context.Context) (*DashboardSummary, error)
 	GetMonthlyTrend(ctx context.Context, productCode string) ([]MonthlyTrendItem, error)
@@ -71,8 +71,8 @@ type AnalyticsRepository interface {
 
 type AnalyticsService interface {
 	GetTopSelling(ctx context.Context, period string, limit int) ([]TopSellingProduct, error)
+	GetTopSellingRange(ctx context.Context, from, to string, limit int) ([]TopSellingProduct, error)
 	GetTopStock(ctx context.Context, limit int) ([]TopStockProduct, int64, error)
 	GetSummary(ctx context.Context) (*DashboardSummary, error)
 	GetMonthlyTrend(ctx context.Context, productCode string) ([]MonthlyTrendItem, error)
 }
-
