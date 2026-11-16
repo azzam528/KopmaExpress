@@ -74,6 +74,8 @@ func main() {
 		return c.SendFile("./web/templates/index.html")
 	})
 
+	handler.RegisterOrderPages(app)
+
 	// 6. Base API Group
 	api := app.Group("/api/v1")
 
@@ -105,7 +107,10 @@ func main() {
 		memberRepo := mongorepo.NewMemberRepo(db)
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
+		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
 	}
+
+	handler.RegisterOrderPages(app)
 
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
