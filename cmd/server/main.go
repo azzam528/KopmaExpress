@@ -17,9 +17,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"smartcoop/internal/config"
+	"smartcoop/internal/handler"
 	"smartcoop/internal/httpx"
 	"smartcoop/internal/middleware"
 	mongorepo "smartcoop/internal/repository/mongo"
+	"smartcoop/internal/service"
 )
 
 func main() {
@@ -96,6 +98,23 @@ func main() {
 		})
 	})
 
+	// Order routes
+	if db != nil {
+		orderRepo := mongorepo.NewOrderRepo(client, db)
+		productRepo := mongorepo.NewProductRepo(db)
+		memberRepo := mongorepo.NewMemberRepo(db)
+
+		orderSvc := service.NewOrderService(
+			orderRepo,
+			productRepo,
+			memberRepo,
+		)
+
+		handler.RegisterOrderRoutes(api, orderSvc)
+
+		log.Println("[ORDER] Order routes registered")
+	}
+
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	go func() {
@@ -127,4 +146,3 @@ func main() {
 
 	log.Println("[SHUTDOWN] Server exited cleanly.")
 }
-
