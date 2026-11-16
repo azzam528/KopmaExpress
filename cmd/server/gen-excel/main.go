@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"smartcoop/internal/excelgen"
+	"smartcoop/internal/etl/excelgen"
 )
 
 func main() {

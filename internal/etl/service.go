@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"smartcoop/internal/domain"
-	"smartcoop/internal/excelgen"
+	"smartcoop/internal/etl/excelgen"
 )
 
 const (
