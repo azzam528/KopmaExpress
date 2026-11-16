@@ -209,3 +209,54 @@ func TestDedupeHistory(t *testing.T) {
 		t.Errorf("DedupeHistory = %+v", out)
 	}
 }
+
+func TestParseWorkbookKnownCodeHook(t *testing.T) {
+	f := excelize.NewFile()
+	if err := f.SetSheetName("Sheet1", SheetProducts); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.NewSheet(SheetHistory); err != nil {
+		t.Fatal(err)
+	}
+	put := func(sheet string, row int, cells ...any) {
+		t.Helper()
+		cell, _ := excelize.CoordinatesToCellName(1, row)
+		if err := f.SetSheetRow(sheet, cell, &cells); err != nil {
+			t.Fatal(err)
+		}
+	}
+	put(SheetProducts, 1, "Kode Barang", "Nama Barang", "Harga", "Stok")
+	put(SheetProducts, 2, "BRG-001", "Buku", 3000, 10)
+	put(SheetHistory, 1, "Kode Barang", "Tahun", "Bulan", "Qty Terjual", "Total Omzet")
+	put(SheetHistory, 2, "BRG-001", 2026, 5, 1, 3000)
+	put(SheetHistory, 3, "DB-777", 2026, 5, 1, 1000)
+	put(SheetHistory, 4, "ZZZ-999", 2026, 5, 1, 1000)
+
+	buf, err := f.WriteToBuffer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	wb, err := OpenWorkbook(buf.Bytes())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	asked := map[string]int{}
+	res, err := ParseWorkbookWith(wb, ParseOptions{KnownCode: func(code string) bool {
+		asked[code]++
+		return code == "DB-777"
+	}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(res.History) != 2 {
+		t.Fatalf("history = %d, want 2 (kode dari file dan dari database)", len(res.History))
+	}
+	if _, ok := findError(res.Errors, SheetHistory, 4); !ok || res.Failed != 1 {
+		t.Errorf("ZZZ-999 harus gagal di baris 4: failed = %d, errors = %+v", res.Failed, res.Errors)
+	}
+	if asked["BRG-001"] != 0 {
+		t.Error("kode yang ada di sheet Barang tidak perlu dicek ke database")
+	}
+}

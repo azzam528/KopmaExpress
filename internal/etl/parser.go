@@ -277,9 +277,20 @@ func (r *ParseResult) addError(re domain.RowError) {
 	}
 }
 
+// ParseOptions tunes ParseWorkbookWith.
+type ParseOptions struct {
+	// KnownCode is asked about history rows whose code is not in the Barang sheet (typically a database lookup).
+	// Nil skips the check.
+	KnownCode func(code string) bool
+}
+
 // ParseWorkbook is the sequential reference implementation: one pass, no goroutines.
 // The worker-pool pipeline should produce the same rows, and this doubles as the benchmark baseline.
 func ParseWorkbook(f *excelize.File) (*ParseResult, error) {
+	return ParseWorkbookWith(f, ParseOptions{})
+}
+
+func ParseWorkbookWith(f *excelize.File, opts ParseOptions) (*ParseResult, error) {
 	res := &ParseResult{}
 
 	productSheet, ok := FindSheet(f, SheetProducts)
@@ -325,6 +336,9 @@ func ParseWorkbook(f *excelize.File) (*ParseResult, error) {
 			h, err := parser.Parse(row)
 			if err != nil {
 				return err
+			}
+			if _, inFile := prices[h.ProductCode]; !inFile && opts.KnownCode != nil && !opts.KnownCode(h.ProductCode) {
+				return fmt.Errorf("kode barang '%s' tidak ada di sheet Barang maupun database", h.ProductCode)
 			}
 			res.History = append(res.History, h)
 			return nil
