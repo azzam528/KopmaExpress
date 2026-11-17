@@ -17,12 +17,15 @@ import (
 )
 
 type MemberRepo struct {
+	client     *mongo.Client
 	collection *mongo.Collection
 	orders     *mongo.Collection
 }
 
-func NewMemberRepo(db *mongo.Database) *MemberRepo {
+// client dibutuhkan untuk transaksi saat NIM anggota diganti (anggota + pesanannya).
+func NewMemberRepo(client *mongo.Client, db *mongo.Database) *MemberRepo {
 	return &MemberRepo{
+		client:     client,
 		collection: db.Collection("members"),
 		orders:     db.Collection("orders"),
 	}
@@ -112,23 +115,55 @@ func (r *MemberRepo) Create(ctx context.Context, m *domain.Member) error {
 	return nil
 }
 
-// Update mengubah nama, unit, dan telepon. NIM tidak bisa diubah.
+// Update mengubah nama, unit, dan telepon. Bila m.NIM berisi NIM baru yang
+// berbeda dari nim, NIM anggota diganti dan member_nim pada SEMUA pesanannya
+// ikut diperbarui dalam satu transaksi, supaya riwayat tidak menjadi yatim.
+// NIM baru yang sudah dipakai anggota lain menghasilkan error E11000 (index
+// unik idx_members_nim_unique); service yang mengubahnya jadi 409.
 func (r *MemberRepo) Update(ctx context.Context, nim string, m *domain.Member) error {
-	res, err := r.collection.UpdateOne(ctx,
-		bson.M{"nim": nim},
-		bson.M{"$set": bson.M{
-			"name":  m.Name,
-			"unit":  m.Unit,
-			"phone": m.Phone,
-		}},
-	)
+	set := bson.M{
+		"name":  m.Name,
+		"unit":  m.Unit,
+		"phone": m.Phone,
+	}
+
+	if m.NIM == "" || m.NIM == nim {
+		res, err := r.collection.UpdateOne(ctx, bson.M{"nim": nim}, bson.M{"$set": set})
+		if err != nil {
+			return err
+		}
+		if res.MatchedCount == 0 {
+			return domain.NewNotFoundError("Anggota tidak ditemukan")
+		}
+		return nil
+	}
+
+	set["nim"] = m.NIM
+	return r.withTx(ctx, func(sc mongo.SessionContext) (interface{}, error) {
+		res, err := r.collection.UpdateOne(sc, bson.M{"nim": nim}, bson.M{"$set": set})
+		if err != nil {
+			return nil, err
+		}
+		if res.MatchedCount == 0 {
+			return nil, domain.NewNotFoundError("Anggota tidak ditemukan")
+		}
+		_, err = r.orders.UpdateMany(sc,
+			bson.M{"member_nim": nim},
+			bson.M{"$set": bson.M{"member_nim": m.NIM}},
+		)
+		return nil, err
+	})
+}
+
+func (r *MemberRepo) withTx(ctx context.Context, fn func(sc mongo.SessionContext) (interface{}, error)) error {
+	sess, err := r.client.StartSession()
 	if err != nil {
 		return err
 	}
-	if res.MatchedCount == 0 {
-		return domain.NewNotFoundError("Anggota tidak ditemukan")
-	}
-	return nil
+	defer sess.EndSession(ctx)
+
+	_, err = sess.WithTransaction(ctx, fn, orderTxnOpts)
+	return err
 }
 
 func (r *MemberRepo) Deactivate(ctx context.Context, nim string) error {

@@ -55,6 +55,9 @@ type CreateMemberRequest struct {
 }
 
 type UpdateMemberRequest struct {
+	// NIM baru (opsional). Kosong atau sama dengan NIM lama = tidak berubah.
+	// Bila berubah, NIM pada seluruh pesanan anggota ini ikut diperbarui.
+	NIM   string `json:"nim"`
 	Name  string `json:"nama"`
 	Unit  string `json:"unit"`
 	Phone string `json:"telepon"`

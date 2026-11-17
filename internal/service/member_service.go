@@ -97,20 +97,7 @@ func (s *memberService) Create(ctx context.Context, req *domain.CreateMemberRequ
 	req.Unit = strings.TrimSpace(req.Unit)
 	req.Phone = strings.TrimSpace(req.Phone)
 
-	var details []domain.ValidationErrorDetail
-
-	switch {
-	case req.NIM == "":
-		details = append(details, domain.ValidationErrorDetail{Field: "nim", Message: "wajib diisi"})
-	case utf8.RuneCountInString(req.NIM) > memberMaxNIM:
-		details = append(details, domain.ValidationErrorDetail{
-			Field: "nim", Message: fmt.Sprintf("maksimal %d karakter", memberMaxNIM),
-		})
-	case !nimPattern.MatchString(req.NIM):
-		details = append(details, domain.ValidationErrorDetail{
-			Field: "nim", Message: "hanya huruf, angka, titik, garis bawah, dan strip; tanpa spasi",
-		})
-	}
+	details := validateNIM(req.NIM)
 	details = append(details, validateMemberFields(req.Name, req.Unit, req.Phone)...)
 
 	if len(details) > 0 {
@@ -155,22 +142,40 @@ func (s *memberService) Update(ctx context.Context, nim string, req *domain.Upda
 		return nil, domain.NewValidationError("Body request tidak boleh kosong")
 	}
 
+	req.NIM = strings.TrimSpace(req.NIM)
 	req.Name = strings.TrimSpace(req.Name)
 	req.Unit = strings.TrimSpace(req.Unit)
 	req.Phone = strings.TrimSpace(req.Phone)
 
-	if details := validateMemberFields(req.Name, req.Unit, req.Phone); len(details) > 0 {
+	// NIM kosong = tidak diganti. Hanya NIM yang benar-benar berbeda yang divalidasi.
+	newNIM := req.NIM
+	if newNIM == "" {
+		newNIM = nim
+	}
+
+	var details []domain.ValidationErrorDetail
+	if newNIM != nim {
+		details = validateNIM(newNIM)
+	}
+	details = append(details, validateMemberFields(req.Name, req.Unit, req.Phone)...)
+	if len(details) > 0 {
 		return nil, domain.NewValidationError("Validasi gagal", details...)
 	}
 
 	if err := s.store.Update(ctx, nim, &domain.Member{
+		NIM:   newNIM,
 		Name:  req.Name,
 		Unit:  req.Unit,
 		Phone: req.Phone,
 	}); err != nil {
+		if isDuplicateKey(err) {
+			return nil, domain.NewDuplicateError(
+				fmt.Sprintf("Anggota dengan NIM %s sudah terdaftar", newNIM),
+			)
+		}
 		return nil, err
 	}
-	return s.store.FindByNIM(ctx, nim)
+	return s.store.FindByNIM(ctx, newNIM)
 }
 
 // ------------------------------------------- Nonaktifkan / aktifkan / ringkasan
@@ -206,6 +211,23 @@ func (s *memberService) Summary(ctx context.Context) (*domain.MemberSummary, err
 }
 
 // --------------------------------------------------------------- Helpers
+
+// validateNIM memeriksa format NIM (input sudah di-trim).
+func validateNIM(nim string) []domain.ValidationErrorDetail {
+	switch {
+	case nim == "":
+		return []domain.ValidationErrorDetail{{Field: "nim", Message: "wajib diisi"}}
+	case utf8.RuneCountInString(nim) > memberMaxNIM:
+		return []domain.ValidationErrorDetail{{
+			Field: "nim", Message: fmt.Sprintf("maksimal %d karakter", memberMaxNIM),
+		}}
+	case !nimPattern.MatchString(nim):
+		return []domain.ValidationErrorDetail{{
+			Field: "nim", Message: "hanya huruf, angka, titik, garis bawah, dan strip; tanpa spasi",
+		}}
+	}
+	return nil
+}
 
 // validateMemberFields memeriksa nama, unit, dan telepon (input sudah di-trim).
 func validateMemberFields(name, unit, phone string) []domain.ValidationErrorDetail {
