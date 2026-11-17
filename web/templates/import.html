@@ -196,26 +196,26 @@
       </p>
 <!-- Template Action Stack -->
 <div class="flex flex-col gap-space-sm">
-<a class="group flex items-center justify-between p-space-md rounded-xl bg-surface-bright hover:bg-surface-container-low transition-all" href="#">
+<a class="group flex items-center justify-between p-space-md rounded-xl bg-surface-bright hover:bg-surface-container-low transition-all" href="/api/v1/export/dummy-excel?dirty=false">
 <div class="flex items-center gap-space-sm">
 <div class="w-9 h-9 rounded-lg bg-status-success-bg text-status-success-text flex items-center justify-center">
 <span class="material-symbols-outlined text-[20px]">table_view</span>
 </div>
 <div class="flex flex-col text-left">
-<span class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Template Data Master Barang</span>
-<span class="font-body-sm text-body-sm text-outline">SKU, Barcode, Kategori, Harga Beli/Jual</span>
+<span class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Download Template Bersih (Valid)</span>
+<span class="font-body-sm text-body-sm text-outline">File .xlsx terstandarisasi</span>
 </div>
 </div>
 <span class="material-symbols-outlined text-outline group-hover:text-primary group-hover:translate-y-0.5 transition-all text-[20px]">file_download</span>
 </a>
-<a class="group flex items-center justify-between p-space-md rounded-xl bg-surface-bright hover:bg-surface-container-low transition-all" href="#">
+<a class="group flex items-center justify-between p-space-md rounded-xl bg-surface-bright hover:bg-surface-container-low transition-all" href="/api/v1/export/dummy-excel?dirty=true">
 <div class="flex items-center gap-space-sm">
 <div class="w-9 h-9 rounded-lg bg-surface-container text-primary flex items-center justify-center">
 <span class="material-symbols-outlined text-[20px]">receipt_long</span>
 </div>
 <div class="flex flex-col text-left">
-<span class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Data Riwayat Penjualan</span>
-<span class="font-body-sm text-body-sm text-outline">Waktu transaksi, No. Nota, Qty, Anggota ID</span>
+<span class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Download Data Demo (Kotor/Dirty)</span>
+<span class="font-body-sm text-body-sm text-outline">Simulasi data lama: format Rp, blank row, pcs</span>
 </div>
 </div>
 <span class="material-symbols-outlined text-outline group-hover:text-primary group-hover:translate-y-0.5 transition-all text-[20px]">file_download</span>
@@ -283,26 +283,26 @@
 <span class="material-symbols-outlined text-outline text-[16px]" title="Pilih perlakuan sistem saat menemukan SKU yang sudah ada di database">help</span>
 </label>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-<!-- Option 1: Replace -->
-<label class="relative flex items-start gap-space-sm p-space-md rounded-xl bg-surface-bright cursor-pointer hover:bg-surface-container-low transition-all">
-<input class="mt-1 w-4 h-4 text-primary focus:ring-primary accent-primary" name="stock_mode" type="radio" value="replace"/>
+<!-- Option 1: Replace (Active by default) -->
+<label class="relative flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-low cursor-pointer shadow-sm">
+<input checked="" class="mt-1 w-4 h-4 text-primary focus:ring-primary accent-primary" name="stock_mode" type="radio" value="replace"/>
 <div class="flex flex-col">
-<span class="font-title-md text-title-md text-on-surface">Replace (Timpa stok lama)</span>
-<p class="font-body-sm text-body-sm text-outline mt-0.5">
+<div class="flex items-center gap-2">
+<span class="font-title-md text-title-md text-primary font-semibold">Replace (Timpa stok lama)</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-primary text-on-primary">Direkomendasikan</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
                 Nilai stok master saat ini langsung diganti dengan nilai kuantitas dari berkas Excel impor (Cocok untuk Opname).
               </p>
 </div>
 </label>
-<!-- Option 2: Append/Sum (Active) -->
-<label class="relative flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-low cursor-pointer shadow-sm">
-<input checked="" class="mt-1 w-4 h-4 text-primary focus:ring-primary accent-primary" name="stock_mode" type="radio" value="append"/>
+<!-- Option 2: Skip -->
+<label class="relative flex items-start gap-space-sm p-space-md rounded-xl bg-surface-bright cursor-pointer hover:bg-surface-container-low transition-all">
+<input class="mt-1 w-4 h-4 text-primary focus:ring-primary accent-primary" name="stock_mode" type="radio" value="skip"/>
 <div class="flex flex-col">
-<div class="flex items-center gap-2">
-<span class="font-title-md text-title-md text-primary font-semibold">Append / Sum (Tambahkan)</span>
-<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-primary text-on-primary">Direkomendasikan</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                Stok dari berkas ditambahkan ke saldo kuantitas berjalan tanpa menghapus histori transaksi sebelumnya.
+<span class="font-title-md text-title-md text-on-surface">Skip (Pertahankan stok saat ini)</span>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">
+                Hanya mengupdate nama barang, harga, dan kategori. Kuantitas stok produk yang sudah ada di database tidak akan diubah.
               </p>
 </div>
 </label>
@@ -504,12 +504,13 @@
 </div>
 </div>
 </div>
-<!-- Interactive Client-Side Simulation Script -->
+<!-- Interactive Client-Side Script with Real Backend Connection -->
 <script>
     (function initETLDashboard() {
       const dropzone = document.getElementById('dropzone');
       const fileInput = document.getElementById('file-input');
       const runBtn = document.getElementById('btn-run-etl');
+      let selectedFile = null;
 
       if (dropzone && fileInput) {
         ['dragenter', 'dragover'].forEach(eventName => {
@@ -528,31 +529,123 @@
           });
         });
 
+        dropzone.addEventListener('drop', (e) => {
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFileSelect(e.dataTransfer.files[0]);
+          }
+        });
+
         fileInput.addEventListener('change', () => {
           if (fileInput.files.length > 0) {
-            const fileName = fileInput.files[0].name;
-            const fileSize = (fileInput.files[0].size / (1024 * 1024)).toFixed(1) + ' MB';
-            const badge = dropzone.querySelector('div.mt-space-md span.font-title-md');
-            const sizeBadge = dropzone.querySelector('div.mt-space-md span.font-body-sm');
-            if (badge) badge.textContent = fileName;
-            if (sizeBadge) sizeBadge.textContent = fileSize;
+            handleFileSelect(fileInput.files[0]);
           }
         });
       }
 
+      function handleFileSelect(file) {
+        selectedFile = file;
+        const badge = dropzone.querySelector('div.mt-space-md span.font-title-md');
+        const sizeBadge = dropzone.querySelector('div.mt-space-md span.font-body-sm');
+        if (badge) badge.textContent = file.name;
+        if (sizeBadge) sizeBadge.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+
       if (runBtn) {
-        runBtn.addEventListener('click', () => {
+        runBtn.addEventListener('click', async () => {
+          if (!selectedFile && fileInput.files.length === 0) {
+            alert('Silakan pilih berkas Excel (.xlsx) terlebih dahulu!');
+            return;
+          }
+          const fileToUpload = selectedFile || fileInput.files[0];
+
+          // Ambil stock_mode yang dipilih
+          const stockModeEl = document.querySelector('input[name="stock_mode"]:checked');
+          const stockMode = stockModeEl ? stockModeEl.value : 'replace';
+
           const originalText = runBtn.innerHTML;
-          runBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">refresh</span><span>Memproses Data...</span>';
+          runBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">refresh</span><span>Mengunggah & Memproses...</span>';
           runBtn.disabled = true;
-          setTimeout(() => {
-            runBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">done_all</span><span>Sinkronisasi Selesai!</span>';
-            setTimeout(() => {
-              runBtn.innerHTML = originalText;
-              runBtn.disabled = false;
-            }, 2500);
-          }, 1800);
+
+          const formData = new FormData();
+          formData.append('file', fileToUpload);
+          formData.append('stock_mode', stockMode);
+
+          try {
+            const resp = await fetch('/api/v1/import/excel', {
+              method: 'POST',
+              body: formData,
+            });
+            const res = await resp.json();
+
+            if (!resp.ok || !res.success) {
+              throw new Error(res.error?.message || 'Gagal memulai import');
+            }
+
+            const jobId = res.data.job_id;
+            pollJobStatus(jobId, originalText);
+          } catch (err) {
+            alert('Error Import: ' + err.message);
+            runBtn.innerHTML = originalText;
+            runBtn.disabled = false;
+          }
         });
+      }
+
+      async function pollJobStatus(jobId, originalBtnHtml) {
+        const interval = setInterval(async () => {
+          try {
+            const resp = await fetch('/api/v1/import/jobs/' + jobId);
+            const res = await resp.json();
+            if (!res.success) return;
+
+            const job = res.data;
+            updateUIProgress(job);
+
+            if (job.status === 'DONE' || job.status === 'FAILED') {
+              clearInterval(interval);
+              runBtn.disabled = false;
+              if (job.status === 'DONE') {
+                runBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">done_all</span><span>Selesai!</span>';
+                alert('Import Berhasil!\n' + 
+                      'Baris diproses: ' + job.processed_rows + '\n' +
+                      'Baris baru (inserted): ' + job.inserted + '\n' +
+                      'Baris update: ' + job.updated + '\n' +
+                      'Dilewati (skipped): ' + job.skipped + '\n' +
+                      'Gagal: ' + job.failed);
+              } else {
+                runBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">error</span><span>Gagal</span>';
+                alert('Import Gagal! Silakan cek log kesalahan.');
+              }
+              setTimeout(() => { runBtn.innerHTML = originalBtnHtml; }, 3000);
+            }
+          } catch (e) {
+            console.error('Polling error:', e);
+          }
+        }, 1000);
+      }
+
+      function updateUIProgress(job) {
+        // Update Pipeline ID
+        const pipelineIdEl = document.querySelector('span.font-label-sm.text-outline');
+        // Update metric
+        const processedEl = document.querySelector('div:has(> span:contains("Total Baris Diproses")) span.font-metric-display');
+        const insertedEl = document.querySelector('div:has(> span:contains("Sukses Tervalidasi")) span.font-metric-display');
+        
+        // Progress percentage
+        let pct = 0;
+        if (job.total_rows > 0) {
+          pct = Math.round((job.processed_rows / job.total_rows) * 100);
+        } else if (job.status === 'DONE') {
+          pct = 100;
+        } else {
+          pct = 50;
+        }
+
+        const pctEl = document.querySelector('span.font-metric-display.text-primary');
+        if (pctEl) pctEl.textContent = pct + '%';
+
+        const barEl = document.querySelector('div.h-full.bg-primary');
+        if (barEl) barEl.style.width = pct + '%';
       }
     })();
   </script>

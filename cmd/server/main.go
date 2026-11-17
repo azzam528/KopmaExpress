@@ -17,6 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"smartcoop/internal/config"
+	"smartcoop/internal/etl"
 	"smartcoop/internal/handler"
 	"smartcoop/internal/httpx"
 	"smartcoop/internal/middleware"
@@ -119,7 +120,25 @@ func main() {
 		})
 	})
 
-		// Order routes (Orang 3)
+		// ETL / Import routes (Orang 2)
+	if db != nil {
+		productRepo := mongorepo.NewProductRepo(db)
+		historyRepo := mongorepo.NewHistoryRepo(db)
+		importJobRepo := mongorepo.NewImportJobRepo(db)
+		etlSvc := etl.NewService(productRepo, historyRepo, importJobRepo)
+		handler.NewImportHandler(etlSvc).Register(api)
+
+		// Analytics & Forecasting routes (Orang 4)
+		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
+		analyticsSvc := service.NewAnalyticsService(analyticsRepo)
+		handler.NewAnalyticsHandler(analyticsSvc).RegisterRoutes(api)
+
+		forecastRepo := mongorepo.NewForecastRepo(db)
+		forecastSvc := service.NewForecastService(forecastRepo, cfg.Workers, 10)
+		handler.NewForecastHandler(forecastSvc).RegisterRoutes(api)
+	}
+
+	// Order routes (Orang 3)
 	if db != nil {
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)

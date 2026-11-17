@@ -23,8 +23,8 @@ var (
 var monthNames = map[string]int{
 	"januari": 1, "january": 1, "jan": 1,
 	"februari": 2, "pebruari": 2, "february": 2, "feb": 2, "peb": 2,
-	"maret": 3, "march": 3, "mar": 3,
 	"april": 4, "apr": 4,
+	"maret": 3, "march": 3, "mar": 3,
 	"mei": 5, "may": 5,
 	"juni": 6, "june": 6, "jun": 6,
 	"juli": 7, "july": 7, "jul": 7,
