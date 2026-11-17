@@ -122,35 +122,24 @@ func main() {
 		})
 	})
 
-<<<<<<< HEAD
-		// ETL / Import routes (Orang 2)
-	if db != nil {
-		productRepo := mongorepo.NewProductRepo(db)
-		historyRepo := mongorepo.NewHistoryRepo(db)
-		importJobRepo := mongorepo.NewImportJobRepo(db)
-		etlSvc := etl.NewService(productRepo, historyRepo, importJobRepo)
-		handler.NewImportHandler(etlSvc).Register(api)
-
-		// Analytics & Forecasting routes (Orang 4)
-		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
-		analyticsSvc := service.NewAnalyticsService(analyticsRepo)
-		handler.NewAnalyticsHandler(analyticsSvc).RegisterRoutes(api)
-
-		forecastRepo := mongorepo.NewForecastRepo(db)
-		forecastSvc := service.NewForecastService(forecastRepo, cfg.Workers, 10)
-		handler.NewForecastHandler(forecastSvc).RegisterRoutes(api)
-	}
-
-=======
->>>>>>> satu
 	// Order routes (Orang 3)
 	if db != nil {
-		orderRepo := mongorepo.NewOrderRepo(client, db)
-		productRepo := mongorepo.NewProductRepo(db)
-		memberRepo := mongorepo.NewMemberRepo(db)
-		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
-		handler.RegisterOrderRoutes(api, orderSvc)
-		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
+    orderRepo := mongorepo.NewOrderRepo(client, db)
+    productRepo := mongorepo.NewProductRepo(db)
+    memberRepo := mongorepo.NewMemberRepo(db)
+
+    orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
+    handler.RegisterOrderRoutes(api, orderSvc)
+    handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
+
+    // Initialize ETL
+    historyRepo := mongorepo.NewHistoryRepo(db)
+    importJobRepo := mongorepo.NewImportJobRepo(db)
+
+    etlSvc := etl.NewService(productRepo, historyRepo, importJobRepo)
+    importHandler := handler.NewImportHandler(etlSvc)
+
+    importHandler.Register(api)
 	}
 
 	handler.RegisterOrderPages(app)
