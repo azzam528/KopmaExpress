@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"regexp"
+	"strings"
 	"time"
 
 	"smartcoop/internal/domain"
@@ -90,6 +91,7 @@ func (r *ProductRepo) FindAll(ctx context.Context, filter domain.ProductFilter) 
 }
 
 func (r *ProductRepo) FindByCode(ctx context.Context, code string) (*domain.Product, error) {
+	code = strings.ToUpper(strings.TrimSpace(code))
 	var product domain.Product
 	err := r.collection.FindOne(ctx, bson.M{"kode_barang": code}).Decode(&product)
 	if errors.Is(err, mongo.ErrNoDocuments) {
@@ -167,7 +169,11 @@ func (r *ProductRepo) BulkUpsert(ctx context.Context, products []domain.Product,
 	models := make([]mongo.WriteModel, 0, len(products))
 
 	for _, p := range products {
-		filter := bson.M{"kode_barang": p.Code}
+		code := strings.ToUpper(strings.TrimSpace(p.Code))
+		if code == "" {
+			continue
+		}
+		filter := bson.M{"kode_barang": code}
 
 		set := bson.M{
 			"name":       p.Name,
@@ -178,7 +184,7 @@ func (r *ProductRepo) BulkUpsert(ctx context.Context, products []domain.Product,
 		}
 
 		setOnInsert := bson.M{
-			"kode_barang": p.Code,
+			"kode_barang": code,
 			"created_at":  now,
 		}
 

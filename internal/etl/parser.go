@@ -37,19 +37,19 @@ const (
 
 // Aliases are compared after normalizeKey, so "Kode Barang" and "kode_barang" both become "kodebarang".
 var productAliases = map[string][]string{
-	fieldCode:     {"kodebarang", "kode", "kodebrg", "code", "sku"},
-	fieldName:     {"namabarang", "nama", "namabrg", "barang", "name"},
-	fieldCategory: {"kategori", "category", "jenis"},
-	fieldPrice:    {"harga", "hargasatuan", "hargajual", "price"},
-	fieldStock:    {"stok", "stock", "jumlahstok", "sisastok"},
+	fieldCode:     {"kodebarang", "kode", "kodebrg", "code", "sku", "kodeproduk", "barcode"},
+	fieldName:     {"namabarang", "nama", "namabrg", "barang", "name", "namaproduk", "produk", "item", "deskripsi", "description"},
+	fieldCategory: {"kategori", "category", "jenis", "golongan", "kelompok"},
+	fieldPrice:    {"harga", "hargasatuan", "hargajual", "price", "hargabarang", "unitprice"},
+	fieldStock:    {"stok", "stock", "jumlahstok", "sisastok", "qty", "jumlah", "kuantitas", "totalstok"},
 }
 
 var historyAliases = map[string][]string{
-	fieldCode:    {"kodebarang", "kode", "kodebrg", "code", "sku"},
-	fieldYear:    {"tahun", "year"},
-	fieldMonth:   {"bulan", "month"},
-	fieldQty:     {"qtyterjual", "qty", "jumlahterjual", "terjual"},
-	fieldRevenue: {"totalomzet", "omzet", "revenue", "totalpenjualan"},
+	fieldCode:    {"kodebarang", "kode", "kodebrg", "code", "sku", "kodeproduk", "barcode"},
+	fieldYear:    {"tahun", "year", "thn"},
+	fieldMonth:   {"bulan", "month", "bln"},
+	fieldQty:     {"qtyterjual", "qty", "jumlahterjual", "terjual", "kuantitas", "jumlah"},
+	fieldRevenue: {"totalomzet", "omzet", "revenue", "totalpenjualan", "total"},
 }
 
 type RawRow struct {
@@ -240,6 +240,53 @@ func FindSheet(f *excelize.File, name string) (string, bool) {
 	return "", false
 }
 
+var (
+	ProductSheetNames = []string{"Barang", "Data Barang", "Daftar Barang", "Produk", "Master Barang", "Products", "Items"}
+	HistorySheetNames = []string{"Riwayat_Penjualan", "Riwayat Penjualan", "Penjualan", "Riwayat", "Sales_History", "Sales History", "Sales"}
+)
+
+// FindProductSheet locates the products sheet by checking common aliases.
+// If not found and the workbook has only one sheet, it checks if that sheet has product headers.
+func FindProductSheet(f *excelize.File) (string, bool) {
+	for _, name := range ProductSheetNames {
+		if s, ok := FindSheet(f, name); ok {
+			return s, true
+		}
+	}
+	// Fallback: If only 1 sheet exists in workbook, inspect its first non-blank row for product columns
+	sheets := f.GetSheetList()
+	if len(sheets) == 1 {
+		firstSheet := sheets[0]
+		var found bool
+		_ = ReadSheet(f, firstSheet, func(r RawRow) error {
+			if IsBlankRow(r.Cells) {
+				return nil
+			}
+			cols := mapColumns(r.Cells, productAliases)
+			if _, okCode := cols[fieldCode]; okCode {
+				if _, okName := cols[fieldName]; okName {
+					found = true
+				}
+			}
+			return errors.New("done") // stop scanning after header
+		})
+		if found {
+			return firstSheet, true
+		}
+	}
+	return "", false
+}
+
+// FindHistorySheet locates the history sheet by checking common aliases.
+func FindHistorySheet(f *excelize.File) (string, bool) {
+	for _, name := range HistorySheetNames {
+		if s, ok := FindSheet(f, name); ok {
+			return s, true
+		}
+	}
+	return "", false
+}
+
 // ReadSheet streams rows one by one without loading the whole sheet. Row is the 1-based Excel row number.
 func ReadSheet(f *excelize.File, sheet string, emit func(RawRow) error) error {
 	rows, err := f.Rows(sheet)
@@ -293,7 +340,7 @@ func ParseWorkbook(f *excelize.File) (*ParseResult, error) {
 func ParseWorkbookWith(f *excelize.File, opts ParseOptions) (*ParseResult, error) {
 	res := &ParseResult{}
 
-	productSheet, ok := FindSheet(f, SheetProducts)
+	productSheet, ok := FindProductSheet(f)
 	if !ok {
 		return nil, fmt.Errorf("sheet '%s' tidak ditemukan", SheetProducts)
 	}
@@ -315,7 +362,7 @@ func ParseWorkbookWith(f *excelize.File, opts ParseOptions) (*ParseResult, error
 		return nil, err
 	}
 
-	historySheet, ok := FindSheet(f, SheetHistory)
+	historySheet, ok := FindHistorySheet(f)
 	if !ok {
 		return res, nil
 	}
@@ -330,7 +377,9 @@ func ParseWorkbookWith(f *excelize.File, opts ParseOptions) (*ParseResult, error
 	err = walkSheet(f, historySheet, res, func(header RawRow) (func(RawRow) error, error) {
 		parser, err := NewHistoryParser(header, priceOf)
 		if err != nil {
-			return nil, err
+			// Record header error as RowError for history sheet, but DO NOT abort the product import
+			res.addError(NewRowError(header, err))
+			return func(RawRow) error { return nil }, nil
 		}
 		return func(row RawRow) error {
 			h, err := parser.Parse(row)

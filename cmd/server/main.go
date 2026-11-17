@@ -87,6 +87,9 @@ func main() {
 		return c.SendFile("./web/templates/import/index.html")
 	})
 	app.Get("/orders", func(c *fiber.Ctx) error {
+		return c.Redirect("/orders/new")
+	})
+	app.Get("/orders/new", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/orders/new.html")
 	})
 	app.Get("/forecast", func(c *fiber.Ctx) error {
@@ -94,7 +97,7 @@ func main() {
 	})
 
 	// 6. Base API Group
-	api := app.Group("/api/")
+	api := app.Group("/api/v1")
 
 	// Health Check Endpoint
 	api.Get("/health", func(c *fiber.Ctx) error {
@@ -117,32 +120,33 @@ func main() {
 		})
 	})
 
-	// Order routes (Orang 3)
+	// 6. Register API Routes
 	if db != nil {
+		// Order
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)
 		memberRepo := mongorepo.NewMemberRepo(client, db)
 
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
-		// Master Barang (Orang 1): menggantikan RegisterProductLookupRoutes sementara
+
+		// Product Master
 		productSvc := service.NewProductService(productRepo)
 		handler.RegisterProductRoutes(api, productSvc)
 
-		// Initialize ETL
+		// Member Master
+		memberSvc := service.NewMemberService(memberRepo)
+		handler.RegisterMemberRoutes(api, memberSvc)
+
+		// ETL Import
 		historyRepo := mongorepo.NewHistoryRepo(db)
 		importJobRepo := mongorepo.NewImportJobRepo(db)
 
 		etlSvc := etl.NewService(productRepo, historyRepo, importJobRepo)
 		importHandler := handler.NewImportHandler(etlSvc)
-
 		importHandler.Register(api)
-	}
 
-<<<<<<< HEAD
-=======
-	// Analytics and Forecasting routes (Orang 4)
-	if db != nil {
+		// Analytics and Forecasting
 		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
 		forecastRepo := mongorepo.NewForecastRepo(db)
 
@@ -155,9 +159,6 @@ func main() {
 		log.Println("[INIT] Analytics and forecasting routes registered")
 	}
 
-	handler.RegisterOrderPages(app)
-
->>>>>>> faiz
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	go func() {

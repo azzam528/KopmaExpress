@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"smartcoop/internal/domain"
@@ -59,8 +60,12 @@ func (r *HistoryRepo) BulkUpsert(ctx context.Context, records []domain.MonthlySa
 	models := make([]mongo.WriteModel, 0, len(records))
 
 	for _, h := range records {
+		code := strings.ToUpper(strings.TrimSpace(h.ProductCode))
+		if code == "" {
+			continue
+		}
 		filter := bson.M{
-			"product_code": h.ProductCode,
+			"product_code": code,
 			"year":         h.Year,
 			"month":        h.Month,
 		}
@@ -72,7 +77,7 @@ func (r *HistoryRepo) BulkUpsert(ctx context.Context, records []domain.MonthlySa
 				"updated_at": now,
 			},
 			"$setOnInsert": bson.M{
-				"product_code": h.ProductCode,
+				"product_code": code,
 				"year":         h.Year,
 				"month":        h.Month,
 			},
@@ -175,4 +180,3 @@ func (r *HistoryRepo) GetMonthlyTrend(ctx context.Context, productCode string) (
 	}
 	return items, nil
 }
-
