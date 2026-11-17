@@ -19,6 +19,7 @@ type fakeMemberStore struct {
 	lastFilter domain.MemberFilter
 	lastSince  time.Time
 	deleteErr  error
+	renamed    []string
 }
 
 func newFakeMemberStore() *fakeMemberStore {
@@ -56,6 +57,15 @@ func (f *fakeMemberStore) Update(_ context.Context, nim string, m *domain.Member
 	cur, ok := f.items[nim]
 	if !ok {
 		return domain.NewNotFoundError("Anggota tidak ditemukan")
+	}
+	if m.NIM != "" && m.NIM != nim {
+		if _, dup := f.items[m.NIM]; dup {
+			return errors.New("E11000 duplicate key error collection: members index: idx_members_nim_unique")
+		}
+		delete(f.items, nim)
+		cur.NIM = m.NIM
+		f.items[m.NIM] = cur
+		f.renamed = append(f.renamed, nim+"->"+m.NIM)
 	}
 	cur.Name, cur.Unit, cur.Phone = m.Name, m.Unit, m.Phone
 	return nil
@@ -212,6 +222,59 @@ func TestMemberUpdate(t *testing.T) {
 
 	_, err = svc.Update(context.Background(), "  ", &domain.UpdateMemberRequest{Name: "X"})
 	assertAppError(t, err, domain.CodeValidationError, http.StatusUnprocessableEntity)
+}
+
+func TestMemberUpdate_ChangeNIM(t *testing.T) {
+	store := newFakeMemberStore()
+	store.items["2210101002"] = &domain.Member{NIM: "2210101002", Name: "Budi", IsActive: true}
+	svc := NewMemberService(store)
+
+	// NIM berubah -> repo menerima NIM baru, hasil dibaca dengan NIM baru
+	m, err := svc.Update(context.Background(), "2210101001", &domain.UpdateMemberRequest{
+		NIM: " 2210109999 ", Name: "Andi Pratama",
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if m.NIM != "2210109999" {
+		t.Errorf("NIM hasil = %q, want 2210109999", m.NIM)
+	}
+	if len(store.renamed) != 1 || store.renamed[0] != "2210101001->2210109999" {
+		t.Errorf("repo tidak menerima penggantian NIM: %v", store.renamed)
+	}
+	if _, ok := store.items["2210101001"]; ok {
+		t.Error("NIM lama seharusnya tidak ada lagi")
+	}
+
+	// NIM sama / kosong -> bukan penggantian NIM
+	store.renamed = nil
+	for _, same := range []string{"", "2210109999"} {
+		if _, err := svc.Update(context.Background(), "2210109999", &domain.UpdateMemberRequest{NIM: same, Name: "Andi P."}); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	}
+	if len(store.renamed) != 0 {
+		t.Errorf("NIM tidak berubah tapi ada penggantian: %v", store.renamed)
+	}
+
+	// NIM baru dipakai anggota lain -> 409 dengan nomor yang dimaksud
+	_, err = svc.Update(context.Background(), "2210109999", &domain.UpdateMemberRequest{NIM: "2210101002", Name: "X"})
+	ae := assertAppError(t, err, domain.CodeDuplicate, http.StatusConflict)
+	if !strings.Contains(ae.Message, "2210101002") {
+		t.Errorf("pesan duplikat tidak menyebut NIM: %q", ae.Message)
+	}
+
+	// format NIM baru salah -> 422 pada field nim
+	_, err = svc.Update(context.Background(), "2210109999", &domain.UpdateMemberRequest{NIM: "ada spasi", Name: "X"})
+	ae = assertAppError(t, err, domain.CodeValidationError, http.StatusUnprocessableEntity)
+	details, _ := ae.Details.([]domain.ValidationErrorDetail)
+	if len(details) == 0 || details[0].Field != "nim" {
+		t.Errorf("harus ada detail untuk field nim: %+v", ae.Details)
+	}
+
+	// NIM lama tidak ada -> 404
+	_, err = svc.Update(context.Background(), "tidak-ada", &domain.UpdateMemberRequest{NIM: "BARU1", Name: "X"})
+	assertAppError(t, err, domain.CodeNotFound, http.StatusNotFound)
 }
 
 func TestMemberDeactivateAndActivate(t *testing.T) {

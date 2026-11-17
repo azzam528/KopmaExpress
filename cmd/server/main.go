@@ -120,7 +120,7 @@ func main() {
 	if db != nil {
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)
-		memberRepo := mongorepo.NewMemberRepo(db)
+		memberRepo := mongorepo.NewMemberRepo(client, db)
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
 		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))

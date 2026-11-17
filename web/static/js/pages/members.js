@@ -156,8 +156,7 @@
     clearErrors();
     $('#form-title').textContent = m ? 'Ubah Anggota' : 'Tambah Anggota';
     $('#f-nim').value = m ? m.nim : '';
-    $('#f-nim').readOnly = !!m; // NIM adalah kunci, tidak bisa diubah
-    $('#f-nim').classList.toggle('opacity-60', !!m);
+    $('#h-nim').classList.toggle('hidden', !m); // petunjuk hanya saat mengubah
     $('#f-nama').value = m ? m.nama : '';
     $('#f-unit').value = m ? (m.unit || '') : '';
     $('#f-telepon').value = m ? (m.telepon || '') : '';
@@ -190,6 +189,7 @@
     ev.preventDefault();
     clearErrors();
     const editing = state.editingNim;
+    const nimInput = $('#f-nim').value.trim();
     const body = {
       nama: $('#f-nama').value.trim(),
       unit: $('#f-unit').value.trim(),
@@ -199,15 +199,16 @@
     btn.disabled = true;
     try {
       if (editing) {
-        await apiClient.put('/members/' + encodeURIComponent(editing), body);
-        notify('ok', 'Data anggota diperbarui.');
+        await apiClient.put('/members/' + encodeURIComponent(editing), { nim: nimInput, ...body });
+        notify('ok', nimInput !== editing ? 'Data anggota diperbarui, NIM pada riwayat pesanan ikut diganti.' : 'Data anggota diperbarui.');
       } else {
-        const nim = $('#f-nim').value.trim();
-        await apiClient.post('/members', { nim, ...body });
+        await apiClient.post('/members', { nim: nimInput, ...body });
         notify('ok', 'Anggota berhasil ditambahkan.');
-        // tampilkan anggota baru: cari berdasarkan NIM-nya
-        state.q = nim; state.status = ''; state.page = 1;
-        $('#q').value = nim; $('#status').value = '';
+      }
+      if (!editing || nimInput !== editing) {
+        // tampilkan anggota yang baru ditambah / diganti NIM-nya: cari berdasarkan NIM-nya
+        state.q = nimInput; state.status = ''; state.page = 1;
+        $('#q').value = nimInput; $('#status').value = '';
       }
       closeForm();
       refresh();
