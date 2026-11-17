@@ -146,6 +146,7 @@ func (r *ProductRepo) SoftDelete(ctx context.Context, code string) error {
 //   - stockMode "skip"    → stok tidak diubah jika produk sudah ada
 //
 // Mengembalikan jumlah dokumen yang baru dibuat (inserted) dan yang diperbarui (updated).
+
 func (r *ProductRepo) BulkUpsert(ctx context.Context, products []domain.Product, stockMode string) (inserted int64, updated int64, err error) {
 	if len(products) == 0 {
 		return 0, 0, nil
@@ -157,32 +158,26 @@ func (r *ProductRepo) BulkUpsert(ctx context.Context, products []domain.Product,
 	for _, p := range products {
 		filter := bson.M{"kode_barang": p.Code}
 
-		var setOnInsert, set bson.M
-		if stockMode == etl.StockModeSkip {
-			// Jika sudah ada: update nama/kategori/harga saja, stok tidak diubah
-			set = bson.M{
-				"name":       p.Name,
-				"category":   p.Category,
-				"price":      p.Price,
-				"is_active":  true,
-				"updated_at": now,
-			}
-		} else {
-			// replace (default): update semua field termasuk stok
-			set = bson.M{
-				"name":       p.Name,
-				"category":   p.Category,
-				"price":      p.Price,
-				"stock":      p.Stock,
-				"is_active":  true,
-				"updated_at": now,
-			}
+		set := bson.M{
+			"name":       p.Name,
+			"category":   p.Category,
+			"price":      p.Price,
+			"is_active":  true,
+			"updated_at": now,
 		}
 
-		setOnInsert = bson.M{
+		setOnInsert := bson.M{
 			"kode_barang": p.Code,
-			"stock":       p.Stock,
 			"created_at":  now,
+		}
+
+		if stockMode == etl.StockModeSkip {
+			// Produk baru mendapatkan stok dari Excel.
+			// Produk lama mempertahankan stok sebelumnya.
+			setOnInsert["stock"] = p.Stock
+		} else {
+			// Replace: stok selalu mengikuti nilai dari Excel.
+			set["stock"] = p.Stock
 		}
 
 		update := bson.M{
@@ -194,13 +189,16 @@ func (r *ProductRepo) BulkUpsert(ctx context.Context, products []domain.Product,
 			SetFilter(filter).
 			SetUpdate(update).
 			SetUpsert(true)
+
 		models = append(models, model)
 	}
 
 	opts := options.BulkWrite().SetOrdered(false)
+
 	res, err := r.collection.BulkWrite(ctx, models, opts)
 	if err != nil {
 		return 0, 0, err
 	}
+
 	return res.UpsertedCount, res.ModifiedCount, nil
 }
