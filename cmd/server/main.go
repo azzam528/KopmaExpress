@@ -127,6 +127,7 @@ func main() {
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
 		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
+		handler.RegisterMemberLookupRoutes(api, mongorepo.NewMemberLookupRepo(db))
 	}
 
 	// 7. Start Server in Goroutine

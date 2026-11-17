@@ -112,11 +112,67 @@
     e.target.value = ''; $('#suggest').classList.add('hidden');
   });
   document.addEventListener('click', (e) => { if (!e.target.closest('#q, #suggest')) $('#suggest').classList.add('hidden'); });
+  // ---- pilih anggota (butuh GET /members; jika belum ada -> ketik NIM manual)
+  let memberOk = true, memberTimer = null, memberSeq = 0, memberResults = [], memberQuery = null;
 
+  function setMemberInfo(m) {
+    $('#nim-info').textContent = m ? `✓ ${m.nama}${m.unit ? ' • ' + m.unit : ''}` : '';
+  }
+
+  function pickMember(m) {
+    $('#nim').value = m.nim;
+    $('#nim-suggest').classList.add('hidden');
+    setMemberInfo(m);
+  }
+
+  async function searchMember(q) {
+    const ul = $('#nim-suggest'), seq = ++memberSeq;
+    try {
+      const r = await apiClient.get('/members', { q, limit: 8 });
+      if (seq !== memberSeq) return; // respons usang, abaikan
+      memberOk = true; $('#nim-note').textContent = '';
+      memberResults = r.data || []; memberQuery = q;
+      setMemberInfo(memberResults.find((m) => m.nim === q && m.is_active !== false) || null);
+      ul.replaceChildren(...(memberResults.length ? memberResults.map((m) => {
+        const off = m.is_active === false;
+        return el('li', { class: 'px-space-md py-space-sm flex justify-between gap-3 ' + (off ? 'opacity-50' : 'cursor-pointer hover:bg-canvas-bg'),
+          onclick: () => { if (!off) pickMember(m); } },
+          el('div', {}, el('div', { class: 'font-title-md text-title-md' }, m.nama), el('div', { class: 'text-label-sm font-label-sm text-outline' }, m.nim + (m.unit ? ' • ' + m.unit : ''))),
+          off ? el('div', { class: 'text-label-lg font-label-lg text-status-critical-text whitespace-nowrap' }, 'Tidak aktif') : '');
+      }) : [el('li', { class: 'px-space-md py-space-sm text-outline' }, 'Anggota tidak ditemukan. NIM tetap bisa diketik penuh.')]));
+      ul.classList.remove('hidden');
+    } catch (e) {
+      if (seq !== memberSeq) return;
+      if (e.status === 404 || !e.status) { memberOk = false; $('#nim-note').textContent = 'Daftar anggota belum tersedia. Ketik NIM secara manual.'; ul.classList.add('hidden'); }
+      else alertBox('err', 'Gagal mencari anggota', e.message);
+    }
+  }
+
+  $('#nim').addEventListener('input', (e) => {
+    setMemberInfo(null); // NIM diubah -> label pilihan sebelumnya tidak berlaku lagi
+    clearTimeout(memberTimer);
+    const v = e.target.value.trim();
+    memberTimer = setTimeout(() => (memberOk ? searchMember(v) : null), 250);
+  });
+  $('#nim').addEventListener('focus', (e) => { if (memberOk) searchMember(e.target.value.trim()); });
+  $('#nim').addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { $('#nim-suggest').classList.add('hidden'); return; }
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    clearTimeout(memberTimer); memberSeq++; // batalkan pencarian yang masih tertunda
+    const v = e.target.value.trim();
+    // pilih dari hasil hanya bila hasil itu untuk teks yang sedang tampil (hindari hasil usang)
+    if (memberOk && memberQuery === v) {
+      const m = memberResults.find((x) => x.is_active !== false && x.nim === v) || memberResults.find((x) => x.is_active !== false);
+      if (m) pickMember(m);
+    }
+    $('#nim-suggest').classList.add('hidden');
+  });
+  document.addEventListener('click', (e) => { if (!e.target.closest('#nim, #nim-suggest')) $('#nim-suggest').classList.add('hidden'); });
   document.querySelectorAll('input[name=pay]').forEach((r) => r.addEventListener('change', () => {
     pay = r.value; $('#cash-box').classList.toggle('hidden', pay !== 'CASH'); calcChange();
   }));
-  $('#cash').addEventListener('input', calcChange);
+  $('#cash').addEventListener('input', calcChange)  ;
 
   // ---- kirim pesanan
   $('#btn-submit').addEventListener('click', async () => {
@@ -156,5 +212,8 @@
   }
 
   apiClient.get('/products', { limit: 1 }).catch((e) => { if (e.status === 404 || !e.status) unavailable(); });
+    apiClient.get('/members', { limit: 1 }).catch((e) => {
+    if (e.status === 404 || !e.status) { memberOk = false; $('#nim-note').textContent = 'Daftar anggota belum tersedia. Ketik NIM secara manual.'; }
+  });
   render(); recent();
 })();
