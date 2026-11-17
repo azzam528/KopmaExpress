@@ -72,29 +72,31 @@ func main() {
 	app.Static("/static", "./web/static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/dashboard.html")
+		return c.SendFile("./web/templates/dashboard/index.html")
 	})
 	app.Get("/dashboard", func(c *fiber.Ctx) error {
 		return c.Redirect("/")
 	})
 	app.Get("/products", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/products.html")
+		return c.SendFile("./web/templates/products/index.html")
 	})
 	app.Get("/members", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/members.html")
+		return c.SendFile("./web/templates/members/index.html")
 	})
 	app.Get("/import", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/import.html")
+		return c.SendFile("./web/templates/import/index.html")
 	})
 	app.Get("/orders", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/orders.html")
+		return c.SendFile("./web/templates/orders/index.html")
 	})
 	app.Get("/orders/new", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/orders.html")
+		return c.SendFile("./web/templates/orders/new.html")
 	})
 	app.Get("/forecast", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/forecast.html")
+		return c.SendFile("./web/templates/forecast/index.html")
 	})
+
+	handler.RegisterOrderPages(app)
 
 	// 6. Base API Group
 	api := app.Group("/api/v1")
@@ -120,6 +122,7 @@ func main() {
 		})
 	})
 
+<<<<<<< HEAD
 		// ETL / Import routes (Orang 2)
 	if db != nil {
 		productRepo := mongorepo.NewProductRepo(db)
@@ -138,6 +141,8 @@ func main() {
 		handler.NewForecastHandler(forecastSvc).RegisterRoutes(api)
 	}
 
+=======
+>>>>>>> satu
 	// Order routes (Orang 3)
 	if db != nil {
 		orderRepo := mongorepo.NewOrderRepo(client, db)
@@ -145,7 +150,10 @@ func main() {
 		memberRepo := mongorepo.NewMemberRepo(db)
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
+		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
 	}
+
+	handler.RegisterOrderPages(app)
 
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)

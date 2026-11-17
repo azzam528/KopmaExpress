@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Import Excel ETL — KOPMA Express</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Global & Page CSS -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <link rel="stylesheet" href="/static/css/pages/dashboard.css" />
+
+  <!-- Tailwind CSS CDN + Centralized Theme Configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+
+  <!-- Libraries & Shared Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/js/components/api.js"></script>
+  <script src="/static/js/main.js"></script>
+</head><body class="bg-canvas-bg font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-sm pt-space-xs"><div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div><div class="flex flex-col"><span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data Analytics</span></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-barang" href="/products"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Master Barang</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-anggota" href="/members"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master Anggota</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl" data-path="import-excel-etl" href="/import"><span class="material-symbols-outlined text-[20px]">upload_file</span><span class="font-label-lg text-label-lg">Import Excel ETL</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="form-pesanan" href="/orders"><span class="material-symbols-outlined text-[20px]">shopping_cart</span><span class="font-label-lg text-label-lg">Form Pesanan</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="forecast-restock" href="/forecast"><span class="material-symbols-outlined text-[20px]">insights</span><span class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav></div><div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm"><div class="flex items-center justify-between"><span class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI Engine</span><span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span></div><div class="flex flex-col"><span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span><p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi suplai.</p></div><a class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center" data-path="forecast-restock" href="/forecast"><span>Lihat Analitik</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div></aside><div class="pl-72 flex flex-col min-h-screen bg-canvas-bg"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-xl"><div class="relative flex items-center w-full"><span class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span><input class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200" placeholder="Cari kode barang, anggota, transaksi..." type="search"/></div></div><div class="flex items-center gap-space-md"><button aria-label="Notifikasi" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><div class="h-8 w-px bg-surface-container"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col text-left"><span class="font-title-md text-title-md text-on-surface leading-tight">Nur Sabrina Hanifa</span><span class="font-label-sm text-label-sm text-outline">Administrator</span></div></div></div></header><main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg"><div class="flex flex-col w-full gap-space-lg">
+<!-- Page Header & Global Context Bar -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md pt-2">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-primary font-label-sm text-label-sm uppercase tracking-wider">ETL Engine v2.4</span>
+<span class="text-outline text-label-sm font-label-sm">|</span>
+<span class="text-outline font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success-text animate-pulse"></span>
+          Koneksi Sinkronisasi Aktif
+        </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">ETL Pipeline &amp; Import Data Excel</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-0.5">
+        Sinkronisasi data master barang, stok awal, dan riwayat transaksi dari spreadsheet secara berkala dengan validasi skema otomatis.
+      </p>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto">
+<button class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface font-title-md text-title-md shadow-sm hover:bg-surface-container-low transition-all" type="button">
+<span class="material-symbols-outlined text-[18px] text-outline">history</span>
+<span>Riwayat Impor</span>
+</button>
+<button class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-xl bg-primary text-on-primary font-title-md text-title-md shadow-sm hover:bg-primary-container transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Dokumentasi Skema</span>
+</button>
+</div>
+</div>
+<!-- Workflow Pipeline Flow Indicator -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="flex items-center gap-space-sm p-space-sm rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center font-title-md text-primary font-bold">1</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Standarisasi Format</span>
+<span class="font-body-sm text-body-sm text-outline truncate">Unduh template acuan resmi</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm p-space-sm rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center font-title-md text-primary font-bold">2</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Validasi Skema &amp; Parsing</span>
+<span class="font-body-sm text-body-sm text-outline truncate">Unggah &amp; tentukan strategi stok</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm p-space-sm rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-status-success-bg flex items-center justify-center font-title-md text-status-success-text font-bold">3</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Ingestion &amp; Rekonsiliasi</span>
+<span class="font-body-sm text-body-sm text-outline truncate">Monitoring log real-time</span>
+</div>
+</div>
+</div>
+<!-- 3-Card Core Workflow Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- CARD 1: UNDUH TEMPLATE SPREADSHEET (lg:col-span-4) -->
+<div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">download_for_offline</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg text-on-surface">1. Unduh Template</span>
+<span class="font-label-sm text-label-sm text-outline">Format resmi Excel KOPMA (.xlsx)</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold">Tersedia</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Gunakan workbook acuan agar struktur kolom, tipe data harga, dan barcode terintegrasi tanpa error validasi OLS.
+      </p>
+<!-- Template Action Stack -->
+<div class="flex flex-col gap-space-sm">
+<a class="group flex items-center justify-between p-space-md rounded-xl bg-surface-bright hover:bg-surface-container-low transition-all" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-status-success-bg text-status-success-text flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">table_view</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Template Data Master Barang</span>
+<span class="font-body-sm text-body-sm text-outline">SKU, Barcode, Kategori, Harga Beli/Jual</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary group-hover:translate-y-0.5 transition-all text-[20px]">file_download</span>
+</a>
+<a class="group flex items-center justify-between p-space-md rounded-xl bg-surface-bright hover:bg-surface-container-low transition-all" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Data Riwayat Penjualan</span>
+<span class="font-body-sm text-body-sm text-outline">Waktu transaksi, No. Nota, Qty, Anggota ID</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary group-hover:translate-y-0.5 transition-all text-[20px]">file_download</span>
+</a>
+</div>
+<!-- Toggle: Sertakan 50 data dummy -->
+<div class="mt-space-xs p-space-md rounded-xl bg-surface-bright flex items-center justify-between">
+<div class="flex flex-col">
+<label class="font-title-md text-title-md text-on-surface cursor-pointer" for="dummy-toggle">Sertakan 50 baris data dummy</label>
+<span class="font-body-sm text-body-sm text-outline">Contoh pengisian nilai &amp; formula standar</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="dummy-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Mini Instruction Notice -->
+<div class="flex items-start gap-space-xs p-space-sm rounded-xl bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">info</span>
+<span class="font-body-sm text-body-sm leading-snug">
+          Pastikan format tanggal bertipe <strong class="font-semibold text-on-surface">YYYY-MM-DD</strong> dan kolom numeric tidak berisi simbol mata uang manual.
+        </span>
+</div>
+</div>
+<!-- CARD 2: UPLOAD FILE EXCEL & KONFIGURASI (lg:col-span-8) -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-lg">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">cloud_upload</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg text-on-surface">2. Upload File Excel &amp; Konfigurasi</span>
+<span class="font-label-sm text-label-sm text-outline">Pilih berkas dan tentukan aturan kalkulasi stok</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-medium">
+          Maks. 15MB (.xlsx, .csv)
+        </span>
+</div>
+<!-- Drag & Drop Area -->
+<div class="relative group cursor-pointer flex flex-col items-center justify-center p-space-xl rounded-2xl bg-surface-bright hover:bg-surface-container-low transition-all duration-200" id="dropzone">
+<input accept=".xlsx, .xls, .csv" class="absolute inset-0 opacity-0 cursor-pointer z-10" id="file-input" type="file"/>
+<div class="w-16 h-16 rounded-2xl bg-surface-container-lowest shadow-sm flex items-center justify-center mb-space-sm group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-primary text-[36px]">file_present</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-title-lg text-title-lg text-on-surface">Tarik &amp; lepas berkas spreadsheet ke sini</span>
+<span class="font-body-md text-body-md text-outline mt-1">atau <span class="text-primary font-semibold underline underline-offset-4">jelajahi file dari perangkat</span></span>
+</div>
+<!-- Attached File Preview Badge (Mock active file) -->
+<div class="mt-space-md flex items-center gap-space-sm px-space-md py-2 rounded-xl bg-surface-container-lowest shadow-sm">
+<span class="material-symbols-outlined text-status-success-text text-[20px]">check_circle</span>
+<span class="font-title-md text-title-md text-on-surface">BATCH_RESTOCK_MEI_2025_FINAL.xlsx</span>
+<span class="font-body-sm text-body-sm text-outline">4.2 MB</span>
+<button class="text-outline hover:text-error transition-colors p-1" title="Hapus Berkas" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Konfigurasi: Mode Penggabungan Stok -->
+<div class="flex flex-col gap-space-sm">
+<label class="font-title-md text-title-md text-on-surface flex items-center gap-1.5">
+<span>Mode Penggabungan Stok (Inventory Merging)</span>
+<span class="material-symbols-outlined text-outline text-[16px]" title="Pilih perlakuan sistem saat menemukan SKU yang sudah ada di database">help</span>
+</label>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Option 1: Replace -->
+<label class="relative flex items-start gap-space-sm p-space-md rounded-xl bg-surface-bright cursor-pointer hover:bg-surface-container-low transition-all">
+<input class="mt-1 w-4 h-4 text-primary focus:ring-primary accent-primary" name="stock_mode" type="radio" value="replace"/>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface">Replace (Timpa stok lama)</span>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">
+                Nilai stok master saat ini langsung diganti dengan nilai kuantitas dari berkas Excel impor (Cocok untuk Opname).
+              </p>
+</div>
+</label>
+<!-- Option 2: Append/Sum (Active) -->
+<label class="relative flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-low cursor-pointer shadow-sm">
+<input checked="" class="mt-1 w-4 h-4 text-primary focus:ring-primary accent-primary" name="stock_mode" type="radio" value="append"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-title-md text-title-md text-primary font-semibold">Append / Sum (Tambahkan)</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-primary text-on-primary">Direkomendasikan</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                Stok dari berkas ditambahkan ke saldo kuantitas berjalan tanpa menghapus histori transaksi sebelumnya.
+              </p>
+</div>
+</label>
+</div>
+</div>
+<!-- Action Button & Summary Footer -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-2">
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+<span>Validasi otomatis OLS, Duplikasi SKU, dan Format Harga aktif</span>
+</div>
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-space-xl py-3 rounded-xl bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed transition-all font-title-lg text-title-lg shadow-sm" id="btn-run-etl" type="button">
+<span class="material-symbols-outlined text-[22px]">rocket_launch</span>
+<span>Mulai Proses ETL Pipeline</span>
+</button>
+</div>
+</div>
+<!-- CARD 3: STATUS & PROGRESS REAL-TIME (Full Width 12-cols) -->
+<div class="lg:col-span-12 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[24px]">sync</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-title-lg text-title-lg text-on-surface">3. Status &amp; Progress Real-Time</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm font-semibold">
+<span class="w-2 h-2 rounded-full bg-status-warning-text animate-ping"></span>
+                Sedang Memproses Ingestion
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Pipeline ID: #ETL-20250524-KOPMA-091</span>
+</div>
+</div>
+<button class="inline-flex items-center gap-1.5 px-space-md py-2 rounded-xl bg-surface-bright hover:bg-surface-container-low text-on-surface font-title-md text-title-md transition-all self-start sm:self-auto" type="button">
+<span class="material-symbols-outlined text-[18px] text-status-critical-text">download</span>
+<span>Unduh Log Error (.csv)</span>
+</button>
+</div>
+<!-- Real-Time Metrics & Visual Progress Bar -->
+<div class="p-space-lg rounded-2xl bg-surface-bright flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-baseline gap-2">
+<span class="font-metric-display text-metric-display text-primary font-bold">84%</span>
+<span class="font-title-md text-title-md text-on-surface">Tahap Ingestion Database Relasional</span>
+</div>
+<span class="font-label-md text-label-md text-outline">Estimasi sisa waktu: ~8 detik</span>
+</div>
+<!-- Progress Bar Track -->
+<div class="w-full h-3.5 bg-surface-container rounded-full overflow-hidden p-0.5">
+<div class="h-full bg-primary rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-1" style="width: 84%">
+<div class="w-2 h-2 rounded-full bg-secondary-container shadow-sm animate-pulse"></div>
+</div>
+</div>
+<!-- 3-KPI Stats Counter Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md pt-space-xs">
+<!-- Total Processed -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">database</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-semibold">Total Baris Diproses</span>
+<span class="font-metric-display text-metric-display text-on-surface font-bold">1.250</span>
+<span class="font-body-sm text-body-sm text-outline">Target alokasi berkas</span>
+</div>
+</div>
+<!-- Successful Rows -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-status-success-bg flex items-center justify-center text-status-success-text">
+<span class="material-symbols-outlined text-[24px]">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-status-success-text font-semibold">Sukses Tervalidasi</span>
+<div class="flex items-baseline gap-2">
+<span class="font-metric-display text-metric-display text-status-success-text font-bold">1.218</span>
+<span class="font-label-sm text-label-sm text-status-success-text font-semibold">(97.4%)</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Siap digabung ke master</span>
+</div>
+</div>
+<!-- Validation Errors -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-status-critical-bg flex items-center justify-center text-status-critical-text">
+<span class="material-symbols-outlined text-[24px]">error</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-status-critical-text font-semibold">Gagal / Error Validasi</span>
+<div class="flex items-baseline gap-2">
+<span class="font-metric-display text-metric-display text-status-critical-text font-bold">32</span>
+<span class="font-label-sm text-label-sm text-status-critical-text font-semibold">(2.6%)</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Dilewati sementara</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Error Log Table Section -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-title-md text-title-md text-on-surface">Log Kesalahan Skema &amp; Anomali Data</span>
+<span class="px-2 py-0.5 rounded-full bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm font-semibold">32 Ditemukan</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Menampilkan 4 dari 32 entri kritis</span>
+</div>
+<div class="overflow-x-auto rounded-xl bg-surface-bright">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-3 px-space-md">Lokasi Baris</th>
+<th class="py-3 px-space-md">Kolom Target</th>
+<th class="py-3 px-space-md">Nilai Input Terbaca</th>
+<th class="py-3 px-space-md">Deskripsi Masalah / Rekomendasi Solusi</th>
+<th class="py-3 px-space-md text-right">Tindakan</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container font-body-sm text-body-sm text-on-surface">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-status-critical-bg text-status-critical-text">
+                    Baris 45
+                  </span>
+</td>
+<td class="py-3.5 px-space-md font-medium text-on-surface">HARGA_JUAL</td>
+<td class="py-3.5 px-space-md font-mono text-outline">"Rp. 12.500,-"</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-critical-text text-[16px]">warning</span>
+<span class="text-status-critical-text font-medium">Format harga tidak valid.</span>
+<span class="text-outline">Wajib angka polos tanpa prefix mata uang atau koma strip.</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="text-primary hover:text-primary-container font-title-md text-title-md underline underline-offset-2" type="button">Koreksi Cepat</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-status-critical-bg text-status-critical-text">
+                    Baris 112
+                  </span>
+</td>
+<td class="py-3.5 px-space-md font-medium text-on-surface">KODE_BARANG</td>
+<td class="py-3.5 px-space-md font-mono text-outline">"KOP-SNK-0012"</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-critical-text text-[16px]">content_copy</span>
+<span class="text-status-critical-text font-medium">Kode barang duplikat di baris 18.</span>
+<span class="text-outline">SKU tidak boleh berulang dalam satu batch spreadsheet.</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="text-primary hover:text-primary-container font-title-md text-title-md underline underline-offset-2" type="button">Lihat Baris 18</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-status-warning-bg text-status-warning-text">
+                    Baris 240
+                  </span>
+</td>
+<td class="py-3.5 px-space-md font-medium text-on-surface">STOK_AWAL</td>
+<td class="py-3.5 px-space-md font-mono text-outline">"-15"</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-warning-text text-[16px]">priority_high</span>
+<span class="text-status-warning-text font-medium">Nilai stok negatif terdeteksi.</span>
+<span class="text-outline">Kuantitas di-clamp otomatis menjadi 0 jika mode append aktif.</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="text-primary hover:text-primary-container font-title-md text-title-md underline underline-offset-2" type="button">Abaikan (Set 0)</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-status-critical-bg text-status-critical-text">
+                    Baris 389
+                  </span>
+</td>
+<td class="py-3.5 px-space-md font-medium text-on-surface">TANGGAL_TRANSAKSI</td>
+<td class="py-3.5 px-space-md font-mono text-outline">"31/02/2025"</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-critical-text text-[16px]">event_busy</span>
+<span class="text-status-critical-text font-medium">Tanggal tidak valid.</span>
+<span class="text-outline">Bulan Februari 2025 hanya memiliki 28 hari kalender.</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="text-primary hover:text-primary-container font-title-md text-title-md underline underline-offset-2" type="button">Koreksi Cepat</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Client-Side Simulation Script -->
+
+</div></main></div>
+  <script src="/static/js/pages/import.js"></script>
+</body></html>
