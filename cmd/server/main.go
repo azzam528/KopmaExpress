@@ -127,7 +127,9 @@ func main() {
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
 		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
-		handler.RegisterMemberLookupRoutes(api, mongorepo.NewMemberLookupRepo(db))
+
+		// Master anggota: CRUD penuh (PRD §6.2); menggantikan lookup sementara.
+		handler.RegisterMemberRoutes(api, service.NewMemberService(memberRepo))
 	}
 
 	// 7. Start Server in Goroutine
