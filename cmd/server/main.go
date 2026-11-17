@@ -17,6 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"smartcoop/internal/config"
+	"smartcoop/internal/etl"
 	"smartcoop/internal/handler"
 	"smartcoop/internal/httpx"
 	"smartcoop/internal/middleware"
@@ -86,9 +87,6 @@ func main() {
 		return c.SendFile("./web/templates/import/index.html")
 	})
 	app.Get("/orders", func(c *fiber.Ctx) error {
-		return c.Redirect("/orders/new")
-	})
-	app.Get("/orders/new", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/orders/new.html")
 	})
 	app.Get("/forecast", func(c *fiber.Ctx) error {
@@ -96,7 +94,7 @@ func main() {
 	})
 
 	// 6. Base API Group
-	api := app.Group("/api/v1")
+	api := app.Group("/api/")
 
 	// Health Check Endpoint
 	api.Get("/health", func(c *fiber.Ctx) error {
@@ -123,11 +121,22 @@ func main() {
 	if db != nil {
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)
-		memberRepo := mongorepo.NewMemberRepo(db)
+		memberRepo := mongorepo.NewMemberRepo(client, db)
+
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
-		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
-		handler.RegisterMemberLookupRoutes(api, mongorepo.NewMemberLookupRepo(db))
+		// Master Barang (Orang 1): menggantikan RegisterProductLookupRoutes sementara
+		productSvc := service.NewProductService(productRepo)
+		handler.RegisterProductRoutes(api, productSvc)
+
+		// Initialize ETL
+		historyRepo := mongorepo.NewHistoryRepo(db)
+		importJobRepo := mongorepo.NewImportJobRepo(db)
+
+		etlSvc := etl.NewService(productRepo, historyRepo, importJobRepo)
+		importHandler := handler.NewImportHandler(etlSvc)
+
+		importHandler.Register(api)
 	}
 
 <<<<<<< HEAD

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
-<html lang="id"><head>
+<html lang="id">
+
+<head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Master Data Barang — KOPMA Express</title>
@@ -8,8 +10,12 @@
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
 
   <!-- Global & Page CSS -->
   <link rel="stylesheet" href="/static/css/style.css" />
@@ -25,633 +31,321 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/static/js/components/api.js"></script>
   <script src="/static/js/main.js"></script>
-</head><body class="bg-canvas-bg font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-sm pt-space-xs"><div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div><div class="flex flex-col"><span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data Analytics</span></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl" data-path="master-barang" href="/products"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Master Barang</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-anggota" href="/members"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master Anggota</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="import-excel-etl" href="/import"><span class="material-symbols-outlined text-[20px]">upload_file</span><span class="font-label-lg text-label-lg">Import Excel ETL</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="form-pesanan" href="/orders"><span class="material-symbols-outlined text-[20px]">shopping_cart</span><span class="font-label-lg text-label-lg">Form Pesanan</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="forecast-restock" href="/forecast"><span class="material-symbols-outlined text-[20px]">insights</span><span class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav></div><div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm"><div class="flex items-center justify-between"><span class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI Engine</span><span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span></div><div class="flex flex-col"><span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span><p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi suplai.</p></div><a class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center" data-path="forecast-restock" href="/forecast"><span>Lihat Analitik</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div></aside><div class="pl-72 flex flex-col min-h-screen bg-canvas-bg"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-xl"><div class="relative flex items-center w-full"><span class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span><input class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200" placeholder="Cari kode barang, anggota, transaksi..." type="search"/></div></div><div class="flex items-center gap-space-md"><button aria-label="Notifikasi" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><div class="h-8 w-px bg-surface-container"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col text-left"><span class="font-title-md text-title-md text-on-surface leading-tight">Nur Sabrina Hanifa</span><span class="font-label-sm text-label-sm text-outline">Administrator</span></div></div></div></header><main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg"><div class="flex flex-col w-full gap-space-lg">
-<!-- Header Section with Action Buttons -->
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div class="flex flex-col">
-<div class="flex items-center gap-space-xs">
-<span class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Master Data Barang &amp; Inventaris</span>
-<span class="px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm">Live Sync</span>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">
-        Manajemen terpadu katalog SKU, penentuan margin harga beli/jual, monitoring batas reorder stok, dan cetak label barcode.
-      </p>
-</div>
-<div class="flex items-center gap-space-xs flex-wrap">
-<button class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container-low transition-colors shadow-sm font-label-md text-label-md" type="button">
-<span class="material-symbols-outlined text-[18px] text-outline">download</span>
-<span>Ekspor Data (.xlsx)</span>
-</button>
-<button class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container-low transition-colors shadow-sm font-label-md text-label-md" type="button">
-<span class="material-symbols-outlined text-[18px] text-outline">qr_code_scanner</span>
-<span>Cetak Barcode Label</span>
-</button>
-<button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all shadow-sm font-label-lg text-label-lg" id="open-modal-btn" type="button">
-<span class="material-symbols-outlined text-[20px]">add</span>
-<span>Tambah Barang Baru</span>
-</button>
-</div>
-</div>
-<!-- KPI Metrik Mini (4 Cards) -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
-<!-- KPI 1 -->
-<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden">
-<div class="flex items-center justify-between">
-<span class="font-label-md text-label-md text-on-surface-variant">Total SKU Aktif</span>
-<div class="w-9 h-9 rounded-xl bg-surface-container-high/60 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-[20px]">inventory_2</span>
-</div>
-</div>
-<div class="mt-3 flex items-baseline gap-2">
-<span class="font-headline-lg text-headline-lg text-on-surface">300</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Item Terdaftar</span>
-</div>
-<div class="mt-2 flex items-center gap-1 text-status-success-text font-label-sm text-label-sm">
-<span class="material-symbols-outlined text-[16px]">trending_up</span>
-<span>+12 SKU bulan ini</span>
-</div>
-</div>
-<!-- KPI 2 -->
-<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden">
-<div class="flex items-center justify-between">
-<span class="font-label-md text-label-md text-on-surface-variant">Total Valuasi Stok</span>
-<div class="w-9 h-9 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary">
-<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
-</div>
-</div>
-<div class="mt-3 flex items-baseline gap-2">
-<span class="font-headline-lg text-headline-lg text-on-surface">Rp 48,65 Jt</span>
-</div>
-<div class="mt-2 flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
-<span class="w-2 h-2 rounded-full bg-status-success-text"></span>
-<span>HPP Berjalan Gudang Utama</span>
-</div>
-</div>
-<!-- KPI 3 -->
-<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden">
-<div class="flex items-center justify-between">
-<span class="font-label-md text-label-md text-on-surface-variant">Perlu Restock Segera</span>
-<div class="w-9 h-9 rounded-xl bg-status-critical-bg flex items-center justify-center text-status-critical-text">
-<span class="material-symbols-outlined text-[20px]">warning</span>
-</div>
-</div>
-<div class="mt-3 flex items-baseline gap-2">
-<span class="font-headline-lg text-headline-lg text-error">6 SKU</span>
-<span class="px-2 py-0.5 rounded-full bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm">Kritis</span>
-</div>
-<div class="mt-2 flex items-center gap-1 text-status-critical-text font-label-sm text-label-sm">
-<span class="material-symbols-outlined text-[16px]">priority_high</span>
-<span>Di bawah ambang batas minimal</span>
-</div>
-</div>
-<!-- KPI 4 -->
-<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden">
-<div class="flex items-center justify-between">
-<span class="font-label-md text-label-md text-on-surface-variant">Kategori Terbanyak</span>
-<div class="w-9 h-9 rounded-xl bg-tertiary-fixed/60 flex items-center justify-center text-tertiary">
-<span class="material-symbols-outlined text-[20px]">category</span>
-</div>
-</div>
-<div class="mt-3 flex items-baseline gap-2">
-<span class="font-headline-lg text-headline-lg text-on-surface">128 SKU</span>
-</div>
-<div class="mt-2 flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm truncate">
-<span class="material-symbols-outlined text-[16px] text-tertiary">edit_note</span>
-<span class="truncate">Alat Tulis Kantor &amp; Kertas</span>
-</div>
-</div>
-</div>
-<!-- Filter & Action Control Bar -->
-<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col lg:flex-row gap-space-sm items-stretch lg:items-center justify-between">
-<div class="flex-1 flex flex-col sm:flex-row gap-space-sm items-center">
-<div class="relative w-full sm:w-80">
-<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px] pointer-events-none">search</span>
-<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all" id="table-search-input" placeholder="Cari kode SKU, nama barang, barcode..." type="text"/>
-</div>
-<div class="flex items-center gap-space-xs w-full sm:w-auto">
-<select class="w-full sm:w-auto px-3 py-2 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer">
-<option value="">Semua Kategori</option>
-<option value="atk">ATK &amp; Kertas</option>
-<option value="buku">Buku &amp; Catatan</option>
-<option value="fnb">Minuman &amp; Snack</option>
-<option value="merch">Merchandise Koperasi</option>
-</select>
-<select class="w-full sm:w-auto px-3 py-2 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer">
-<option value="">Semua Status Stok</option>
-<option value="safe">Stok Aman (Safe)</option>
-<option value="critical">Stok Kritis (&lt;10)</option>
-<option value="empty">Stok Habis (0)</option>
-<option value="overstock">Overstock Warning</option>
-</select>
-</div>
-</div>
-<div class="flex items-center gap-space-xs justify-between lg:justify-end">
-<span class="font-label-sm text-label-sm text-outline">Urutkan:</span>
-<select class="px-3 py-2 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer">
-<option value="lowest_stock">Stok Terendah (Prioritas)</option>
-<option value="highest_price">Harga Tertinggi</option>
-<option value="best_seller">Paling Sering Terjual</option>
-<option value="newest">Baru Ditambahkan</option>
-</select>
-<button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Reset Filter" type="button">
-<span class="material-symbols-outlined text-[20px]">restart_alt</span>
-</button>
-</div>
-</div>
-<!-- Data Table Card Container -->
-<div class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden flex flex-col">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
-<th class="py-3.5 px-4 w-12 text-center">
-<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer accent-primary" id="check-all" type="checkbox"/>
-</th>
-<th class="py-3.5 px-4">Kode SKU &amp; Barcode</th>
-<th class="py-3.5 px-4">Informasi Produk</th>
-<th class="py-3.5 px-4">Kategori</th>
-<th class="py-3.5 px-4 text-right">Harga Beli / Jual</th>
-<th class="py-3.5 px-4 text-center">Stok Fisik</th>
-<th class="py-3.5 px-4 text-center">Min. Reorder</th>
-<th class="py-3.5 px-4 text-center">Aksi Cepat</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-surface-container">
-<!-- Baris 1: Buku Tulis KIKY -->
-<tr class="hover:bg-surface-bright transition-colors group">
-<td class="py-3.5 px-4 text-center">
-<input class="w-4 h-4 rounded cursor-pointer accent-primary row-checkbox" type="checkbox"/>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-primary font-bold">B-0104</span>
-<span class="font-body-sm text-body-sm text-outline font-mono">899123456701</span>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-3">
-<img class="w-11 h-11 rounded-xl object-cover shadow-sm bg-surface-container-low flex-shrink-0" data-alt="A clean top-down catalog photo of KIKY lined notebook stationery pack on pure white minimal studio background soft teal illumination sharp focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnyRTP4VoO9iAR7FM-MXTjWSFXJgLfrmT06Bkd3DV2em_MF_okHnHEUDuSklqKHdOGnCBVgHV_DvFy3Hhm7nqIjr5KwdN1dQxXF6e5khsHJrQeuRTjwGvTuhpdqosjJLG24bavih0Pe8IbS7b48CB5nTDKJffRvaejBy8CCgHug7K8oRha9cgoTGZItyi8Wu54UC7RhiImIMAMB4xfMuvvzssZgoDZfQeMY2vKmd2Y"/>
-<div class="flex flex-col min-w-0">
-<span class="font-title-md text-title-md text-on-surface truncate">Buku Tulis KIKY 38 Lembar</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Pak (10 Buku)</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<span class="px-2.5 py-1 rounded-lg bg-surface-container-high text-tertiary font-label-sm text-label-sm inline-block">
-                Buku &amp; Catatan
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<div class="flex flex-col items-end">
-<span class="font-title-md text-title-md text-on-surface font-semibold">Rp 38.500</span>
-<span class="font-body-sm text-body-sm text-outline">Beli: Rp 32.000 <span class="text-status-success-text font-medium">(+20.3%)</span></span>
-</div>
-</td>
-<td class="py-3.5 px-4 text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-critical-text"></span>
-                4 Pak - Kritis
-              </span>
-</td>
-<td class="py-3.5 px-4 text-center font-body-md text-body-md text-on-surface-variant font-medium">
-              15 Pak
-            </td>
-<td class="py-3.5 px-4 text-center">
-<div class="inline-flex items-center gap-1">
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Barang" type="button">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-surface-container-low transition-colors" title="Cetak Barcode" type="button">
-<span class="material-symbols-outlined text-[18px]">barcode</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Menu Lainnya" type="button">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Baris 2: Kertas HVS A4 -->
-<tr class="hover:bg-surface-bright transition-colors group">
-<td class="py-3.5 px-4 text-center">
-<input class="w-4 h-4 rounded cursor-pointer accent-primary row-checkbox" type="checkbox"/>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-primary font-bold">K-0021</span>
-<span class="font-body-sm text-body-sm text-outline font-mono">899234567812</span>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-3">
-<img class="w-11 h-11 rounded-xl object-cover shadow-sm bg-surface-container-low flex-shrink-0" data-alt="A studio product photograph of PaperOne A4 70gsm photocopy paper rim packaging on clean white backdrop subtle cyan cast minimal composition" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFpzqwXW9wpJqhVbYNtv_y9UDJwgQaol1gKcK3sACLuuq-dx6P5Dns4a9PC-lax1W9ve6eDh2RoS-cxMP16fEV1Ht8BQnbYxl9DdeY41CmZzAkbwXNm7RT4Jxwchy7xCIqrUpO6dHKGBPV1QHPBVT_pTB4YPSmMsmwn1pGK2DBngL7qlBDNWIY2r2HUvax9m969nqBQKs84RPjgaTFIXpC4aMl8qNj7llDNvTheror"/>
-<div class="flex flex-col min-w-0">
-<span class="font-title-md text-title-md text-on-surface truncate">Kertas HVS A4 70gr PaperOne</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Rim (500 Lembar)</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<span class="px-2.5 py-1 rounded-lg bg-surface-container-high text-tertiary font-label-sm text-label-sm inline-block">
-                ATK &amp; Kertas
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<div class="flex flex-col items-end">
-<span class="font-title-md text-title-md text-on-surface font-semibold">Rp 48.000</span>
-<span class="font-body-sm text-body-sm text-outline">Beli: Rp 42.000 <span class="text-status-success-text font-medium">(+14.3%)</span></span>
-</div>
-</td>
-<td class="py-3.5 px-4 text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                114 Rim - Aman
-              </span>
-</td>
-<td class="py-3.5 px-4 text-center font-body-md text-body-md text-on-surface-variant font-medium">
-              20 Rim
-            </td>
-<td class="py-3.5 px-4 text-center">
-<div class="inline-flex items-center gap-1">
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Barang" type="button">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-surface-container-low transition-colors" title="Cetak Barcode" type="button">
-<span class="material-symbols-outlined text-[18px]">barcode</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Menu Lainnya" type="button">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Baris 3: Pulpen Gel Pilot G2 -->
-<tr class="hover:bg-surface-bright transition-colors group">
-<td class="py-3.5 px-4 text-center">
-<input class="w-4 h-4 rounded cursor-pointer accent-primary row-checkbox" type="checkbox"/>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-primary font-bold">P-0089</span>
-<span class="font-body-sm text-body-sm text-outline font-mono">899345678923</span>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-3">
-<img class="w-11 h-11 rounded-xl object-cover shadow-sm bg-surface-container-low flex-shrink-0" data-alt="A high resolution macro photo of black Pilot G2 0.5 rollerball gel pens neatly angled on a sleek slate surface soft daylight modern aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr7gUBlx3Z_rBNAsWn_FFe1pxNY9nbSoPLbkkcF322QK8eJ3M9ey1CNryb2YiMUdUXTkBTu8vc9lyy2QY0lbJgkN21MiOYp6hsGK0ENB9E_OiNAOcc_75-CCtQY0uuAVisu5F2RLIPYdPolNke-jVPrIV1QhJoiLrzaZ0v-0vK1Qol386txmJvDKGY01w07JXqNjtcPWV-0dyyaRDrV0BP6iOJsGcegYC6cOm-ICcF"/>
-<div class="flex flex-col min-w-0">
-<span class="font-title-md text-title-md text-on-surface truncate">Pulpen Gel Pilot G2 0.5 Hitam</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Pcs</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<span class="px-2.5 py-1 rounded-lg bg-surface-container-high text-tertiary font-label-sm text-label-sm inline-block">
-                ATK &amp; Kertas
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<div class="flex flex-col items-end">
-<span class="font-title-md text-title-md text-on-surface font-semibold">Rp 18.000</span>
-<span class="font-body-sm text-body-sm text-outline">Beli: Rp 14.500 <span class="text-status-success-text font-medium">(+24.1%)</span></span>
-</div>
-</td>
-<td class="py-3.5 px-4 text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-warning-text"></span>
-                8 Pcs - Menipis
-              </span>
-</td>
-<td class="py-3.5 px-4 text-center font-body-md text-body-md text-on-surface-variant font-medium">
-              12 Pcs
-            </td>
-<td class="py-3.5 px-4 text-center">
-<div class="inline-flex items-center gap-1">
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Barang" type="button">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-surface-container-low transition-colors" title="Cetak Barcode" type="button">
-<span class="material-symbols-outlined text-[18px]">barcode</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Menu Lainnya" type="button">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Baris 4: Air Mineral Aqua 600ml -->
-<tr class="hover:bg-surface-bright transition-colors group">
-<td class="py-3.5 px-4 text-center">
-<input class="w-4 h-4 rounded cursor-pointer accent-primary row-checkbox" type="checkbox"/>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-primary font-bold">M-0311</span>
-<span class="font-body-sm text-body-sm text-outline font-mono">899456789034</span>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-3">
-<img class="w-11 h-11 rounded-xl object-cover shadow-sm bg-surface-container-low flex-shrink-0" data-alt="A commercial product shot of refreshing cold water bottle with condensation drops against a pristine light teal gradient background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu8wMzkWpDhX4pD3jY4dSHuKNdgX87wiRupIyV3zpKPxpNy3OuKGfKEAXQI-dmypf6zPUc2sN6_Qq8bz0wn-G20aX36XPEK3HZy3ZuZ1a2BnQ8qrMPMR78TTXtvFfhHfUnfFiGJrmn-2o1mBhp5N_6Ck5DxkGSQkg1xd23yNksgQS8_D6U1U8Kl2i16i98fnXSXC88QTzOzRHpo5Jkc-MxZG2I9xGrpOQMdPxOXtCt"/>
-<div class="flex flex-col min-w-0">
-<span class="font-title-md text-title-md text-on-surface truncate">Air Mineral Aqua 600ml</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Dus (24 Botol)</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<span class="px-2.5 py-1 rounded-lg bg-surface-container-high text-tertiary font-label-sm text-label-sm inline-block">
-                Minuman &amp; Snack
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<div class="flex flex-col items-end">
-<span class="font-title-md text-title-md text-on-surface font-semibold">Rp 52.000</span>
-<span class="font-body-sm text-body-sm text-outline">Beli: Rp 46.000 <span class="text-status-success-text font-medium">(+13.0%)</span></span>
-</div>
-</td>
-<td class="py-3.5 px-4 text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                42 Dus - Aman
-              </span>
-</td>
-<td class="py-3.5 px-4 text-center font-body-md text-body-md text-on-surface-variant font-medium">
-              10 Dus
-            </td>
-<td class="py-3.5 px-4 text-center">
-<div class="inline-flex items-center gap-1">
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Barang" type="button">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-surface-container-low transition-colors" title="Cetak Barcode" type="button">
-<span class="material-symbols-outlined text-[18px]">barcode</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Menu Lainnya" type="button">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Baris 5: Map Snellhecter Plastik -->
-<tr class="hover:bg-surface-bright transition-colors group">
-<td class="py-3.5 px-4 text-center">
-<input class="w-4 h-4 rounded cursor-pointer accent-primary row-checkbox" type="checkbox"/>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-primary font-bold">A-0402</span>
-<span class="font-body-sm text-body-sm text-outline font-mono">899567890145</span>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-3">
-<img class="w-11 h-11 rounded-xl object-cover shadow-sm bg-surface-container-low flex-shrink-0" data-alt="A clean studio photo of colorful plastic document folders and binders neatly stacked on an executive desk with crisp diffused lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk5Pqtlfl9eglTk3PEAGdhyZxpacc0Z499kZnkXRuGXQ06TaE6AYegZL38uSqqM23tCOC1YUZEBsxc3_NToqXBHG7WPfa4Ejo2RLlM9BJrJBrDQQI_EDYYKevi4HTan9yqcFyJtjYTPjrD-ZdSXwJYRw1UHxI8GboMAwSKBig_mMFpJqVTbzV40I_FQrn4TFKqhRrvXywihSN2q_q5papR1TMG0D0I63sh29qwtvcA"/>
-<div class="flex flex-col min-w-0">
-<span class="font-title-md text-title-md text-on-surface truncate">Map Snellhecter Plastik Folio</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Lusin (12 Pcs)</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<span class="px-2.5 py-1 rounded-lg bg-surface-container-high text-tertiary font-label-sm text-label-sm inline-block">
-                ATK &amp; Kertas
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<div class="flex flex-col items-end">
-<span class="font-title-md text-title-md text-on-surface font-semibold">Rp 36.000</span>
-<span class="font-body-sm text-body-sm text-outline">Beli: Rp 28.500 <span class="text-status-success-text font-medium">(+26.3%)</span></span>
-</div>
-</td>
-<td class="py-3.5 px-4 text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-critical-text"></span>
-                2 Lusin - Kritis
-              </span>
-</td>
-<td class="py-3.5 px-4 text-center font-body-md text-body-md text-on-surface-variant font-medium">
-              8 Lusin
-            </td>
-<td class="py-3.5 px-4 text-center">
-<div class="inline-flex items-center gap-1">
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Barang" type="button">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-surface-container-low transition-colors" title="Cetak Barcode" type="button">
-<span class="material-symbols-outlined text-[18px]">barcode</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Menu Lainnya" type="button">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Baris 6: Kopi Susu Botol 250ml -->
-<tr class="hover:bg-surface-bright transition-colors group">
-<td class="py-3.5 px-4 text-center">
-<input class="w-4 h-4 rounded cursor-pointer accent-primary row-checkbox" type="checkbox"/>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-primary font-bold">M-0188</span>
-<span class="font-body-sm text-body-sm text-outline font-mono">899678901256</span>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-3">
-<img class="w-11 h-11 rounded-xl object-cover shadow-sm bg-surface-container-low flex-shrink-0" data-alt="An artisanal iced cold brew latte in a glass bottle with amber and milk swirl aesthetic set against clean modern cafe surface studio light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3tdM4d7GSluKGARV0esVutw0T66g8dJKs0m7DzTTt3UvSLLBD6C_1QtRBHq4YPVYWuInRhaCBmMNymklThghF5syjKsaXKzUqW45dtsp7upEU2VI7XCqxzUoL7s9dIrr7_DbZ5g-L5_yeUMOmLhlGN9HyvRGiO28be0mbc_RZX7v8zIvOEIX5INJ7zbCfPxemzUANE2DSzc75cesquZ-C5Eqg8B2vm9h67dr4SE-w"/>
-<div class="flex flex-col min-w-0">
-<span class="font-title-md text-title-md text-on-surface truncate">Kopi Susu Gula Aren 250ml</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Botol</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4">
-<span class="px-2.5 py-1 rounded-lg bg-surface-container-high text-tertiary font-label-sm text-label-sm inline-block">
-                Minuman &amp; Snack
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<div class="flex flex-col items-end">
-<span class="font-title-md text-title-md text-on-surface font-semibold">Rp 12.000</span>
-<span class="font-body-sm text-body-sm text-outline">Beli: Rp 9.000 <span class="text-status-success-text font-medium">(+33.3%)</span></span>
-</div>
-</td>
-<td class="py-3.5 px-4 text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                28 Botol - Aman
-              </span>
-</td>
-<td class="py-3.5 px-4 text-center font-body-md text-body-md text-on-surface-variant font-medium">
-              10 Botol
-            </td>
-<td class="py-3.5 px-4 text-center">
-<div class="inline-flex items-center gap-1">
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Barang" type="button">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-surface-container-low transition-colors" title="Cetak Barcode" type="button">
-<span class="material-symbols-outlined text-[18px]">barcode</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Menu Lainnya" type="button">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Table Footer with Pagination -->
-<div class="p-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm bg-surface-container-lowest">
-<div class="flex items-center gap-2">
-<span class="font-body-sm text-body-sm text-outline">Menampilkan 1-10 dari 300 barang</span>
-<span class="w-1.5 h-1.5 rounded-full bg-surface-container-high"></span>
-<select class="px-2 py-1 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm focus:outline-none cursor-pointer">
-<option>10 per halaman</option>
-<option>25 per halaman</option>
-<option>50 per halaman</option>
-</select>
-</div>
-<div class="flex items-center gap-1">
-<button class="px-3 py-1.5 rounded-lg text-outline hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1" type="button">
-<span class="material-symbols-outlined text-[16px]">chevron_left</span>
-<span>Prev</span>
-</button>
-<button class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center shadow-sm" type="button">
-          1
-        </button>
-<button class="w-8 h-8 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md flex items-center justify-center transition-colors" type="button">
-          2
-        </button>
-<button class="w-8 h-8 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md flex items-center justify-center transition-colors" type="button">
-          3
-        </button>
-<span class="w-6 text-center text-outline font-label-sm text-label-sm">...</span>
-<button class="w-8 h-8 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md flex items-center justify-center transition-colors" type="button">
-          30
-        </button>
-<button class="px-3 py-1.5 rounded-lg text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors flex items-center gap-1" type="button">
-<span>Next</span>
-<span class="material-symbols-outlined text-[16px]">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Quick Restock Banner Alert Inspired by Promotional Card -->
-<div class="p-space-lg rounded-2xl bg-surface-container-high/40 flex flex-col md:flex-row items-center justify-between gap-space-md shadow-sm">
-<div class="flex items-center gap-space-md">
-<div class="w-12 h-12 rounded-2xl bg-secondary-container flex items-center justify-center text-sidebar-dark flex-shrink-0 shadow-sm">
-<span class="material-symbols-outlined text-[28px]">notifications_active</span>
-</div>
-<div class="flex flex-col">
-<span class="font-title-lg text-title-lg text-on-surface">6 Barang Mendekati Batas Kritis Minimum</span>
-<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
-          Sistem WMA memproyeksikan kekurangan stok dalam 7 hari kerja ke depan jika pesanan pemasok tidak diproses hari ini.
-        </p>
-</div>
-</div>
-<div class="flex items-center gap-space-xs flex-shrink-0 w-full md:w-auto">
-<a class="w-full md:w-auto text-center px-5 py-2.5 rounded-xl bg-secondary-container text-on-secondary-container font-label-lg text-label-lg hover:bg-secondary-fixed transition-colors shadow-sm flex items-center justify-center gap-2" href="#">
-<span>Buka Rekomendasi Restock</span>
-<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-</a>
-</div>
-</div>
-<!-- Modal Dialog: Tambah Barang Baru -->
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-sidebar-dark/40 backdrop-blur-sm hidden transition-opacity" id="item-modal">
-<div class="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden m-4 transform transition-all">
-<!-- Modal Header -->
-<div class="px-space-lg py-space-md bg-surface-bright flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<div class="w-8 h-8 rounded-lg bg-primary-fixed-dim/30 text-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-[20px]">add_box</span>
-</div>
-<div class="flex flex-col">
-<span class="font-title-lg text-title-lg text-on-surface">Tambah Barang Baru</span>
-<span class="font-label-sm text-label-sm text-outline">Katalog Master KOPMA Express</span>
-</div>
-</div>
-<button class="w-8 h-8 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-outline hover:text-on-surface transition-colors" id="close-modal-btn" type="button">
-<span class="material-symbols-outlined text-[20px]">close</span>
-</button>
-</div>
-<!-- Modal Form Body -->
-<form class="p-space-lg flex flex-col gap-space-md" id="add-product-form">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-<!-- Nama Barang -->
-<div class="flex flex-col gap-1 md:col-span-2">
-<label class="font-label-md text-label-md text-on-surface">Nama Lengkap Barang <span class="text-error">*</span></label>
-<input class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" placeholder="Contoh: Kertas HVS A4 80gr Sinar Dunia" required="" type="text"/>
-</div>
-<!-- Kode SKU -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Kode SKU <span class="text-error">*</span></label>
-<input class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all uppercase" placeholder="Contoh: K-0099" required="" type="text"/>
-</div>
-<!-- Kategori -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Kategori <span class="text-error">*</span></label>
-<select class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none cursor-pointer">
-<option value="atk">ATK &amp; Kertas</option>
-<option value="buku">Buku &amp; Catatan</option>
-<option value="fnb">Minuman &amp; Snack</option>
-<option value="merch">Merchandise Koperasi</option>
-</select>
-</div>
-<!-- Satuan -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Satuan Dasar <span class="text-error">*</span></label>
-<select class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none cursor-pointer">
-<option value="pcs">Pcs (Satuan)</option>
-<option value="rim">Rim</option>
-<option value="pak">Pak</option>
-<option value="dus">Dus</option>
-<option value="lusin">Lusin</option>
-</select>
-</div>
-<!-- Barcode -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Barcode EAN/UPC</label>
-<input class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" placeholder="Scan atau ketik 13 digit angka" type="text"/>
-</div>
-<!-- Harga Beli -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Harga Beli Pokok (Rp) <span class="text-error">*</span></label>
-<input class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" placeholder="0" required="" type="number"/>
-</div>
-<!-- Harga Jual -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Harga Jual Anggota (Rp) <span class="text-error">*</span></label>
-<input class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" placeholder="0" required="" type="number"/>
-</div>
-<!-- Stok Awal -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Stok Awal Gudang <span class="text-error">*</span></label>
-<input class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" placeholder="0" required="" type="number"/>
-</div>
-<!-- Minimum Reorder Point -->
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-label-md text-on-surface">Batas Min. Reorder (ROP) <span class="text-error">*</span></label>
-<input class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" placeholder="5" required="" type="number"/>
-</div>
-</div>
-<!-- Modal Actions Footer -->
-<div class="mt-4 pt-4 flex items-center justify-end gap-space-xs">
-<button class="px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-md text-label-md" id="cancel-modal-btn" type="button">
-            Batal
+</head>
+
+<body class="bg-canvas-bg font-body-md text-on-surface antialiased">
+  <aside
+    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="flex flex-col gap-space-lg">
+      <div class="flex items-center gap-space-sm px-space-sm pt-space-xs">
+        <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span
+            class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div>
+        <div class="flex flex-col"><span
+            class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span
+            class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
+            Analytics</span></div>
+      </div>
+      <nav class="flex flex-col gap-1"
+        data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span
+            class="font-label-lg text-label-lg">Dashboard</span></a><a aria-current="page"
+          class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"
+          data-path="master-barang" href="/products"><span
+            class="material-symbols-outlined text-[20px]">inventory_2</span><span
+            class="font-label-lg text-label-lg">Master Barang</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-anggota" href="/members"><span
+            class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master
+            Anggota</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="import-excel-etl" href="/import"><span
+            class="material-symbols-outlined text-[20px]">upload_file</span><span
+            class="font-label-lg text-label-lg">Import Excel ETL</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="form-pesanan" href="/orders"><span
+            class="material-symbols-outlined text-[20px]">shopping_cart</span><span
+            class="font-label-lg text-label-lg">Form Pesanan</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="forecast-restock" href="/forecast"><span
+            class="material-symbols-outlined text-[20px]">insights</span><span
+            class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav>
+    </div>
+    <div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm">
+      <div class="flex items-center justify-between"><span
+          class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI
+          Engine</span><span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span>
+      </div>
+      <div class="flex flex-col"><span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span>
+        <p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi
+          suplai.</p>
+      </div><a
+        class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center"
+        data-path="forecast-restock" href="/forecast"><span>Lihat Analitik</span><span
+          class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
+    </div>
+  </aside>
+  <div class="pl-72 flex flex-col min-h-screen bg-canvas-bg">
+    <header
+      class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md">
+      <div class="flex-1 max-w-xl">
+        <div class="relative flex items-center w-full"><span
+            class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span><input
+            class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200"
+            placeholder="Cari kode barang, anggota, transaksi..." type="search" /></div>
+      </div>
+      <div class="flex items-center gap-space-md"><button aria-label="Notifikasi"
+          class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
+          type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span
+            class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button>
+        <div class="h-8 w-px bg-surface-container"></div>
+        <div class="flex items-center gap-space-sm pl-space-xs">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
+              class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+          <div class="flex flex-col text-left"><span
+              class="font-title-md text-title-md text-on-surface leading-tight">Nur Sabrina Hanifa</span><span
+              class="font-label-sm text-label-sm text-outline">Administrator</span></div>
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg">
+      <div class="flex flex-col w-full gap-space-lg">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+          <div class="flex flex-col">
+            <span class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Master Data Barang</span>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Kelola katalog barang koperasi: kode,
+              nama, kategori, harga, dan stok.</p>
+          </div>
+          <button
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all shadow-sm font-label-lg text-label-lg"
+            id="open-modal-btn" type="button">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            <span>Tambah Barang Baru</span>
           </button>
-<button class="px-5 py-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all shadow-sm font-label-lg text-label-lg flex items-center gap-1.5" type="submit">
-<span class="material-symbols-outlined text-[18px]">save</span>
-<span>Simpan Barang</span>
-</button>
-</div>
-</form>
-</div>
-</div>
-</div>
-</main></div>
+        </div>
+        <!-- KPI (3 kartu) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="font-label-md text-label-md text-on-surface-variant">Total Barang Aktif</span>
+              <div
+                class="w-9 h-9 rounded-xl bg-surface-container-high/60 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[20px]">inventory_2</span></div>
+            </div>
+            <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface" id="kpi-total">…</span>
+            </div>
+            <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant">Barang yang tidak
+              di-soft-delete</span>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="font-label-md text-label-md text-on-surface-variant">Total Valuasi Stok</span>
+              <div class="w-9 h-9 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+                <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span></div>
+            </div>
+            <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface"
+                id="kpi-valuation">…</span></div>
+            <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant">Stok × harga seluruh gudang</span>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="font-label-md text-label-md text-on-surface-variant">Perlu Restock Segera</span>
+              <div
+                class="w-9 h-9 rounded-xl bg-status-critical-bg flex items-center justify-center text-status-critical-text">
+                <span class="material-symbols-outlined text-[20px]">warning</span></div>
+            </div>
+            <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface" id="kpi-critical">…</span>
+            </div>
+            <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant" id="kpi-critical-note">&nbsp;</span>
+          </div>
+        </div>
+        <!-- Filter -->
+        <div
+          class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col lg:flex-row gap-space-sm items-stretch lg:items-center justify-between">
+          <div class="flex-1 flex flex-col sm:flex-row gap-space-sm items-center">
+            <div class="relative w-full sm:w-80">
+              <span
+                class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px] pointer-events-none">search</span>
+              <input
+                class="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all"
+                id="search-input" placeholder="Cari kode atau nama barang..." type="text" autocomplete="off" />
+            </div>
+            <select
+              class="w-full sm:w-auto px-3 py-2 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer"
+              id="filter-category"></select>
+          </div>
+          <div class="flex items-center gap-space-xs justify-between lg:justify-end">
+            <span class="font-label-sm text-label-sm text-outline">Urutkan:</span>
+            <select
+              class="px-3 py-2 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer"
+              id="filter-sort">
+              <option value="name">Nama A-Z</option>
+              <option value="stock_asc">Stok Terendah</option>
+              <option value="stock_desc">Stok Terbanyak</option>
+              <option value="price_desc">Harga Tertinggi</option>
+              <option value="price_asc">Harga Terendah</option>
+              <option value="newest">Baru Ditambahkan</option>
+            </select>
+            <button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
+              id="reset-btn" title="Reset filter" type="button"><span
+                class="material-symbols-outlined text-[20px]">restart_alt</span></button>
+          </div>
+        </div>
+        <!-- Tabel -->
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden flex flex-col">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+                  <th class="py-3.5 px-4">Kode Barang</th>
+                  <th class="py-3.5 px-4">Nama Barang</th>
+                  <th class="py-3.5 px-4">Kategori</th>
+                  <th class="py-3.5 px-4 text-right">Harga</th>
+                  <th class="py-3.5 px-4 text-center">Stok</th>
+                  <th class="py-3.5 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container" id="products-body">
+                <tr>
+                  <td colspan="6" class="py-12 px-4 text-center font-body-md text-body-md text-on-surface-variant">
+                    Memuat data…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            class="p-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm bg-surface-container-lowest">
+            <div class="flex items-center gap-2">
+              <span class="font-body-sm text-body-sm text-outline" id="page-info"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-surface-container-high"></span>
+              <select
+                class="px-2 py-1 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm focus:outline-none cursor-pointer"
+                id="page-size">
+                <option value="10">10 per halaman</option>
+                <option value="20" selected>20 per halaman</option>
+                <option value="50">50 per halaman</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                class="px-3 py-1.5 rounded-lg text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                id="prev-btn" type="button"><span
+                  class="material-symbols-outlined text-[16px]">chevron_left</span><span>Prev</span></button>
+              <span class="font-label-md text-label-md text-on-surface-variant" id="page-indicator"></span>
+              <button
+                class="px-3 py-1.5 rounded-lg text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                id="next-btn" type="button"><span>Next</span><span
+                  class="material-symbols-outlined text-[16px]">chevron_right</span></button>
+            </div>
+          </div>
+        </div>
+        <!-- Modal tambah/edit -->
+        <div
+          class="fixed inset-0 z-50 flex items-center justify-center bg-sidebar-dark/40 backdrop-blur-sm hidden transition-opacity"
+          id="item-modal">
+          <div class="bg-surface-container-lowest w-full max-w-xl rounded-2xl shadow-xl overflow-hidden m-4">
+            <div class="px-space-lg py-space-md bg-surface-bright flex items-center justify-between">
+              <div class="flex items-center gap-space-xs">
+                <div class="w-8 h-8 rounded-lg bg-primary-fixed-dim/30 text-primary flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]">add_box</span></div>
+                <div class="flex flex-col">
+                  <span class="font-title-lg text-title-lg text-on-surface" id="modal-title">Tambah Barang Baru</span>
+                  <span class="font-label-sm text-label-sm text-outline">Katalog Master KOPMA Express</span>
+                </div>
+              </div>
+              <button
+                class="w-8 h-8 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-outline hover:text-on-surface transition-colors"
+                id="close-modal-btn" type="button"><span
+                  class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+            <form class="p-space-lg flex flex-col gap-space-md" id="product-form">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-md text-label-md text-on-surface" for="f-kode">Kode Barang <span
+                      class="text-error">*</span></label>
+                  <input
+                    class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all uppercase"
+                    id="f-kode" maxlength="30" placeholder="Contoh: BRG-0099" required type="text" autocomplete="off" />
+                  <p class="font-label-sm text-label-sm text-error hidden" data-error-for="kode_barang"></p>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-md text-label-md text-on-surface" for="f-kategori">Kategori <span
+                      class="text-error">*</span></label>
+                  <select
+                    class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all cursor-pointer"
+                    id="f-kategori" required></select>
+                  <p class="font-label-sm text-label-sm text-error hidden" data-error-for="kategori"></p>
+                </div>
+                <div class="flex flex-col gap-1 md:col-span-2">
+                  <label class="font-label-md text-label-md text-on-surface" for="f-nama">Nama Barang <span
+                      class="text-error">*</span></label>
+                  <input
+                    class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all"
+                    id="f-nama" maxlength="150" placeholder="Contoh: Buku Tulis Sidu 38 Lembar" required type="text"
+                    autocomplete="off" />
+                  <p class="font-label-sm text-label-sm text-error hidden" data-error-for="nama_barang"></p>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-md text-label-md text-on-surface" for="f-harga">Harga (Rp) <span
+                      class="text-error">*</span></label>
+                  <input
+                    class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all"
+                    id="f-harga" min="0" step="1" placeholder="0" required type="number" />
+                  <p class="font-label-sm text-label-sm text-error hidden" data-error-for="harga"></p>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-md text-label-md text-on-surface" for="f-stok">Stok Saat Ini <span
+                      class="text-error">*</span></label>
+                  <input
+                    class="px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all"
+                    id="f-stok" min="0" step="1" placeholder="0" required type="number" />
+                  <p class="font-label-sm text-label-sm text-error hidden" data-error-for="stok"></p>
+                </div>
+              </div>
+              <p class="font-label-sm text-label-sm text-error hidden" id="form-error"></p>
+              <div class="flex items-center justify-end gap-space-xs pt-space-xs">
+                <button
+                  class="px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-lg text-label-lg transition-colors"
+                  id="cancel-modal-btn" type="button">Batal</button>
+                <button
+                  class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all shadow-sm font-label-lg text-label-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                  id="submit-btn" type="submit"><span class="material-symbols-outlined text-[20px]">save</span><span
+                    id="submit-label">Simpan Barang</span></button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Modal konfirmasi hapus -->
+        <div
+          class="fixed inset-0 z-50 flex items-center justify-center bg-sidebar-dark/40 backdrop-blur-sm hidden transition-opacity"
+          id="delete-modal">
+          <div
+            class="bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-xl overflow-hidden m-4 p-space-lg flex flex-col gap-space-md">
+            <div class="flex flex-col gap-1">
+              <span class="font-title-lg text-title-lg text-on-surface">Hapus barang ini?</span>
+              <span class="font-body-md text-body-md text-on-surface-variant" id="delete-name"></span>
+              <p class="font-body-sm text-body-sm text-outline mt-1">Barang dinonaktifkan (soft delete), riwayat
+                penjualan dan pesanan tetap tersimpan.</p>
+            </div>
+            <div class="flex items-center justify-end gap-space-xs">
+              <button
+                class="px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-lg text-label-lg transition-colors"
+                id="delete-cancel" type="button">Batal</button>
+              <button
+                class="px-4 py-2.5 rounded-xl bg-error text-on-primary hover:opacity-90 transition-all shadow-sm font-label-lg text-label-lg disabled:opacity-60"
+                id="delete-confirm" type="button">Hapus</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
   <script src="/static/js/pages/products.js"></script>
-</body></html>
+</body>
+
+</html>
