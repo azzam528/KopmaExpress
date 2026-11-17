@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Master Data Anggota — KOPMA Express</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Global & Page CSS -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <link rel="stylesheet" href="/static/css/pages/members.css" />
+
+  <!-- Tailwind CSS CDN + Centralized Theme Configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+
+  <!-- Libraries & Shared Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/js/components/api.js"></script>
+  <script src="/static/js/main.js"></script>
+</head><body class="bg-canvas-bg font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-sm pt-space-xs"><div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div><div class="flex flex-col"><span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data Analytics</span></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-barang" href="/products"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Master Barang</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl" data-path="master-anggota" href="/members"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master Anggota</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="import-excel-etl" href="/import"><span class="material-symbols-outlined text-[20px]">upload_file</span><span class="font-label-lg text-label-lg">Import Excel ETL</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="form-pesanan" href="/orders"><span class="material-symbols-outlined text-[20px]">shopping_cart</span><span class="font-label-lg text-label-lg">Form Pesanan</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="forecast-restock" href="/forecast"><span class="material-symbols-outlined text-[20px]">insights</span><span class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav></div><div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm"><div class="flex items-center justify-between"><span class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI Engine</span><span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span></div><div class="flex flex-col"><span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span><p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi suplai.</p></div><a class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center" data-path="forecast-restock" href="/forecast"><span>Lihat Analitik</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div></aside><div class="pl-72 flex flex-col min-h-screen bg-canvas-bg"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-xl"><div class="relative flex items-center w-full"><span class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span><input class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200" placeholder="Cari kode barang, anggota, transaksi..." type="search"/></div></div><div class="flex items-center gap-space-md"><button aria-label="Notifikasi" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><div class="h-8 w-px bg-surface-container"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col text-left"><span class="font-title-md text-title-md text-on-surface leading-tight">Nur Sabrina Hanifa</span><span class="font-label-sm text-label-sm text-outline">Administrator</span></div></div></div></header><main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg"><div class="flex flex-col w-full">
+<!-- Top Section: Header & Action Buttons -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-md mb-space-lg">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="px-space-xs py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm inline-flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success-text animate-pulse"></span>
+          Master Data Koperasi
+        </span>
+<span class="text-outline text-label-sm font-label-sm">• Terverifikasi Dikti &amp; Kemenkop</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Master Data Anggota Koperasi</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-0.5">
+        Pengelolaan repositori keanggotaan mahasiswa &amp; civitas akademika, limit plafon kasbon terdesentralisasi, histori pesanan, serta histori transaksi KOPMA Express.
+      </p>
+</div>
+<!-- Quick Action Toolbars -->
+<div class="flex items-center flex-wrap gap-space-sm">
+<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface shadow-sm hover:bg-surface-container-low font-label-lg text-label-lg transition-all" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">download</span>
+<span>Impor Anggota (.xlsx)</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-xl bg-primary text-on-primary shadow-sm hover:bg-primary-container font-label-lg text-label-lg transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>+ Tambah Anggota Baru</span>
+</button>
+</div>
+</div>
+<!-- 4 KPI Summary Cards (Neo-Fluidity Soft Metric Row) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md mb-space-lg">
+<!-- Card 1 -->
+<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="flex items-start justify-between">
+<div class="w-11 h-11 rounded-xl bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">groups</span>
+</div>
+<span class="px-space-xs py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +14 bln ini
+        </span>
+</div>
+<div class="mt-space-md">
+<span class="font-label-md text-label-md text-outline block mb-0.5">Total Anggota Terdaftar</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-metric-display text-metric-display text-on-surface">300</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Mahasiswa &amp; Tendik</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs border-t-0 flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="font-label-sm text-label-sm">Basis data tersinkronisasi SIAM</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="flex items-start justify-between">
+<div class="w-11 h-11 rounded-xl bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+</div>
+<span class="px-space-xs py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">speed</span> 82.6% Rasio
+        </span>
+</div>
+<div class="mt-space-md">
+<span class="font-label-md text-label-md text-outline block mb-0.5">Anggota Aktif Bertransaksi</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-metric-display text-metric-display text-on-surface">248</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Orang (30 hari terakhir)</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center gap-1.5 text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-status-success-text"></span>
+<span class="font-label-sm text-label-sm">Aktivitas ritel &amp; kantin stabil</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="flex items-start justify-between">
+<div class="w-11 h-11 rounded-xl bg-error-container/40 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+</div>
+<span class="px-space-xs py-0.5 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm flex items-center gap-0.5">
+          59.4% Plafon
+        </span>
+</div>
+<div class="mt-space-md">
+<span class="font-label-md text-label-md text-outline block mb-0.5">Total Plafon Kasbon Tersalur</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-metric-display text-metric-display text-on-surface">Rp 14.850.000</span>
+</div>
+</div>
+<div class="mt-space-sm">
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-fixed-dim h-full rounded-full" style="width: 59.4%"></div>
+</div>
+<div class="flex justify-between items-center mt-1 text-on-surface-variant">
+<span class="font-label-sm text-label-sm">Limit: Rp 25.000.000</span>
+<span class="font-label-sm text-label-sm text-status-warning-text font-semibold">52 Anggota</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="flex items-start justify-between">
+<div class="w-11 h-11 rounded-xl bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">school</span>
+</div>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">domain</span> Seluruh Kampus
+</span>
+</div>
+<div class="mt-space-md">
+<span class="font-label-md text-label-md text-outline block mb-0.5">Unit &amp; Program Studi</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-metric-display text-metric-display text-on-surface">18</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Unit / Jurusan</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span class="font-label-sm text-label-sm">Terdistribusi di 6 Fakultas</span>
+</div>
+</div>
+</div>
+<!-- Main Work area: 12-Column Responsive Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- Left 8.5 Columns: Filter & Data Table -->
+<div class="xl:col-span-8 flex flex-col gap-space-md">
+<!-- Filter Bar -->
+<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col gap-space-sm">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-sm items-center">
+<!-- Search input -->
+<div class="md:col-span-6 relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full pl-10 pr-space-md py-2.5 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all" id="memberSearchInput" placeholder="Cari NIM / NIP, nama lengkap, atau program studi..." type="text"/>
+</div>
+<!-- Dropdown Filter Prodi -->
+<div class="md:col-span-3">
+<select class="w-full px-space-sm py-2.5 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest transition-all cursor-pointer">
+<option value="all">Semua Prodi &amp; Fakultas</option>
+<option value="si">SI Bisnis Digital</option>
+<option value="ti">Teknik Informatika</option>
+<option value="manajemen">Manajemen</option>
+<option value="akuntansi">Akuntansi</option>
+<option value="kedokteran">Kedokteran</option>
+</select>
+</div>
+<!-- Filter Status Kasbon -->
+<div class="md:col-span-3">
+<select class="w-full px-space-sm py-2.5 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest transition-all cursor-pointer">
+<option value="all">Semua Status Kasbon</option>
+<option value="lunas">Kasbon Lunas (Nol)</option>
+<option value="tagihan">Ada Tagihan Kasbon</option>
+<option value="kritis">Plafon Hampir Habis (&gt;80%)</option>
+<option value="pending">Menunggu Verifikasi</option>
+</select>
+</div>
+</div>
+<!-- Secondary Filter Pills Row -->
+<div class="flex items-center justify-between pt-space-xs flex-wrap gap-space-sm">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider mr-1">Filter Cepat:</span>
+<button class="px-space-sm py-1 rounded-lg bg-primary/10 text-primary font-label-sm text-label-sm flex items-center gap-1 hover:bg-primary/20 transition-colors">
+<span>Diskon Member Aktif (5%)</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+<button class="px-space-sm py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container transition-colors">
+              Plafon &gt; Rp 200rb
+            </button>
+<button class="px-space-sm py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container transition-colors">
+              Angkatan 2023 &amp; 2024
+            </button>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
+<span>Menampilkan <strong class="text-on-surface font-semibold">6</strong> dari <strong class="text-on-surface font-semibold">300</strong> Anggota</span>
+</div>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-card-bg rounded-2xl shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/70 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-3 px-space-md w-10">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+</th>
+<th class="py-3 px-space-md">Identitas Anggota</th>
+<th class="py-3 px-space-md">Program Studi / Unit</th>
+<th class="py-3 px-space-md">Penggunaan Plafon Kasbon</th>
+<th class="py-3 px-space-md text-right">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface font-body-sm text-body-sm">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer" onclick="selectMemberForPreview(0)">
+<td class="py-3.5 px-space-md">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-primary text-on-primary font-title-md text-title-md flex items-center justify-center font-bold shadow-sm">
+                      AR
+                    </div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface font-semibold group-hover:text-primary transition-colors">Adinda Rahma Salsabila</span>
+<span class="font-label-sm text-label-sm text-outline">NIM: 2105120401 • adinda.rahma@student.ac.id</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-medium">SI Bisnis Digital</span>
+<span class="font-label-sm text-label-sm text-outline">Angkatan 2021 (Reguler)</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 w-44">
+<div class="flex justify-between items-center text-[11px] font-label-sm">
+<span class="text-status-success-text font-semibold">Rp 75.000</span>
+<span class="text-outline">/ Rp 250.000</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success-text h-full rounded-full" style="width: 30%"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+<button class="p-1.5 rounded-lg text-outline hover:text-secondary hover:bg-surface-container-low transition-colors" title="Edit Data Anggota">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 (Warning Kasbon Hampir Penuh) -->
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer bg-status-warning-bg/10" onclick="selectMemberForPreview(1)">
+<td class="py-3.5 px-space-md">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-tertiary-container text-on-primary font-title-md text-title-md flex items-center justify-center font-bold shadow-sm">
+                      RP
+                    </div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface font-semibold group-hover:text-primary transition-colors">Rian Pratama</span>
+<span class="font-label-sm text-label-sm text-outline">NIM: 2205120415 • rian.pratama@student.ac.id</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-medium">Teknik Informatika</span>
+<span class="font-label-sm text-label-sm text-outline">Angkatan 2022 (Reguler)</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 w-44">
+<div class="flex justify-between items-center text-[11px] font-label-sm">
+<span class="text-status-critical-text font-bold">Rp 240.000</span>
+<span class="text-outline">/ Rp 250.000</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 96%"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+<button class="p-1.5 rounded-lg text-outline hover:text-secondary hover:bg-surface-container-low transition-colors" title="Edit Data Anggota">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer" onclick="selectMemberForPreview(2)">
+<td class="py-3.5 px-space-md">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-secondary-container text-sidebar-dark font-title-md text-title-md flex items-center justify-center font-bold shadow-sm">
+                      SM
+                    </div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface font-semibold group-hover:text-primary transition-colors">Siti Maulida</span>
+<span class="font-label-sm text-label-sm text-outline">NIM: 2005120388 • s.maulida@student.ac.id</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-medium">Manajemen Bisnis</span>
+<span class="font-label-sm text-label-sm text-outline">Angkatan 2020 (Tingkat Akhir)</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 w-44">
+<div class="flex justify-between items-center text-[11px] font-label-sm">
+<span class="text-status-success-text font-semibold">Rp 0 (Lunas)</span>
+<span class="text-outline">/ Rp 250.000</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success-text h-full rounded-full" style="width: 0%"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+<button class="p-1.5 rounded-lg text-outline hover:text-secondary hover:bg-surface-container-low transition-colors" title="Edit Data Anggota">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 (Dosen / Tendik with Rp 500k Limit) -->
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer" onclick="selectMemberForPreview(3)">
+<td class="py-3.5 px-space-md">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-tertiary text-on-tertiary font-title-md text-title-md flex items-center justify-center font-bold shadow-sm">
+                      DF
+                    </div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-semibold group-hover:text-primary transition-colors">Dimas Fajar Nugraha, M.Kom</span>
+<span class="material-symbols-outlined text-[15px] text-tertiary-container" title="Dosen Pembimbing">verified</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">NIP: 198804122019031008 • dimas.fajar@univ.ac.id</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-medium">Fakultas Ilmu Komputer</span>
+<span class="font-label-sm text-label-sm text-outline">Tenaga Pengajar (Dosen)</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 w-44">
+<div class="flex justify-between items-center text-[11px] font-label-sm">
+<span class="text-tertiary font-semibold">Rp 120.000</span>
+<span class="text-outline">/ Rp 500.000</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full rounded-full" style="width: 24%"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+<button class="p-1.5 rounded-lg text-outline hover:text-secondary hover:bg-surface-container-low transition-colors" title="Edit Data Anggota">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 (Pending Approval) -->
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer" onclick="selectMemberForPreview(4)">
+<td class="py-3.5 px-space-md">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-outline-variant text-on-surface-variant font-title-md text-title-md flex items-center justify-center font-bold shadow-sm">
+                      NI
+                    </div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface font-semibold group-hover:text-primary transition-colors">Nurul Izzati</span>
+<span class="font-label-sm text-label-sm text-outline">NIM: 2405120102 • nurul.izzati@student.ac.id</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-medium">Akuntansi Keuangan</span>
+<span class="font-label-sm text-label-sm text-outline">Angkatan 2024 (Baru)</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-label-sm text-label-sm text-outline italic">Plafon belum aktif</span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+<button class="p-1.5 rounded-lg text-outline hover:text-secondary hover:bg-surface-container-low transition-colors" title="Edit Data Anggota">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer" onclick="selectMemberForPreview(5)">
+<td class="py-3.5 px-space-md">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary font-title-md text-title-md flex items-center justify-center font-bold shadow-sm">
+                      BW
+                    </div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface font-semibold group-hover:text-primary transition-colors">Bagus Wicaksono</span>
+<span class="font-label-sm text-label-sm text-outline">NIM: 2105120444 • bagus.w@student.ac.id</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-medium">SI Bisnis Digital</span>
+<span class="font-label-sm text-label-sm text-outline">Angkatan 2021 (Reguler)</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 w-44">
+<div class="flex justify-between items-center text-[11px] font-label-sm">
+<span class="text-status-success-text font-semibold">Rp 35.000</span>
+<span class="text-outline">/ Rp 250.000</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success-text h-full rounded-full" style="width: 14%"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+<button class="p-1.5 rounded-lg text-outline hover:text-secondary hover:bg-surface-container-low transition-colors" title="Edit Data Anggota">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Bar -->
+<div class="px-space-md py-3 bg-surface-bright flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-2">
+<span>Baris per halaman:</span>
+<select class="bg-card-bg px-2 py-1 rounded-lg text-on-surface focus:outline-none shadow-sm cursor-pointer">
+<option>10</option>
+<option selected="">25</option>
+<option>50</option>
+</select>
+<span class="text-outline">Halaman 1 dari 12 (300 data)</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-card-bg text-outline hover:text-on-surface shadow-sm transition-colors disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-7 h-7 rounded-lg bg-primary text-on-primary font-bold shadow-sm flex items-center justify-center">1</button>
+<button class="w-7 h-7 rounded-lg bg-card-bg text-on-surface font-medium hover:bg-surface-container-low shadow-sm flex items-center justify-center">2</button>
+<button class="w-7 h-7 rounded-lg bg-card-bg text-on-surface font-medium hover:bg-surface-container-low shadow-sm flex items-center justify-center">3</button>
+<span class="px-1 text-outline">...</span>
+<button class="w-7 h-7 rounded-lg bg-card-bg text-on-surface font-medium hover:bg-surface-container-low shadow-sm flex items-center justify-center">12</button>
+<button class="p-1.5 rounded-lg bg-card-bg text-outline hover:text-on-surface shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right 4 Columns: Selected Member Profile & Financial Details -->
+<div class="xl:col-span-4 flex flex-col gap-space-md sticky top-20">
+<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">account_circle</span>
+<h3 class="font-title-lg text-title-lg text-on-surface">Detail Anggota Terpilih</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed-dim/25 text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider">
+Terpilih
+</span>
+</div>
+
+<!-- Member Profile Card -->
+<div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col gap-space-sm" id="selectedMemberCard">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-primary text-on-primary font-title-lg text-title-lg flex items-center justify-center font-bold shadow-sm" id="previewCardAvatar">
+AR
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-lg text-title-lg text-on-surface font-semibold truncate" id="previewCardName">Adinda Rahma Salsabila</span>
+<span class="font-label-sm text-label-sm text-outline" id="previewCardNIM">NIM: 2105120401</span>
+</div>
+</div>
+<div class="pt-2 border-t border-surface-container flex flex-col gap-1 text-on-surface-variant text-body-sm font-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-outline">Unit / Program Studi:</span>
+<span class="font-medium text-on-surface" id="previewCardProdi">SI Bisnis Digital</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-outline">Kontak:</span>
+<span class="font-medium text-on-surface" id="previewCardPhone">adinda.rahma@student.ac.id</span>
+</div>
+</div>
+</div>
+
+<!-- Detail Keuangan Kasbon -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-title-md text-title-md text-on-surface">Informasi Keuangan Kasbon</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Sisa Plafon</span>
+<span class="font-title-lg text-title-lg text-status-success-text font-bold mt-0.5" id="previewSisaPlafon">Rp 175.000</span>
+<span class="text-[11px] text-outline mt-0.5">Dari total Rp 250.000</span>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Tagihan Bulan Ini</span>
+<span class="font-title-lg text-title-lg text-on-surface font-bold mt-0.5" id="previewTagihan">Rp 75.000</span>
+<span class="text-[11px] text-status-warning-text font-medium mt-0.5" id="previewStatusKasbon">Jatuh tempo 28 Maret</span>
+</div>
+</div>
+
+<!-- Quick Action Buttons for Member -->
+<div class="flex flex-col gap-2 mt-space-xs">
+<button class="w-full py-2.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg font-medium hover:bg-primary-container transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Input Pembayaran Kasbon</span>
+</button>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 px-space-sm rounded-xl bg-surface-container-low text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">edit_note</span>
+<span>Edit Limit Plafon</span>
+</button>
+<button class="py-2 px-space-sm rounded-xl bg-surface-container-low text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">history</span>
+<span>Log Transaksi</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main></div>
+  <script src="/static/js/pages/members.js"></script>
+</body></html>

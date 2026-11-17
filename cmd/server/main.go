@@ -159,8 +159,6 @@ func main() {
 		log.Println("[INIT] Analytics and forecasting routes registered")
 	}
 
-	handler.RegisterOrderPages(app)
-
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	go func() {

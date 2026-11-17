@@ -16,13 +16,21 @@ type Config struct {
 	DBName      string
 	MaxUploadMB int
 	Workers     int
+	JWTSecret   string
+	JWTTTLHours int
 }
 
 // Load loads configuration from environment variables with fallback defaults.
 // It also attempts to read a local .env file if available.
 func Load() *Config {
 	if err := godotenv.Load(); err != nil {
-		log.Println("[CONFIG] Info: No .env file found or error loading, reading from environment variables")
+		if err2 := godotenv.Load("../.env"); err2 != nil {
+			if err3 := godotenv.Load("../../.env"); err3 != nil {
+				if err4 := godotenv.Load("../../../.env"); err4 != nil {
+					log.Println("[CONFIG] Info: No .env file found or error loading, reading from environment variables")
+				}
+			}
+		}
 	}
 
 	return &Config{
@@ -32,6 +40,8 @@ func Load() *Config {
 		DBName:      getEnv("DB_NAME", "smartcoop"),
 		MaxUploadMB: getEnvAsInt("MAX_UPLOAD_MB", 50),
 		Workers:     getEnvAsInt("WORKERS", runtime.NumCPU()),
+		JWTSecret:   getEnv("JWT_SECRET", "kopma-express-jwt-secret-dev-2026"),
+		JWTTTLHours: getEnvAsInt("JWT_TTL_HOURS", 24),
 	}
 }
 

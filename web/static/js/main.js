@@ -87,3 +87,41 @@ window.showToast = function(type, title, message) {
     setTimeout(() => toast.remove(), 300);
   }, 4000);
 };
+
+// 4. Session & Auth Profile Helper
+async function syncUserProfile() {
+  try {
+    const res = await fetch('/api/v1/auth/me', {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) return;
+    const json = await res.json();
+    if (json && json.success && json.data) {
+      const user = json.data;
+      const userNameEl = document.querySelector('header .flex-col span.font-title-md');
+      const userRoleEl = document.querySelector('header .flex-col span.font-label-sm');
+      if (userNameEl && (user.nama || user.name)) {
+        userNameEl.textContent = user.nama || user.name;
+      }
+      if (userRoleEl && user.nim) {
+        userRoleEl.textContent = user.nim;
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
+window.logoutUser = async function() {
+  try {
+    await fetch('/api/v1/auth/logout', { method: 'POST' });
+  } catch (e) {
+    // ignore
+  } finally {
+    window.location.href = '/login';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  syncUserProfile();
+});

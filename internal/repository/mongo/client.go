@@ -67,7 +67,7 @@ func EnsureIndexes(ctx context.Context, db *mongo.Database) error {
 	}
 
 	// 2. Members Indexes
-	// {nim:1} UNIQUE; {name:1}
+	// {nim:1} UNIQUE; {name:1}; {email:1} UNIQUE SPARSE
 	memberIndexes := []mongo.IndexModel{
 		{
 			Keys:    bson.D{{Key: "nim", Value: 1}},
@@ -76,6 +76,10 @@ func EnsureIndexes(ctx context.Context, db *mongo.Database) error {
 		{
 			Keys:    bson.D{{Key: "name", Value: 1}},
 			Options: options.Index().SetName("idx_members_name"),
+		},
+		{
+			Keys:    bson.D{{Key: "email", Value: 1}},
+			Options: options.Index().SetUnique(true).SetSparse(true).SetName("idx_members_email_unique"),
 		},
 	}
 	if _, err := db.Collection("members").Indexes().CreateMany(timeoutCtx, memberIndexes); err != nil {

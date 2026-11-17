@@ -10,6 +10,8 @@ const (
 	CodeValidationError   = "VALIDATION_ERROR"
 	CodeNotFound          = "NOT_FOUND"
 	CodeDuplicate         = "DUPLICATE"
+	CodeUnauthorized      = "UNAUTHORIZED"
+	CodeForbidden         = "FORBIDDEN"
 	CodeInsufficientStock = "INSUFFICIENT_STOCK"
 	CodeUnsupportedFile   = "UNSUPPORTED_FILE"
 	CodeFileTooLarge      = "FILE_TOO_LARGE"
@@ -59,6 +61,14 @@ func NewNotFoundError(message string) *AppError {
 
 func NewDuplicateError(message string) *AppError {
 	return NewAppError(http.StatusConflict, CodeDuplicate, message, nil)
+}
+
+func NewUnauthorizedError(message string) *AppError {
+	return NewAppError(http.StatusUnauthorized, CodeUnauthorized, message, nil)
+}
+
+func NewForbiddenError(message string) *AppError {
+	return NewAppError(http.StatusForbidden, CodeForbidden, message, nil)
 }
 
 func NewValidationError(message string, details ...ValidationErrorDetail) *AppError {

@@ -40,5 +40,17 @@ func TestAppErrors(t *testing.T) {
 	if errStock.HTTPStatus != http.StatusConflict || errStock.Code != CodeInsufficientStock {
 		t.Errorf("unexpected stock error: %+v", errStock)
 	}
+
+	// 5. UnauthorizedError
+	errAuth := NewUnauthorizedError("Email atau password salah")
+	if errAuth.HTTPStatus != http.StatusUnauthorized || errAuth.Code != CodeUnauthorized {
+		t.Errorf("unexpected unauthorized error: %+v", errAuth)
+	}
+
+	// 6. ForbiddenError
+	errForbid := NewForbiddenError("Akses ditolak")
+	if errForbid.HTTPStatus != http.StatusForbidden || errForbid.Code != CodeForbidden {
+		t.Errorf("unexpected forbidden error: %+v", errForbid)
+	}
 }
 
