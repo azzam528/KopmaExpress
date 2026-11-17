@@ -38,7 +38,7 @@
 </div>
 <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Master Data Anggota Koperasi</h1>
 <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-0.5">
-        Pengelolaan repositori keanggotaan mahasiswa &amp; civitas akademika, limit plafon kasbon terdesentralisasi, histori pesanan, serta akumulasi poin loyalitas KOPMA Express.
+        Pengelolaan repositori keanggotaan mahasiswa &amp; civitas akademika, limit plafon kasbon terdesentralisasi, histori pesanan, serta histori transaksi KOPMA Express.
       </p>
 </div>
 <!-- Quick Action Toolbars -->
@@ -46,10 +46,6 @@
 <button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface shadow-sm hover:bg-surface-container-low font-label-lg text-label-lg transition-all" type="button">
 <span class="material-symbols-outlined text-[18px] text-primary">download</span>
 <span>Impor Anggota (.xlsx)</span>
-</button>
-<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface shadow-sm hover:bg-surface-container-low font-label-lg text-label-lg transition-all" onclick="toggleVirtualCardModal(true)" type="button">
-<span class="material-symbols-outlined text-[18px] text-secondary">badge</span>
-<span>Cetak Kartu Digital</span>
 </button>
 <button class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-xl bg-primary text-on-primary shadow-sm hover:bg-primary-container font-label-lg text-label-lg transition-all" type="button">
 <span class="material-symbols-outlined text-[18px]">add</span>
@@ -132,23 +128,23 @@
 <!-- Card 4 -->
 <div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
 <div class="flex items-start justify-between">
-<div class="w-11 h-11 rounded-xl bg-secondary-container/40 flex items-center justify-center text-secondary">
-<span class="material-symbols-outlined text-[24px]">stars</span>
+<div class="w-11 h-11 rounded-xl bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">school</span>
 </div>
 <span class="px-space-xs py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm flex items-center gap-0.5">
-<span class="material-symbols-outlined text-[14px]">redeem</span> Dapat Ditukar
-        </span>
+<span class="material-symbols-outlined text-[14px]">domain</span> Seluruh Kampus
+</span>
 </div>
 <div class="mt-space-md">
-<span class="font-label-md text-label-md text-outline block mb-0.5">Poin Loyalitas Beredar</span>
+<span class="font-label-md text-label-md text-outline block mb-0.5">Unit &amp; Program Studi</span>
 <div class="flex items-baseline gap-space-xs">
-<span class="font-metric-display text-metric-display text-on-surface">48.920</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Pts</span>
+<span class="font-metric-display text-metric-display text-on-surface">18</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Unit / Jurusan</span>
 </div>
 </div>
 <div class="mt-space-sm pt-space-xs flex items-center gap-1.5 text-on-surface-variant">
-<span class="material-symbols-outlined text-[16px] text-secondary">monetization_on</span>
-<span class="font-label-sm text-label-sm">Senilai ± Rp 4.892.000 cashback</span>
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span class="font-label-sm text-label-sm">Terdistribusi di 6 Fakultas</span>
 </div>
 </div>
 </div>
@@ -198,9 +194,6 @@
               Plafon &gt; Rp 200rb
             </button>
 <button class="px-space-sm py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container transition-colors">
-              Poin &gt; 1.000 Pts
-            </button>
-<button class="px-space-sm py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container transition-colors">
               Angkatan 2023 &amp; 2024
             </button>
 </div>
@@ -219,10 +212,8 @@
 <input class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </th>
 <th class="py-3 px-space-md">Identitas Anggota</th>
-<th class="py-3 px-space-md">Prodi / Status</th>
+<th class="py-3 px-space-md">Program Studi / Unit</th>
 <th class="py-3 px-space-md">Penggunaan Plafon Kasbon</th>
-<th class="py-3 px-space-md">Poin Loyalitas</th>
-<th class="py-3 px-space-md">Status</th>
 <th class="py-3 px-space-md text-right">Aksi</th>
 </tr>
 </thead>
@@ -259,18 +250,6 @@
 <div class="bg-status-success-text h-full rounded-full" style="width: 30%"></div>
 </div>
 </div>
-</td>
-<td class="py-3.5 px-space-md">
-<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-secondary-container/20 text-secondary font-semibold font-label-md text-label-md">
-<span class="material-symbols-outlined text-[15px] text-secondary">star</span>
-<span>1.420 Pts</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-space-xs py-1 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold inline-flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                    Mahasiswa Aktif
-                  </span>
 </td>
 <td class="py-3.5 px-space-md text-right">
 <div class="flex items-center justify-end gap-1">
@@ -316,18 +295,6 @@
 </div>
 </div>
 </td>
-<td class="py-3.5 px-space-md">
-<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-secondary-container/20 text-secondary font-semibold font-label-md text-label-md">
-<span class="material-symbols-outlined text-[15px] text-secondary">star</span>
-<span>890 Pts</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-space-xs py-1 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm font-semibold inline-flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-status-warning-text"></span>
-                    Tagihan Berjalan
-                  </span>
-</td>
 <td class="py-3.5 px-space-md text-right">
 <div class="flex items-center justify-end gap-1">
 <button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
@@ -371,18 +338,6 @@
 <div class="bg-status-success-text h-full rounded-full" style="width: 0%"></div>
 </div>
 </div>
-</td>
-<td class="py-3.5 px-space-md">
-<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-secondary-container/20 text-secondary font-semibold font-label-md text-label-md">
-<span class="material-symbols-outlined text-[15px] text-secondary">star</span>
-<span>2.650 Pts</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-space-xs py-1 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold inline-flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                    Mahasiswa Aktif
-                  </span>
 </td>
 <td class="py-3.5 px-space-md text-right">
 <div class="flex items-center justify-end gap-1">
@@ -431,18 +386,6 @@
 </div>
 </div>
 </td>
-<td class="py-3.5 px-space-md">
-<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-secondary-container/20 text-secondary font-semibold font-label-md text-label-md">
-<span class="material-symbols-outlined text-[15px] text-secondary">star</span>
-<span>3.810 Pts</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-space-xs py-1 rounded-full bg-surface-container-high text-tertiary font-label-sm text-label-sm font-semibold inline-flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-                    Dosen / Tendik
-                  </span>
-</td>
 <td class="py-3.5 px-space-md text-right">
 <div class="flex items-center justify-end gap-1">
 <button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
@@ -479,20 +422,14 @@
 <td class="py-3.5 px-space-md">
 <span class="font-label-sm text-label-sm text-outline italic">Plafon belum aktif</span>
 </td>
-<td class="py-3.5 px-space-md">
-<span class="font-label-sm text-label-sm text-outline">0 Pts</span>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-space-xs py-1 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm font-semibold inline-flex items-center gap-1">
-<span class="material-symbols-outlined text-[14px]">hourglass_top</span>
-                    Verifikasi KTM
-                  </span>
-</td>
 <td class="py-3.5 px-space-md text-right">
 <div class="flex items-center justify-end gap-1">
-<button class="px-2.5 py-1 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-medium hover:bg-primary-container transition-colors">
-                      Setujui
-                    </button>
+<button class="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail Kasbon &amp; Transaksi">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+<button class="p-1.5 rounded-lg text-outline hover:text-secondary hover:bg-surface-container-low transition-colors" title="Edit Data Anggota">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
 </div>
 </td>
 </tr>
@@ -528,18 +465,6 @@
 <div class="bg-status-success-text h-full rounded-full" style="width: 14%"></div>
 </div>
 </div>
-</td>
-<td class="py-3.5 px-space-md">
-<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-secondary-container/20 text-secondary font-semibold font-label-md text-label-md">
-<span class="material-symbols-outlined text-[15px] text-secondary">star</span>
-<span>1.180 Pts</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-space-xs py-1 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold inline-flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                    Mahasiswa Aktif
-                  </span>
 </td>
 <td class="py-3.5 px-space-md text-right">
 <div class="flex items-center justify-end gap-1">
@@ -582,79 +507,46 @@
 </div>
 </div>
 </div>
-<!-- Right 3.5 Columns: Interactive Virtual Card & Selected Member Panel -->
+<!-- Right 4 Columns: Selected Member Profile & Financial Details -->
 <div class="xl:col-span-4 flex flex-col gap-space-md sticky top-20">
-<!-- Panel Header & Card Preview -->
 <div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col gap-space-md">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">badge</span>
-<h3 class="font-title-lg text-title-lg text-on-surface">Kartu Digital Anggota</h3>
+<span class="material-symbols-outlined text-primary text-[20px]">account_circle</span>
+<h3 class="font-title-lg text-title-lg text-on-surface">Detail Anggota Terpilih</h3>
 </div>
 <span class="px-2 py-0.5 rounded-full bg-primary-fixed-dim/25 text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider">
-            Live Preview
-          </span>
+Terpilih
+</span>
 </div>
-<!-- The Physical-Inspired Modern KOPMA Member Card (Teal & Gold accents) -->
-<div class="relative w-full rounded-2xl p-5 text-on-primary shadow-lg overflow-hidden bg-gradient-to-br from-sidebar-teal via-primary-container to-sidebar-dark transition-all duration-300" id="virtualCard">
-<!-- Decorative Background Elements -->
-<div class="absolute -right-8 -bottom-8 w-40 h-40 rounded-full bg-secondary-container/15 blur-xl pointer-events-none"></div>
-<div class="absolute -left-6 -top-6 w-32 h-32 rounded-full bg-primary-fixed-dim/10 blur-lg pointer-events-none"></div>
-<!-- Top Row of the card: Cooperative Brand & Smart NFC Chip -->
-<div class="relative z-10 flex items-start justify-between">
-<div class="flex items-center gap-2">
-<div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center shadow-sm">
-<span class="material-symbols-outlined text-sidebar-dark text-[18px] font-bold">storefront</span>
+
+<!-- Member Profile Card -->
+<div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col gap-space-sm" id="selectedMemberCard">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-primary text-on-primary font-title-lg text-title-lg flex items-center justify-center font-bold shadow-sm" id="previewCardAvatar">
+AR
 </div>
-<div class="flex flex-col">
-<span class="font-title-md text-title-md font-bold tracking-tight leading-none text-white">KOPMA Express</span>
-<span class="text-[10px] text-primary-fixed-dim font-medium tracking-wider uppercase mt-0.5">Universitas Negeri • Student Coop</span>
+<div class="flex flex-col min-w-0">
+<span class="font-title-lg text-title-lg text-on-surface font-semibold truncate" id="previewCardName">Adinda Rahma Salsabila</span>
+<span class="font-label-sm text-label-sm text-outline" id="previewCardNIM">NIM: 2105120401</span>
 </div>
 </div>
-<!-- Smart Chip Icon SVG -->
-<div class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-secondary-fixed text-[24px]">contactless</span>
-<div class="w-8 h-6 rounded bg-secondary-fixed/90 flex items-center justify-center shadow-inner">
-<div class="w-6 h-4 rounded-sm border border-secondary/40 flex items-center justify-center">
-<div class="w-2 h-2 rounded-full bg-secondary/30"></div>
+<div class="pt-2 border-t border-surface-container flex flex-col gap-1 text-on-surface-variant text-body-sm font-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-outline">Unit / Program Studi:</span>
+<span class="font-medium text-on-surface" id="previewCardProdi">SI Bisnis Digital</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-outline">Kontak:</span>
+<span class="font-medium text-on-surface" id="previewCardPhone">adinda.rahma@student.ac.id</span>
 </div>
 </div>
 </div>
-</div>
-<!-- Middle Row: Member Number (Monospace feel) & Photo -->
-<div class="relative z-10 mt-6 flex items-center justify-between">
-<div class="flex flex-col">
-<span class="text-[10px] uppercase font-label-sm tracking-widest text-primary-fixed-dim">Nomor Anggota / NIM</span>
-<span class="font-headline-md text-headline-md tracking-wider font-bold text-white" id="previewCardNIM">2105 1204 01</span>
-</div>
-<!-- Quick QR Code inline preview -->
-<div class="p-1 rounded-lg bg-white/95 shadow-md flex items-center justify-center">
-<svg class="w-11 h-11 text-sidebar-dark" fill="currentColor" viewbox="0 0 24 24">
-<path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 2h2v4h-2v-4zm-4-4h2v2h-2v-2zm4 0h4v2h-4v-2zm-4 4h2v2h-2v-2zm2 2h2v2h-2v-2zm2-2h2v2h-2v-2zM5 5h2v2H5V5zm12 0h2v2h-2V5zM5 17h2v2H5v-2z"></path>
-</svg>
-</div>
-</div>
-<!-- Bottom Row: Card Holder Info & Tier -->
-<div class="relative z-10 mt-5 pt-3 border-t-0 flex items-end justify-between">
-<div class="flex flex-col">
-<span class="font-title-lg text-title-lg font-bold text-white tracking-wide" id="previewCardName">Adinda Rahma Salsabila</span>
-<div class="flex items-center gap-2 mt-0.5">
-<span class="text-[11px] text-primary-fixed-dim font-medium" id="previewCardProdi">SI Bisnis Digital '21</span>
-<span class="text-white/40">•</span>
-<span class="text-[10px] px-1.5 py-0.5 rounded bg-secondary-container text-sidebar-dark font-bold">GOLD TIER</span>
-</div>
-</div>
-<div class="flex flex-col text-right">
-<span class="text-[9px] uppercase tracking-wider text-primary-fixed-dim">Berlaku s/d</span>
-<span class="text-[11px] font-bold text-white">10 / 2026</span>
-</div>
-</div>
-</div>
-<!-- Detail Anggota Terpilih Card Breakdown -->
+
+<!-- Detail Keuangan Kasbon -->
 <div class="flex flex-col gap-space-sm pt-space-xs">
 <div class="flex items-center justify-between">
 <span class="font-title-md text-title-md text-on-surface">Informasi Keuangan Kasbon</span>
-<span class="px-2 py-0.5 rounded bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">Aktif</span>
 </div>
 <div class="grid grid-cols-2 gap-space-sm">
 <div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col">
@@ -665,104 +557,27 @@
 <div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col">
 <span class="font-label-sm text-label-sm text-outline">Tagihan Bulan Ini</span>
 <span class="font-title-lg text-title-lg text-on-surface font-bold mt-0.5" id="previewTagihan">Rp 75.000</span>
-<span class="text-[11px] text-status-warning-text font-medium mt-0.5">Jatuh tempo 28 Maret</span>
+<span class="text-[11px] text-status-warning-text font-medium mt-0.5" id="previewStatusKasbon">Jatuh tempo 28 Maret</span>
 </div>
 </div>
+
 <!-- Quick Action Buttons for Member -->
 <div class="flex flex-col gap-2 mt-space-xs">
-<button class="w-full py-2.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg font-medium hover:bg-primary-container transition-colors flex items-center justify-center gap-space-xs shadow-sm">
+<button class="w-full py-2.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg font-medium hover:bg-primary-container transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
 <span class="material-symbols-outlined text-[18px]">payments</span>
 <span>Input Pembayaran Kasbon</span>
 </button>
 <div class="grid grid-cols-2 gap-2">
-<button class="py-2 px-space-sm rounded-xl bg-surface-container-low text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center justify-center gap-1">
+<button class="py-2 px-space-sm rounded-xl bg-surface-container-low text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center justify-center gap-1" type="button">
 <span class="material-symbols-outlined text-[16px] text-primary">edit_note</span>
 <span>Edit Limit Plafon</span>
 </button>
-<button class="py-2 px-space-sm rounded-xl bg-surface-container-low text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center justify-center gap-1">
+<button class="py-2 px-space-sm rounded-xl bg-surface-container-low text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center justify-center gap-1" type="button">
 <span class="material-symbols-outlined text-[16px] text-secondary">history</span>
 <span>Log Transaksi</span>
 </button>
 </div>
 </div>
-</div>
-<!-- Banner Promosi Loyalty (Inspired by PinHome Low occupancy banner) -->
-<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-tertiary-fixed to-surface-container-high p-space-md flex flex-col justify-between shadow-sm">
-<div class="relative z-10 flex flex-col">
-<div class="flex items-center justify-between mb-1">
-<span class="font-title-md text-title-md font-bold text-on-tertiary-fixed">Loyalty Booster</span>
-<span class="px-2 py-0.5 rounded-full bg-secondary-container text-sidebar-dark font-label-sm text-label-sm font-bold">2x Poin</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-tertiary-fixed-variant max-w-[210px]">
-              Aktifkan promo tebus murah alat tulis untuk 50 anggota berbelanja kasbon minggu ini.
-            </p>
-<div class="mt-space-md">
-<button class="px-space-md py-1.5 rounded-xl bg-secondary-container text-sidebar-dark font-label-sm text-label-sm font-bold hover:bg-secondary-fixed transition-colors shadow-sm inline-flex items-center gap-1">
-<span>Buat Promo Anggota</span>
-<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</button>
-</div>
-</div>
-<!-- Decorative SVG Leaf / Plant Icon -->
-<div class="absolute -right-3 -bottom-3 text-tertiary-container/30 pointer-events-none">
-<span class="material-symbols-outlined text-[80px]">yard</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Interactive Modal for Virtual Card Print / QR Code Detail -->
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-sidebar-teal/40 backdrop-blur-md hidden transition-all duration-300" id="cardModal">
-<div class="bg-card-bg rounded-2xl p-space-lg max-w-md w-full mx-space-md shadow-2xl flex flex-col gap-space-md relative animate-in fade-in zoom-in-95 duration-200">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<div class="w-8 h-8 rounded-lg bg-primary-fixed-dim/30 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-[20px]">print</span>
-</div>
-<div>
-<h4 class="font-title-lg text-title-lg text-on-surface font-bold">Kartu Anggota Virtual</h4>
-<span class="font-label-sm text-label-sm text-outline">Siap cetak standar ID Card ISO/IEC 7810</span>
-</div>
-</div>
-<button class="p-1.5 rounded-xl text-outline hover:text-on-surface hover:bg-surface-container transition-colors" onclick="toggleVirtualCardModal(false)">
-<span class="material-symbols-outlined text-[20px]">close</span>
-</button>
-</div>
-<!-- Card Display Area in Modal -->
-<div class="w-full rounded-2xl p-6 text-on-primary shadow-xl bg-gradient-to-br from-sidebar-teal via-primary to-sidebar-dark relative overflow-hidden">
-<div class="flex justify-between items-start">
-<div class="flex flex-col">
-<span class="font-title-lg text-title-lg font-bold text-white">KOPMA Express</span>
-<span class="font-label-sm text-label-sm text-primary-fixed-dim">Kartu Identitas Anggota</span>
-</div>
-<span class="px-2 py-1 rounded bg-secondary-container text-sidebar-dark font-bold font-label-sm text-label-sm">AKTIF 2024/2025</span>
-</div>
-<div class="my-6 flex items-center gap-space-md">
-<div class="w-16 h-16 rounded-xl bg-white p-1 shadow-md flex items-center justify-center">
-<svg class="w-full h-full text-sidebar-dark" fill="currentColor" viewbox="0 0 24 24">
-<path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 2h2v4h-2v-4zm-4-4h2v2h-2v-2zm4 0h4v2h-4v-2zm-4 4h2v2h-2v-2zm2 2h2v2h-2v-2zm2-2h2v2h-2v-2zM5 5h2v2H5V5zm12 0h2v2h-2V5zM5 17h2v2H5v-2z"></path>
-</svg>
-</div>
-<div class="flex flex-col text-white">
-<span class="font-title-lg text-title-lg font-bold">Adinda Rahma Salsabila</span>
-<span class="font-body-sm text-body-sm text-primary-fixed-dim">NIM: 2105120401</span>
-<span class="font-body-sm text-body-sm text-primary-fixed-dim">SI Bisnis Digital • Angkatan 2021</span>
-</div>
-</div>
-<div class="pt-3 border-t-0 flex items-center justify-between text-[11px] text-primary-fixed">
-<span>Plafon Kasbon: Rp 250.000</span>
-<span>Security Token: #KP-882194</span>
-</div>
-</div>
-<!-- Action inside modal -->
-<div class="flex items-center justify-end gap-space-xs mt-2">
-<button class="px-space-md py-2 rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container" onclick="toggleVirtualCardModal(false)">
-          Batal
-        </button>
-<button class="px-space-md py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container flex items-center gap-1.5 shadow-sm" onclick="window.print()">
-<span class="material-symbols-outlined text-[16px]">print</span>
-<span>Unduh PDF / Cetak Kartu</span>
-</button>
 </div>
 </div>
 </div>

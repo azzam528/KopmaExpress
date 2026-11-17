@@ -86,14 +86,12 @@
 <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-teal-700 to-teal-500 text-white font-bold flex items-center justify-center text-sm shadow-sm">
               AR
             </div>
-<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-amber-400 border-2 border-white rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-[9px] text-amber-950 font-bold">star</span>
-</span>
+
 </div>
 <div class="text-left hidden sm:block">
 <div class="text-xs font-bold text-slate-800 leading-tight flex items-center gap-1">
               Adinda Rahma
-              <span class="px-1.5 py-0.2 bg-teal-100 text-teal-800 text-[10px] rounded font-semibold">Gold</span>
+              
 </div>
 <div class="text-[11px] text-slate-500">S1 Bisnis Digital</div>
 </div>
@@ -204,23 +202,20 @@ Loket Express Counter Kantin Gedung B • Buka s/d 17.30 WIB
 <h2 class="text-lg font-bold text-slate-900">Kasbon &amp; Tagihan Anggota</h2>
 <span class="text-xs text-slate-500 hidden sm:inline">• Fasilitas belanja 0% bunga bagi mahasiswa</span>
 </div>
-<span class="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">Status: Kredit Lancar</span>
+
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-<!-- Card KTA Digital -->
+<!-- Card Profil Anggota -->
 <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-800 via-teal-700 to-emerald-800 p-6 text-white shadow-md shadow-teal-900/10 flex flex-col justify-between min-h-[220px]">
 <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
 <div class="flex items-center justify-between relative z-10">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-amber-300 text-[22px]">school</span>
 <div>
-<div class="text-[11px] font-semibold tracking-wider text-teal-200 uppercase">Kartu Anggota Digital</div>
+<div class="text-[11px] font-semibold tracking-wider text-teal-200 uppercase">Identitas Anggota</div>
 <div class="text-sm font-bold">KOPMA Universitas Negeri Merdeka</div>
 </div>
 </div>
-<span class="px-2.5 py-0.5 bg-amber-400 text-amber-950 font-extrabold text-[11px] rounded-full shadow-sm">
-GOLD MEMBER
-</span>
 </div>
 <div class="my-4 relative z-10">
 <div class="text-xs text-teal-200">Nama Anggota</div>
@@ -228,11 +223,10 @@ GOLD MEMBER
 <div class="text-xs text-teal-100 font-mono mt-0.5">NIM: 2105120401 • S1 Bisnis Digital</div>
 </div>
 <div class="pt-3 border-t border-white/15 flex items-center justify-between relative z-10">
-<div>
-<span class="text-[11px] text-teal-200 block">Poin Anggota</span>
-<span class="text-sm font-bold text-white">1.420 Pts <span class="text-xs font-normal text-amber-200">(Rp 14.200)</span></span>
+<div class="text-xs text-teal-200">
+<span>Anggota Koperasi Terdaftar</span>
 </div>
-<button class="px-3.5 py-2 bg-white text-teal-900 hover:bg-amber-300 hover:text-amber-950 font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95" onclick="openQrModal('2105120401-GOLD')">
+<button class="px-3.5 py-2 bg-white text-teal-900 hover:bg-amber-300 hover:text-amber-950 font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95" onclick="openQrModal('2105120401')">
 <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
 <span>QR Kasir</span>
 </button>
@@ -483,7 +477,7 @@ Favorit Ujian
 <rect height="14" width="18" x="74" y="38"></rect>
 </svg>
 <span class="mt-3 font-mono font-bold text-sm tracking-widest text-teal-900 bg-teal-100/70 px-3 py-1 rounded-lg" id="modalCodeText">
-          2105120401-GOLD
+          2105120401
         </span>
 </div>
 <div class="w-full bg-slate-50 rounded-2xl p-3 text-xs text-slate-600 mb-4 text-left">
@@ -518,9 +512,9 @@ Favorit Ujian
         subtitle.innerText = 'Tunjukkan di Loket Gedung B untuk serah terima paket kamu';
         codeText.innerText = '#ORD-20250314-082';
       } else {
-        title.innerText = 'QR KTA Digital Mahasiswa';
+        title.innerText = 'QR Identitas Anggota';
         subtitle.innerText = 'Scan di kasir KOPMA untuk diskon otomatis 5% dan kasbon 0%';
-        codeText.innerText = '2105120401-GOLD';
+        codeText.innerText = '2105120401';
       }
       modal.classList.remove('hidden');
     }
