@@ -128,7 +128,9 @@ func main() {
 
     orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
     handler.RegisterOrderRoutes(api, orderSvc)
-    handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
+    // Master Barang (Orang 1): menggantikan RegisterProductLookupRoutes sementara
+    productSvc := service.NewProductService(productRepo)
+    handler.RegisterProductRoutes(api, productSvc)
 
     // Initialize ETL
     historyRepo := mongorepo.NewHistoryRepo(db)

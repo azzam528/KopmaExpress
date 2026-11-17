@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"errors"
+	"regexp"
 	"time"
 
 	"smartcoop/internal/domain"
@@ -27,9 +28,11 @@ func NewProductRepo(db *mongo.Database) *ProductRepo {
 func (r *ProductRepo) FindAll(ctx context.Context, filter domain.ProductFilter) ([]domain.Product, int64, error) {
 	q := bson.M{}
 	if filter.Query != "" {
+		// QuoteMeta: input pengguna diperlakukan sebagai teks biasa, bukan regex.
+		re := primitive.Regex{Pattern: regexp.QuoteMeta(filter.Query), Options: "i"}
 		q["$or"] = bson.A{
-			bson.M{"kode_barang": bson.M{"$regex": filter.Query, "$options": "i"}},
-			bson.M{"name": bson.M{"$regex": filter.Query, "$options": "i"}},
+			bson.M{"kode_barang": re},
+			bson.M{"name": re},
 		}
 	}
 	if filter.Category != "" {
@@ -54,14 +57,18 @@ func (r *ProductRepo) FindAll(ctx context.Context, filter domain.ProductFilter) 
 	}
 	skip := int64((page - 1) * limit)
 
-	sortField := "name"
-	sortDir := 1
-	if filter.Sort == "stock_desc" {
+	sortField, sortDir := "name", 1 // default: nama A-Z
+	switch filter.Sort {
+	case "stock_desc":
 		sortField, sortDir = "stock", -1
-	} else if filter.Sort == "price_asc" {
+	case "stock_asc":
+		sortField, sortDir = "stock", 1
+	case "price_asc":
 		sortField, sortDir = "price", 1
-	} else if filter.Sort == "price_desc" {
+	case "price_desc":
 		sortField, sortDir = "price", -1
+	case "newest":
+		sortField, sortDir = "created_at", -1
 	}
 
 	opts := options.Find().
@@ -75,7 +82,7 @@ func (r *ProductRepo) FindAll(ctx context.Context, filter domain.ProductFilter) 
 	}
 	defer cursor.Close(ctx)
 
-	var products []domain.Product
+	products := make([]domain.Product, 0, limit) // non-nil -> JSON [] bukan null
 	if err := cursor.All(ctx, &products); err != nil {
 		return nil, 0, err
 	}
@@ -97,9 +104,13 @@ func (r *ProductRepo) FindByCode(ctx context.Context, code string) (*domain.Prod
 func (r *ProductRepo) Create(ctx context.Context, p *domain.Product) error {
 	now := time.Now()
 	p.ID = primitive.NewObjectID()
+	p.IsActive = true
 	p.CreatedAt = now
 	p.UpdatedAt = now
 	_, err := r.collection.InsertOne(ctx, p)
+	if mongo.IsDuplicateKeyError(err) {
+		return domain.NewDuplicateError("Kode barang sudah digunakan")
+	}
 	return err
 }
 
@@ -111,11 +122,11 @@ func (r *ProductRepo) Update(ctx context.Context, code string, p *domain.Product
 			"category":   p.Category,
 			"price":      p.Price,
 			"stock":      p.Stock,
-			"is_active":  p.IsActive,
 			"updated_at": p.UpdatedAt,
 		},
 	}
-	res, err := r.collection.UpdateOne(ctx, bson.M{"kode_barang": code}, update)
+	// Hanya barang aktif yang bisa diedit; status aktif diubah lewat SoftDelete/import.
+	res, err := r.collection.UpdateOne(ctx, bson.M{"kode_barang": code, "is_active": true}, update)
 	if err != nil {
 		return err
 	}
@@ -128,7 +139,7 @@ func (r *ProductRepo) Update(ctx context.Context, code string, p *domain.Product
 func (r *ProductRepo) SoftDelete(ctx context.Context, code string) error {
 	res, err := r.collection.UpdateOne(
 		ctx,
-		bson.M{"kode_barang": code},
+		bson.M{"kode_barang": code, "is_active": true},
 		bson.M{"$set": bson.M{"is_active": false, "updated_at": time.Now()}},
 	)
 	if err != nil {
