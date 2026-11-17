@@ -16,6 +16,15 @@ const (
 	PayKasbon   PaymentMethod = "KASBON"
 )
 
+// OrderChannel menandai asal pesanan: dibuat kasir (OFFLINE) atau anggota (ONLINE).
+// Pesanan lama tanpa field ini dianggap OFFLINE.
+type OrderChannel string
+
+const (
+	ChannelOffline OrderChannel = "OFFLINE"
+	ChannelOnline  OrderChannel = "ONLINE"
+)
+
 type OrderStatus string
 
 const (
@@ -41,6 +50,7 @@ type Order struct {
 	Items       []OrderItem        `bson:"items"          json:"items"`
 	TotalAmount int64              `bson:"total_amount"   json:"total"`
 	Payment     PaymentMethod      `bson:"payment_method" json:"metode_pembayaran"`
+	Channel     OrderChannel       `bson:"channel"        json:"channel"`
 	Status      OrderStatus        `bson:"status"         json:"status"`
 	CreatedAt   time.Time          `bson:"created_at"     json:"created_at"`
 }
@@ -53,6 +63,7 @@ type OrderItemRequest struct {
 type CreateOrderRequest struct {
 	MemberNIM string             `json:"nim"`
 	Payment   PaymentMethod      `json:"metode_pembayaran"`
+	Channel   OrderChannel       `json:"channel"` // kosong = OFFLINE
 	Items     []OrderItemRequest `json:"items"`
 }
 
@@ -61,6 +72,7 @@ type OrderFilter struct {
 	From      *time.Time
 	To        *time.Time
 	Status    OrderStatus
+	Channel   OrderChannel // kosong = semua
 	Page      int
 	Limit     int
 }

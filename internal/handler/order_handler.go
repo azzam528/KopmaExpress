@@ -45,11 +45,12 @@ func (h *OrderHandler) Create(c *fiber.Ctx) error {
 	return httpx.WriteCreated(c, order)
 }
 
-// GET /orders?nim=&from=&to=&status=&page=&limit=
+// GET /orders?nim=&from=&to=&status=&channel=&page=&limit=
 func (h *OrderHandler) List(c *fiber.Ctx) error {
 	f := domain.OrderFilter{
 		MemberNIM: c.Query("nim"),
 		Status:    domain.OrderStatus(c.Query("status")),
+		Channel:   domain.OrderChannel(c.Query("channel")),
 		Page:      c.QueryInt("page", 1),
 		Limit:     c.QueryInt("limit", 20),
 	}

@@ -92,6 +92,13 @@ func main() {
 	app.Get("/orders/new", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/orders/new.html")
 	})
+	// Portal anggota (belanja online), terpisah dari halaman admin/kasir.
+	app.Get("/masuk", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/shop/masuk.html")
+	})
+	app.Get("/belanja", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/shop/belanja.html")
+	})
 	app.Get("/forecast", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/forecast/index.html")
 	})
@@ -122,42 +129,37 @@ func main() {
 
 	// 6. Register API Routes
 	if db != nil {
-		// Order
+		// Repositories
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)
 		memberRepo := mongorepo.NewMemberRepo(client, db)
-
-		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
-		handler.RegisterOrderRoutes(api, orderSvc)
-
-		// Product Master
-		productSvc := service.NewProductService(productRepo)
-		handler.RegisterProductRoutes(api, productSvc)
-
-		// Member Master
-		memberSvc := service.NewMemberService(memberRepo)
-		handler.RegisterMemberRoutes(api, memberSvc)
-
-		// ETL Import
 		historyRepo := mongorepo.NewHistoryRepo(db)
 		importJobRepo := mongorepo.NewImportJobRepo(db)
-
-		etlSvc := etl.NewService(productRepo, historyRepo, importJobRepo)
-		importHandler := handler.NewImportHandler(etlSvc)
-		importHandler.Register(api)
-
-		// Analytics and Forecasting
 		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
 		forecastRepo := mongorepo.NewForecastRepo(db)
 
+		// Services
+		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
+		memberSvc := service.NewMemberService(memberRepo)
+		productSvc := service.NewProductService(productRepo)
+		etlSvc := etl.NewService(productRepo, historyRepo, importJobRepo)
 		analyticsService := service.NewAnalyticsService(analyticsRepo)
 		forecastService := service.NewForecastService(forecastRepo, cfg.Workers, 10)
 
+		// Handlers & Route Registration
+		handler.RegisterOrderRoutes(api, orderSvc)
+		handler.RegisterMemberRoutes(api, memberSvc)
+		handler.RegisterProductRoutes(api, productSvc)
+
+		importHandler := handler.NewImportHandler(etlSvc)
+		importHandler.Register(api)
+
 		handler.NewAnalyticsHandler(analyticsService).RegisterRoutes(api)
 		handler.NewForecastHandler(forecastService).RegisterRoutes(api)
-
 		log.Println("[INIT] Analytics and forecasting routes registered")
 	}
+
+	handler.RegisterOrderPages(app)
 
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
