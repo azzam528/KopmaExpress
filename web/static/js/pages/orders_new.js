@@ -173,12 +173,18 @@
     pay = r.value; $('#cash-box').classList.toggle('hidden', pay !== 'CASH'); calcChange();
   }));
   $('#cash').addEventListener('input', calcChange)  ;
+    $('#btn-pas').addEventListener('click', () => { if (total != null) { $('#cash').value = String(total); calcChange(); } });
 
   // ---- kirim pesanan
   $('#btn-submit').addEventListener('click', async () => {
     const nim = $('#nim').value.trim();
     if (!nim) return alertBox('err', 'NIM wajib diisi');
     if (!cart.length) return alertBox('err', 'Keranjang masih kosong');
+        if (pay === 'CASH' && total != null) {
+      const paid = parseInt(($('#cash').value || '').replace(/[^0-9]/g, '') || '0', 10);
+      if (paid < total) return alertBox('err', 'Uang tunai belum cukup',
+        paid ? `Kurang ${rp(total - paid)} dari total ${rp(total)}.` : `Isi uang tunai yang diterima (total ${rp(total)}) atau klik "Uang pas".`);
+    }
     const btn = $('#btn-submit'); btn.disabled = true;
     try {
       const r = await apiClient.post('/orders', { nim, metode_pembayaran: pay, items: cart.map((c) => ({ kode_barang: c.code, qty: c.qty })) });
