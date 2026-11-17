@@ -86,9 +86,6 @@ func main() {
 		return c.SendFile("./web/templates/import/index.html")
 	})
 	app.Get("/orders", func(c *fiber.Ctx) error {
-		return c.Redirect("/orders/new")
-	})
-	app.Get("/orders/new", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/orders/new.html")
 	})
 	app.Get("/forecast", func(c *fiber.Ctx) error {
