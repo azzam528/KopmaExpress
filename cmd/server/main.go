@@ -67,7 +67,7 @@ func main() {
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
 
-	// 5. Static Files & Web Page Routes (PRD §6.7)
+	// 5. Static Files & Web Page Routes (PRD Â§6.7)
 	app.Static("/static", "./web/static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
@@ -86,7 +86,7 @@ func main() {
 		return c.SendFile("./web/templates/import/index.html")
 	})
 	app.Get("/orders", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/orders/index.html")
+		return c.Redirect("/orders/new")
 	})
 	app.Get("/orders/new", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/orders/new.html")
@@ -94,8 +94,6 @@ func main() {
 	app.Get("/forecast", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/forecast/index.html")
 	})
-
-	handler.RegisterOrderPages(app)
 
 	// 6. Base API Group
 	api := app.Group("/api/v1")
@@ -130,8 +128,6 @@ func main() {
 		handler.RegisterOrderRoutes(api, orderSvc)
 		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
 	}
-
-	handler.RegisterOrderPages(app)
 
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
