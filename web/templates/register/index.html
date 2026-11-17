@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Akun - KOPMA Express</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9ff;
+      color: #0b1c30;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      text-align: center;
+      padding: 12px 0 8px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: #005c55;
+      color: white;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+    }
+
+    .brand-name {
+      font: 700 21px 'Plus Jakarta Sans', sans-serif;
+      color: #005c55;
+    }
+
+    .brand-name span {
+      color: #ffc329;
+    }
+
+    header p {
+      font-size: 10px;
+      color: #64716f;
+      margin-top: 3px;
+      letter-spacing: 1px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+    }
+
+    .register-card {
+      width: 100%;
+      max-width: 410px;
+      background: white;
+      padding: 18px 24px;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+    }
+
+    .heading {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .heading-icon {
+      width: 36px;
+      height: 36px;
+      background: #005c55;
+      color: white;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 7px;
+    }
+
+    h1 {
+      font: 700 21px 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .heading p {
+      font-size: 12px;
+      color: #64716f;
+      margin-top: 3px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-box>.material-symbols-outlined {
+      position: absolute;
+      left: 11px;
+      color: #6e7977;
+      font-size: 18px;
+    }
+
+    input {
+      width: 100%;
+      height: 37px;
+      padding: 8px 38px;
+      border: 1px solid #e1e8e6;
+      background: #f8fafc;
+      border-radius: 8px;
+      font: 13px 'Inter', sans-serif;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #005c55;
+      background: white;
+      box-shadow: 0 0 0 2px rgba(0, 92, 85, 0.1);
+    }
+
+    input::placeholder {
+      color: #9ca9a6;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      border: none;
+      background: transparent;
+      color: #6e7977;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    .toggle-password span {
+      font-size: 18px;
+    }
+
+    .submit-btn {
+      height: 39px;
+      border: none;
+      border-radius: 8px;
+      background: #0f766e;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 3px;
+      transition: 0.2s;
+    }
+
+    .submit-btn:hover {
+      background: #005c55;
+    }
+
+    .login-link {
+      text-align: center;
+      font-size: 12px;
+      color: #64716f;
+      margin-top: 11px;
+    }
+
+    .login-link a {
+      color: #005c55;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 8px 10px;
+      font-size: 10px;
+      color: #64716f;
+    }
+
+    footer .security {
+      margin-bottom: 4px;
+    }
+
+    @media (max-height: 700px) and (min-width: 601px) {
+      header {
+        padding: 5px 0;
+      }
+
+      .register-card {
+        padding: 12px 22px;
+      }
+
+      .heading {
+        margin-bottom: 8px;
+      }
+
+      .heading-icon {
+        width: 30px;
+        height: 30px;
+        margin-bottom: 4px;
+      }
+
+      form {
+        gap: 6px;
+      }
+
+      input {
+        height: 33px;
+      }
+
+      .submit-btn {
+        height: 35px;
+      }
+
+      .login-link {
+        margin-top: 7px;
+      }
+
+      footer {
+        padding: 4px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      main {
+        align-items: flex-start;
+        padding: 12px 16px;
+      }
+
+      .register-card {
+        padding: 20px;
+      }
+
+      header {
+        padding-top: 16px;
+      }
+
+      footer {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <span class="material-symbols-outlined">local_mall</span>
+      </div>
+      <div class="brand-name">KOPMA <span>Express</span></div>
+    </div>
+    <p>PORTAL KOPERASI MAHASISWA</p>
+  </header>
+
+  <main>
+    <section class="register-card">
+
+      <div class="heading">
+        <div class="heading-icon">
+          <span class="material-symbols-outlined">person_add</span>
+        </div>
+        <h1>Daftar Akun Baru</h1>
+        <p>Buat akun anggota KOPMA Express Anda</p>
+      </div>
+
+      <div id="alertBox" style="display:none; padding: 9px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 9px; line-height: 1.4;"></div>
+
+      <form id="registerForm">
+
+        <div class="form-group">
+          <label for="nama">Nama Lengkap</label>
+          <div class="input-box">
+            <span class="material-symbols-outlined">person</span>
+            <input type="text" id="nama" placeholder="Contoh: Adinda Rahma" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="nim">NIM (Nomor Induk Mahasiswa)</label>
+          <div class="input-box">
+            <span class="material-symbols-outlined">badge</span>
+            <input type="text" id="nim" placeholder="Contoh: 2105120401" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-box">
+            <span class="material-symbols-outlined">mail</span>
+            <input type="email" id="email" placeholder="nama@student.ac.id" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-box">
+            <span class="material-symbols-outlined">lock</span>
+            <input type="password" id="password" placeholder="Masukkan password (min. 8 karakter)" required>
+            <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="konfirmasi_password">Konfirmasi Password</label>
+          <div class="input-box">
+            <span class="material-symbols-outlined">lock_reset</span>
+            <input type="password" id="konfirmasi_password" placeholder="Ulangi password" required>
+            <button type="button" class="toggle-password" onclick="togglePassword('konfirmasi_password', this)">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+          <span id="btnText">Daftar Akun →</span>
+        </button>
+
+      </form>
+
+      <div class="login-link">
+        Sudah punya akun?
+        <a href="/login">Masuk di sini</a>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <div class="security">✓ Sistem Terenkripsi Kampus • Bantuan Cepat</div>
+    <p>© 2026 Koperasi Mahasiswa KOPMA. Seluruh hak cipta dilindungi.</p>
+  </footer>
+
+  <script>
+    function togglePassword(id, button) {
+      const input = document.getElementById(id);
+      const icon = button.querySelector("span");
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "visibility_off";
+      } else {
+        input.type = "password";
+        icon.textContent = "visibility";
+      }
+    }
+
+    const regForm = document.getElementById("registerForm");
+    const alertBox = document.getElementById("alertBox");
+    const submitBtn = document.getElementById("submitBtn");
+    const btnText = document.getElementById("btnText");
+
+    function showAlert(msg, isSuccess = false) {
+      if (!alertBox) return;
+      alertBox.textContent = msg;
+      if (isSuccess) {
+        alertBox.style.background = "#d1fae5";
+        alertBox.style.color = "#047857";
+        alertBox.style.border = "1px solid #a7f3d0";
+      } else {
+        alertBox.style.background = "#fee2e2";
+        alertBox.style.color = "#b91c1c";
+        alertBox.style.border = "1px solid #fecaca";
+      }
+      alertBox.style.display = "block";
+    }
+
+    function hideAlert() {
+      if (alertBox) alertBox.style.display = "none";
+    }
+
+    function setLoading(loading) {
+      if (submitBtn) submitBtn.disabled = loading;
+      if (btnText) btnText.textContent = loading ? "Mendaftarkan akun..." : "Daftar Akun →";
+    }
+
+    if (regForm) {
+      regForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        hideAlert();
+
+        const nama = document.getElementById("nama").value.trim();
+        const nim = document.getElementById("nim").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const konfirmasi = document.getElementById("konfirmasi_password").value;
+
+        if (!nama || !nim || !email || !password) {
+          showAlert("Semua kolom bertanda wajib harus diisi!");
+          return;
+        }
+
+        if (password !== konfirmasi) {
+          showAlert("Password dan konfirmasi password tidak sama!");
+          return;
+        }
+
+        if (password.length < 8) {
+          showAlert("Password minimal 8 karakter!");
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          const resp = await fetch("/api/v1/auth/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              nama: nama,
+              nim: nim,
+              email: email,
+              password: password
+            })
+          });
+
+          const result = await resp.json();
+
+          if (!resp.ok || !result.success) {
+            let errMsg = "Pendaftaran gagal.";
+            if (result && result.error) {
+              errMsg = result.error.message || errMsg;
+              if (result.error.details && Array.isArray(result.error.details) && result.error.details.length > 0) {
+                errMsg = result.error.details.map(d => d.message).join(", ");
+              }
+            }
+            showAlert(errMsg, false);
+            setLoading(false);
+            return;
+          }
+
+          showAlert("Pendaftaran berhasil! Mengalihkan ke halaman masuk...", true);
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 900);
+
+        } catch (err) {
+          showAlert("Gagal terhubung ke server. Periksa koneksi Anda.", false);
+          setLoading(false);
+        }
+      });
+    }
+  </script>
+
+</body>
+
+</html>

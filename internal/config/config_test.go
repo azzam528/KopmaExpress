@@ -12,6 +12,8 @@ func TestLoadDefaults(t *testing.T) {
 	_ = os.Unsetenv("MONGO_URI")
 	_ = os.Unsetenv("DB_NAME")
 	_ = os.Unsetenv("MAX_UPLOAD_MB")
+	_ = os.Unsetenv("JWT_SECRET")
+	_ = os.Unsetenv("JWT_TTL_HOURS")
 
 	cfg := Load()
 
@@ -26,6 +28,12 @@ func TestLoadDefaults(t *testing.T) {
 	}
 	if cfg.Workers <= 0 {
 		t.Errorf("expected Workers > 0, got %d", cfg.Workers)
+	}
+	if cfg.JWTSecret == "" {
+		t.Errorf("expected non-empty default JWTSecret")
+	}
+	if cfg.JWTTTLHours != 24 {
+		t.Errorf("expected default JWTTTLHours 24, got %d", cfg.JWTTTLHours)
 	}
 }
 

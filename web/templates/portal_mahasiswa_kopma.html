@@ -81,21 +81,23 @@
 <span class="material-symbols-outlined text-[24px]">notifications</span>
 <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white"></span>
 </button>
-<div class="flex items-center gap-2.5 bg-slate-50 hover:bg-slate-100/80 p-1.5 pr-3 rounded-full border border-slate-200/80 transition-all cursor-pointer">
+<div class="flex items-center gap-2.5 bg-slate-50 hover:bg-slate-100/80 p-1.5 pr-3 rounded-full border border-slate-200/80 transition-all">
 <div class="relative">
-<div class="w-9 h-9 rounded-full bg-gradient-to-tr from-teal-700 to-teal-500 text-white font-bold flex items-center justify-center text-sm shadow-sm">
+<div id="userAvatar" class="w-9 h-9 rounded-full bg-gradient-to-tr from-teal-700 to-teal-500 text-white font-bold flex items-center justify-center text-sm shadow-sm">
               AR
             </div>
 
 </div>
 <div class="text-left hidden sm:block">
-<div class="text-xs font-bold text-slate-800 leading-tight flex items-center gap-1">
+<div id="userName" class="text-xs font-bold text-slate-800 leading-tight flex items-center gap-1">
               Adinda Rahma
               
 </div>
-<div class="text-[11px] text-slate-500">S1 Bisnis Digital</div>
+<div id="userUnit" class="text-[11px] text-slate-500">S1 Bisnis Digital</div>
 </div>
-<span class="material-symbols-outlined text-slate-400 text-[18px] ml-1">expand_more</span>
+<button onclick="logoutUser()" title="Keluar dari akun" class="text-slate-400 hover:text-red-600 transition-colors ml-1 p-1 flex items-center justify-center" type="button">
+  <span class="material-symbols-outlined text-[18px]">logout</span>
+</button>
 </div>
 </div>
 </div>
@@ -535,6 +537,37 @@ Favorit Ujian
         toast.classList.add('translate-y-20', 'opacity-0');
         toast.classList.remove('translate-y-0', 'opacity-100');
       }, 2500);
+    }
+
+    async function syncPortalUser() {
+      try {
+        const res = await fetch('/api/v1/auth/me');
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.success && json.data) {
+            const u = json.data;
+            const nameEl = document.getElementById('userName');
+            const unitEl = document.getElementById('userUnit');
+            const avatarEl = document.getElementById('userAvatar');
+            if (nameEl && (u.nama || u.name)) nameEl.textContent = u.nama || u.name;
+            if (unitEl && (u.unit || u.nim)) unitEl.textContent = u.unit || `NIM: ${u.nim}`;
+            if (avatarEl && (u.nama || u.name)) {
+              const str = u.nama || u.name;
+              const initials = str.split(' ').filter(Boolean).map(w => w[0]).join('').substring(0, 2).toUpperCase();
+              avatarEl.textContent = initials || 'ME';
+            }
+          }
+        }
+      } catch (e) {}
+    }
+    syncPortalUser();
+
+    async function logoutUser() {
+      try {
+        await fetch('/api/v1/auth/logout', { method: 'POST' });
+      } finally {
+        window.location.href = '/login';
+      }
     }
   </script>
 </body></html>

@@ -94,6 +94,21 @@ func main() {
 	app.Get("/forecast", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/forecast/index.html")
 	})
+	app.Get("/login", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/login/index.html")
+	})
+	app.Get("/login.html", func(c *fiber.Ctx) error {
+		return c.Redirect("/login")
+	})
+	app.Get("/register", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/register/index.html")
+	})
+	app.Get("/register.html", func(c *fiber.Ctx) error {
+		return c.Redirect("/register")
+	})
+	app.Get("/portal", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/portal_mahasiswa_kopma.html")
+	})
 
 	handler.RegisterOrderPages(app)
 
@@ -121,17 +136,21 @@ func main() {
 		})
 	})
 
-	// Order routes (Orang 3)
+	// Routes when DB is connected
 	if db != nil {
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)
 		memberRepo := mongorepo.NewMemberRepo(db)
+
+		// Order & Product routes
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
 		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
-	}
 
-	handler.RegisterOrderPages(app)
+		// Auth routes (Register, Login, Me, Logout)
+		authSvc := service.NewAuthService(memberRepo)
+		handler.RegisterAuthRoutes(api, authSvc, memberRepo, cfg)
+	}
 
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
