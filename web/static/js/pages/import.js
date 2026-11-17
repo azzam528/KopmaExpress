@@ -143,17 +143,10 @@
 
           if (job.status === 'DONE') {
             runBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">done_all</span><span>Selesai!</span>';
-            const summaryMsg = `Import Berhasil!\n` +
-              `Total baris diproses: ${job.processed_rows || 0}\n` +
-              `Barang baru (inserted): ${job.inserted || 0}\n` +
-              `Barang diperbarui (updated): ${job.updated || 0}\n` +
-              `Dilewati (skipped): ${job.skipped || 0}\n` +
-              `Gagal (failed): ${job.failed || 0}`;
 
             if (window.showToast) {
               window.showToast('success', 'Import Berhasil', `${job.inserted || 0} barang baru masuk, ${job.updated || 0} diperbarui.`);
             }
-            alert(summaryMsg);
           } else {
             runBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">error</span><span>Gagal</span>';
             const failReason = (job.errors && job.errors.length > 0)
