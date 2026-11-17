@@ -86,7 +86,31 @@ func EnsureIndexes(ctx context.Context, db *mongo.Database) error {
 		return fmt.Errorf("error creating indexes for members: %w", err)
 	}
 
-	// 3. Orders Indexes
+	// 3. Users Indexes (Authentication & Authorization accounts)
+	// {nim:1} UNIQUE; {role:1}; {member_id:1} UNIQUE SPARSE; {status:1}
+	userIndexes := []mongo.IndexModel{
+		{
+			Keys:    bson.D{{Key: "nim", Value: 1}},
+			Options: options.Index().SetUnique(true).SetName("idx_users_nim_unique"),
+		},
+		{
+			Keys:    bson.D{{Key: "role", Value: 1}},
+			Options: options.Index().SetName("idx_users_role"),
+		},
+		{
+			Keys:    bson.D{{Key: "member_id", Value: 1}},
+			Options: options.Index().SetUnique(true).SetSparse(true).SetName("idx_users_member_id_unique_sparse"),
+		},
+		{
+			Keys:    bson.D{{Key: "status", Value: 1}},
+			Options: options.Index().SetName("idx_users_status"),
+		},
+	}
+	if _, err := db.Collection("users").Indexes().CreateMany(timeoutCtx, userIndexes); err != nil {
+		return fmt.Errorf("error creating indexes for users: %w", err)
+	}
+
+	// 4. Orders Indexes
 	// {order_no:1} UNIQUE; {member_nim:1, created_at:-1}; {created_at:-1}; {status:1}
 	orderIndexes := []mongo.IndexModel{
 		{

@@ -14,12 +14,18 @@ type MemberHandler struct {
 }
 
 // RegisterMemberRoutes mendaftarkan seluruh rute anggota di bawah /members.
-// Dipanggil dari main.go: handler.RegisterMemberRoutes(api, memberSvc)
+// Dipanggil dari main.go: handler.RegisterMemberRoutes(api, memberSvc, authMiddleware)
 // "/summary" HARUS didaftarkan sebelum "/:nim" agar tidak dianggap NIM.
-func RegisterMemberRoutes(api fiber.Router, svc domain.MemberService) {
+func RegisterMemberRoutes(api fiber.Router, svc domain.MemberService, middlewares ...fiber.Handler) {
 	h := &MemberHandler{svc: svc}
 
 	g := api.Group("/members")
+	for _, m := range middlewares {
+		if m != nil {
+			g.Use(m)
+		}
+	}
+
 	g.Get("/", h.List)
 	g.Get("/summary", h.Summary)
 	g.Post("/", h.Create)

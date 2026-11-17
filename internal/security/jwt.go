@@ -12,11 +12,13 @@ import (
 
 // JWTClaims holds user identity data embedded in the token payload
 type JWTClaims struct {
-	NIM   string `json:"nim"`
-	Email string `json:"email"`
-	Name  string `json:"name"`
-	Exp   int64  `json:"exp"`
-	Iat   int64  `json:"iat"`
+	UserID string `json:"user_id,omitempty"`
+	NIM    string `json:"nim"`
+	Email  string `json:"email,omitempty"`
+	Name   string `json:"name"`
+	Role   string `json:"role"`
+	Exp    int64  `json:"exp"`
+	Iat    int64  `json:"iat"`
 }
 
 // GenerateToken creates an HMAC-SHA256 signed JWT token string

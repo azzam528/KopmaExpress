@@ -16,15 +16,22 @@ type ProductHandler struct {
 
 // RegisterProductRoutes mendaftarkan rute /products.
 // Dipanggil dari main.go: handler.RegisterProductRoutes(api, productSvc)
-func RegisterProductRoutes(api fiber.Router, svc domain.ProductService) {
+func RegisterProductRoutes(api fiber.Router, svc domain.ProductService, adminOnly ...fiber.Handler) {
 	h := &ProductHandler{svc: svc}
 
 	g := api.Group("/products")
 	g.Get("/", h.List)
-	g.Post("/", h.Create)
 	g.Get("/:code", h.Get)
-	g.Put("/:code", h.Update)
-	g.Delete("/:code", h.Delete)
+
+	if len(adminOnly) > 0 && adminOnly[0] != nil {
+		g.Post("/", adminOnly[0], h.Create)
+		g.Put("/:code", adminOnly[0], h.Update)
+		g.Delete("/:code", adminOnly[0], h.Delete)
+	} else {
+		g.Post("/", h.Create)
+		g.Put("/:code", h.Update)
+		g.Delete("/:code", h.Delete)
+	}
 }
 
 // GET /products?q=&category=&sort=&page=1&limit=20

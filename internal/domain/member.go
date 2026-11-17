@@ -60,7 +60,8 @@ type CreateMemberRequest struct {
 }
 
 type LoginRequest struct {
-	Email    string `json:"email"`
+	NIM      string `json:"nim"`
+	Email    string `json:"email,omitempty"`
 	Password string `json:"password"`
 }
 
@@ -76,6 +77,7 @@ type UpdateMemberRequest struct {
 type MemberRepository interface {
 	FindAll(ctx context.Context, filter MemberFilter) ([]Member, int64, error)
 	FindByNIM(ctx context.Context, nim string) (*Member, error)
+	FindByID(ctx context.Context, id primitive.ObjectID) (*Member, error)
 	FindByEmail(ctx context.Context, email string) (*Member, error)
 	Create(ctx context.Context, m *Member) error
 	Update(ctx context.Context, nim string, m *Member) error

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,6 +23,8 @@ type MemberRepo struct {
 	orders     *mongo.Collection
 }
 
+var _ domain.MemberRepository = (*MemberRepo)(nil)
+
 // client dibutuhkan untuk transaksi saat NIM anggota diganti (anggota + pesanannya).
 func NewMemberRepo(client *mongo.Client, db *mongo.Database) *MemberRepo {
 	return &MemberRepo{
@@ -35,7 +38,7 @@ func (r *MemberRepo) FindByNIM(ctx context.Context, nim string) (*domain.Member,
 	var member domain.Member
 
 	err := r.collection.FindOne(ctx, bson.M{
-		"nim": nim,
+		"nim": strings.TrimSpace(nim),
 	}).Decode(&member)
 
 	if errors.Is(err, mongo.ErrNoDocuments) {
@@ -46,6 +49,88 @@ func (r *MemberRepo) FindByNIM(ctx context.Context, nim string) (*domain.Member,
 	}
 
 	return &member, nil
+}
+
+// FindByID mencari anggota berdasarkan ObjectID.
+func (r *MemberRepo) FindByID(ctx context.Context, id primitive.ObjectID) (*domain.Member, error) {
+	var member domain.Member
+
+	err := r.collection.FindOne(ctx, bson.M{
+		"_id": id,
+	}).Decode(&member)
+
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, domain.NewNotFoundError("Anggota tidak ditemukan")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &member, nil
+}
+
+// FindByEmail mencari anggota berdasarkan email.
+func (r *MemberRepo) FindByEmail(ctx context.Context, email string) (*domain.Member, error) {
+	normEmail := strings.ToLower(strings.TrimSpace(email))
+	if normEmail == "" {
+		return nil, domain.NewNotFoundError("Anggota tidak ditemukan")
+	}
+
+	var member domain.Member
+	err := r.collection.FindOne(ctx, bson.M{
+		"email": normEmail,
+	}).Decode(&member)
+
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, domain.NewNotFoundError("Anggota tidak ditemukan")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &member, nil
+}
+
+// BulkUpsert menyisipkan atau memperbarui banyak anggota sekaligus.
+func (r *MemberRepo) BulkUpsert(ctx context.Context, members []domain.Member) (inserted int64, updated int64, err error) {
+	if len(members) == 0 {
+		return 0, 0, nil
+	}
+
+	models := make([]mongo.WriteModel, 0, len(members))
+	for _, m := range members {
+		m.NIM = strings.TrimSpace(m.NIM)
+		filter := bson.M{"nim": m.NIM}
+		set := bson.M{
+			"name":      m.Name,
+			"email":     m.Email,
+			"unit":      m.Unit,
+			"phone":     m.Phone,
+			"is_active": m.IsActive,
+		}
+		if !m.JoinedAt.IsZero() {
+			set["joined_at"] = m.JoinedAt
+		}
+		update := bson.M{
+			"$set": set,
+			"$setOnInsert": bson.M{
+				"created_at": time.Now(),
+			},
+		}
+		model := mongo.NewUpdateOneModel().
+			SetFilter(filter).
+			SetUpdate(update).
+			SetUpsert(true)
+		models = append(models, model)
+	}
+
+	opts := options.BulkWrite().SetOrdered(false)
+	res, err := r.collection.BulkWrite(ctx, models, opts)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return res.UpsertedCount, res.ModifiedCount, nil
 }
 
 // FindAll: pencarian NIM/nama (memuat teks, tanpa membedakan huruf besar/kecil),

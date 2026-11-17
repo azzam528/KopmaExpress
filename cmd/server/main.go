@@ -17,6 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"smartcoop/internal/config"
+	"smartcoop/internal/domain"
 	"smartcoop/internal/etl"
 	"smartcoop/internal/handler"
 	"smartcoop/internal/httpx"
@@ -68,45 +69,55 @@ func main() {
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
 
-	// 5. Static Files & Web Page Routes (PRD Â§6.7)
+	// 5. Static Files & Web Page Routes (PRD §6.7)
 	app.Static("/static", "./web/static")
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/dashboard/index.html")
+	// 5.1 Public Auth Pages
+	app.Get("/login", middleware.WebRequireGuest(cfg.JWTSecret), func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/login/index.html")
 	})
-	app.Get("/dashboard", func(c *fiber.Ctx) error {
-		return c.Redirect("/")
-	})
-	app.Get("/products", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/products/index.html")
-	})
-	app.Get("/members", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/members/index.html")
-	})
-	app.Get("/import", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/import/index.html")
-	})
-	app.Get("/orders", func(c *fiber.Ctx) error {
-		return c.Redirect("/orders/new")
-	})
-	app.Get("/orders/new", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/orders/new.html")
-	})
-	// Portal anggota (belanja online), terpisah dari halaman admin/kasir.
+	// Redirect old passwordless login route to centralized login
 	app.Get("/masuk", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/templates/shop/masuk.html")
+		return c.Redirect("/login")
 	})
-	app.Get("/belanja", func(c *fiber.Ctx) error {
+
+	// 5.2 Member & Shared Shop Pages
+	memberWebAuth := middleware.WebRequireAuth(cfg.JWTSecret, domain.RoleMember, domain.RoleAdmin)
+	app.Get("/belanja", memberWebAuth, func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/shop/belanja.html")
 	})
-	app.Get("/forecast", func(c *fiber.Ctx) error {
+
+	// 5.3 Protected Admin Web Pages (Requires Role: "admin")
+	adminWebAuth := middleware.WebRequireAuth(cfg.JWTSecret, domain.RoleAdmin)
+	app.Get("/", adminWebAuth, func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/dashboard/index.html")
+	})
+	app.Get("/dashboard", adminWebAuth, func(c *fiber.Ctx) error {
+		return c.Redirect("/")
+	})
+	app.Get("/products", adminWebAuth, func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/products/index.html")
+	})
+	app.Get("/members", adminWebAuth, func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/members/index.html")
+	})
+	app.Get("/import", adminWebAuth, func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/import/index.html")
+	})
+	app.Get("/orders", adminWebAuth, func(c *fiber.Ctx) error {
+		return c.Redirect("/orders/new")
+	})
+	app.Get("/orders/new", adminWebAuth, func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/orders/new.html")
+	})
+	app.Get("/forecast", adminWebAuth, func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/forecast/index.html")
 	})
 
 	// 6. Base API Group
 	api := app.Group("/api/v1")
 
-	// Health Check Endpoint
+	// Health Check Endpoint (Public)
 	api.Get("/health", func(c *fiber.Ctx) error {
 		dbStatus := "CONNECTED"
 		if client == nil {
@@ -130,6 +141,7 @@ func main() {
 	// 6. Register API Routes
 	if db != nil {
 		// Repositories
+		userRepo := mongorepo.NewUserRepo(db)
 		orderRepo := mongorepo.NewOrderRepo(client, db)
 		productRepo := mongorepo.NewProductRepo(db)
 		memberRepo := mongorepo.NewMemberRepo(client, db)
@@ -139,6 +151,8 @@ func main() {
 		forecastRepo := mongorepo.NewForecastRepo(db)
 
 		// Services
+		jwtTTL := time.Duration(cfg.JWTTTLHours) * time.Hour
+		authSvc := service.NewAuthService(userRepo, memberRepo, cfg.JWTSecret, jwtTTL)
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		memberSvc := service.NewMemberService(memberRepo)
 		productSvc := service.NewProductService(productRepo)
@@ -146,17 +160,37 @@ func main() {
 		analyticsService := service.NewAnalyticsService(analyticsRepo)
 		forecastService := service.NewForecastService(forecastRepo, cfg.Workers, 10)
 
+		// Seed initial testing accounts (idempotent)
+		seedAdminPass := os.Getenv("SEED_ADMIN_PASSWORD")
+		if seedAdminPass == "" {
+			seedAdminPass = "Admin123!"
+		}
+		seedMemberPass := os.Getenv("SEED_MEMBER_PASSWORD")
+		if seedMemberPass == "" {
+			seedMemberPass = "Member123!"
+		}
+		if seedErr := authSvc.SeedInitialUsers(context.Background(), "000000001", seedAdminPass, "000000002", seedMemberPass); seedErr != nil {
+			log.Printf("[AUTH] Warning: Initial user seeding failed: %v\n", seedErr)
+		} else {
+			log.Println("[AUTH] Initial testing accounts verified/seeded successfully")
+		}
+
+		// API Middlewares
+		authReq := middleware.RequireAuth(cfg.JWTSecret)
+		adminOnly := middleware.RequireRole(domain.RoleAdmin)
+
 		// Handlers & Route Registration
-		handler.RegisterOrderRoutes(api, orderSvc)
-		handler.RegisterMemberRoutes(api, memberSvc)
-		handler.RegisterProductRoutes(api, productSvc)
+		handler.RegisterAuthRoutes(api, authSvc, cfg)
+		handler.RegisterOrderRoutes(api, orderSvc, authReq)
+		handler.RegisterMemberRoutes(api, memberSvc, authReq, adminOnly)
+		handler.RegisterProductRoutes(api, productSvc, adminOnly)
 
 		importHandler := handler.NewImportHandler(etlSvc)
-		importHandler.Register(api)
+		importHandler.Register(api, authReq, adminOnly)
 
-		handler.NewAnalyticsHandler(analyticsService).RegisterRoutes(api)
-		handler.NewForecastHandler(forecastService).RegisterRoutes(api)
-		log.Println("[INIT] Analytics and forecasting routes registered")
+		handler.NewAnalyticsHandler(analyticsService).RegisterRoutes(api, authReq, adminOnly)
+		handler.NewForecastHandler(forecastService).RegisterRoutes(api, authReq, adminOnly)
+		log.Println("[INIT] Auth, Analytics, and operational routes registered")
 	}
 
 	// 7. Start Server in Goroutine
