@@ -16,34 +16,7 @@
 
 body { background: var(--dash-bg); color: var(--dash-ink); }
 .dashboard-layout { min-height: 100vh; }
-.dashboard-sidebar {
-  position: fixed; inset: 0 auto 0 0; z-index: 50; width: 252px;
-  display: flex; flex-direction: column; gap: 30px;
-  padding: 25px 17px; background: #105b56; color: #f5fffd;
-}
-.dashboard-brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; padding: 2px 7px; }
-.dashboard-brand-icon {
-  display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px;
-  background: #d4eee8; color: #124e49; font-size: 23px;
-}
-.dashboard-brand strong { display: block; font: 700 16px/1.2 "Plus Jakarta Sans", sans-serif; letter-spacing: -.3px; }
-.dashboard-brand small { display: block; margin-top: 5px; color: #bbd9d3; font: 600 9px/1 Inter, sans-serif; letter-spacing: 1.2px; }
-.dashboard-nav { display: grid; gap: 5px; }
-.dashboard-nav a {
-  display: flex; align-items: center; gap: 12px; min-height: 43px; padding: 9px 12px;
-  border-radius: 10px; color: #d5e7e3; text-decoration: none; font: 500 13px Inter, sans-serif;
-  transition: background .15s ease, color .15s ease;
-}
-.dashboard-nav a .material-symbols-outlined { font-size: 19px; }
-.dashboard-nav a:hover { background: rgba(255,255,255,.1); color: #fff; }
-.dashboard-nav a[aria-current="page"] { background: #f2f7f5; color: #0f625a; font-weight: 700; }
-.dashboard-sidebar-footer {
-  margin-top: auto; display: flex; align-items: center; gap: 9px; padding: 13px 10px;
-  border-top: 1px solid rgba(255,255,255,.16); color: #c4ddd7; font-size: 11px;
-}
-.dashboard-sidebar-footer .material-symbols-outlined { font-size: 18px; }
-
-.dashboard-main { min-height: 100vh; margin-left: 252px; }
+.dashboard-main { min-height: 100vh; margin-left: 18rem; }
 .dashboard-topbar {
   position: sticky; top: 0; z-index: 30; display: flex; justify-content: space-between; align-items: center;
   min-height: 72px; padding: 13px 30px; background: rgba(255,255,255,.94);
@@ -153,21 +126,13 @@ body { background: var(--dash-bg); color: var(--dash-ink); }
 .dashboard-error-banner[hidden] { display: none; }
 
 @media (max-width: 1250px) {
-  .dashboard-sidebar { width: 220px; }
-  .dashboard-main { margin-left: 220px; }
   .dashboard-content { padding-left: 22px; padding-right: 22px; }
   .dashboard-topbar { padding-left: 22px; padding-right: 22px; }
   .dashboard-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .dashboard-kpi-currency { font-size: 19px; }
 }
 @media (max-width: 900px) {
-  .dashboard-sidebar { position: static; width: auto; min-height: auto; padding: 13px 16px; gap: 12px; }
-  .dashboard-brand { padding: 0; }
-  .dashboard-nav { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 2px; }
-  .dashboard-nav a { flex: 0 0 auto; min-height: 37px; padding: 8px 10px; font-size: 11px; }
-  .dashboard-sidebar-footer { display: none; }
-  .dashboard-main { margin-left: 0; }
-  .dashboard-topbar { position: static; min-height: 64px; }
+  .dashboard-topbar { min-height: 64px; }
   .dashboard-section-grid, .dashboard-lower-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 600px) {
