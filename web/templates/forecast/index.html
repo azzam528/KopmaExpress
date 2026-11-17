@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
-<html lang="id"><head>
+<html lang="id">
+
+<head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Smart Demand Forecasting — KOPMA Express</title>
@@ -8,8 +10,12 @@
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
 
   <!-- Global & Page CSS -->
   <link rel="stylesheet" href="/static/css/style.css" />
@@ -25,591 +31,254 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/static/js/components/api.js"></script>
   <script src="/static/js/main.js"></script>
-</head><body class="bg-canvas-bg font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-sm pt-space-xs"><div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div><div class="flex flex-col"><span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data Analytics</span></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-barang" href="/products"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Master Barang</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-anggota" href="/members"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master Anggota</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="import-excel-etl" href="/import"><span class="material-symbols-outlined text-[20px]">upload_file</span><span class="font-label-lg text-label-lg">Import Excel ETL</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="form-pesanan" href="/orders"><span class="material-symbols-outlined text-[20px]">shopping_cart</span><span class="font-label-lg text-label-lg">Form Pesanan</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl" data-path="forecast-restock" href="/forecast"><span class="material-symbols-outlined text-[20px]">insights</span><span class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav></div><div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm"><div class="flex items-center justify-between"><span class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI Engine</span><span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span></div><div class="flex flex-col"><span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span><p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi suplai.</p></div><a class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center" data-path="forecast-restock" href="/forecast"><span>Lihat Analitik</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div></aside><div class="pl-72 flex flex-col min-h-screen bg-canvas-bg"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-xl"><div class="relative flex items-center w-full"><span class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span><input class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200" placeholder="Cari kode barang, anggota, transaksi..." type="search"/></div></div><div class="flex items-center gap-space-md"><button aria-label="Notifikasi" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><div class="h-8 w-px bg-surface-container"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col text-left"><span class="font-title-md text-title-md text-on-surface leading-tight">Nur Sabrina Hanifa</span><span class="font-label-sm text-label-sm text-outline">Administrator</span></div></div></div></header><main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg"><div class="flex flex-col w-full gap-space-lg">
-<!-- Top Command & Action Bar -->
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pt-2">
-<div>
-<div class="flex items-center gap-2">
-<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-primary font-label-sm text-label-sm uppercase tracking-wider">AI Predictive Suite</span>
-<span class="inline-block w-1.5 h-1.5 rounded-full bg-status-success-text animate-pulse"></span>
-<span class="font-label-sm text-label-sm text-outline">Engine v2.4 Live</span>
-</div>
-<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Prediksi Permintaan &amp; Analitik Restock</h1>
-<p class="font-body-md text-body-md text-on-surface-variant">Model prediktif WMA (Weighted Moving Average) &amp; Regresi Linear OLS terintegrasi inventaris riil.</p>
-</div>
-<!-- Actions & Timestamp Pill -->
-<div class="flex flex-wrap items-center gap-space-sm self-start lg:self-center">
-<div class="flex items-center gap-2 px-space-md py-2 rounded-xl bg-surface-container-low text-on-surface shadow-sm">
-<span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
-<div class="flex flex-col">
-<span class="font-label-sm text-label-sm text-outline leading-tight">Sinkronisasi Terakhir</span>
-<span class="font-title-md text-title-md text-on-surface leading-none mt-0.5">Hari ini, 10:45 WIB</span>
-</div>
-</div>
-<button class="group relative flex items-center gap-2 bg-primary text-on-primary px-space-md py-2.5 rounded-xl font-label-lg text-label-lg shadow-sm hover:bg-primary-container active:scale-[0.98] transition-all duration-200" id="btnRecalculate" type="button">
-<span class="material-symbols-outlined text-[19px] transition-transform duration-700" id="spinIcon">sync</span>
-<span>Hitung Ulang Forecast</span>
-</button>
-<button class="flex items-center gap-2 bg-secondary-container text-sidebar-dark font-label-lg text-label-lg px-space-md py-2.5 rounded-xl shadow-sm hover:bg-secondary-fixed active:scale-[0.98] transition-all duration-200" type="button">
-<span class="material-symbols-outlined text-[19px]">download</span>
-<span>Ekspor PO (.xlsx)</span>
-</button>
-</div>
-</div>
-<!-- Status Filter Pill Cards (4 Interactive Summaries) -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
-<!-- Critical -->
-<div class="status-card cursor-pointer group bg-card-bg rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between border-l-4 border-l-error" onclick="filterStatus('CRITICAL')">
-<div class="flex items-start justify-between">
-<div class="w-10 h-10 rounded-xl bg-status-critical-bg flex items-center justify-center text-status-critical-text">
-<span class="material-symbols-outlined text-[22px]">warning</span>
-</div>
-<span class="px-2 py-0.5 rounded-full bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm">Urgent Restock</span>
-</div>
-<div class="mt-4">
-<div class="flex items-baseline gap-2">
-<span class="font-metric-display text-metric-display text-on-surface">6</span>
-<span class="font-body-sm text-body-sm text-outline">SKU Barang</span>
-</div>
-<span class="font-title-md text-title-md text-status-critical-text block">CRITICAL STATUS</span>
-<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Stok &lt; 3 hari konsumsi riil. Rekomendasi restock segera.</p>
-</div>
-</div>
-<!-- Overstock Warning -->
-<div class="status-card cursor-pointer group bg-card-bg rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between border-l-4 border-l-secondary-container" onclick="filterStatus('OVERSTOCK')">
-<div class="flex items-start justify-between">
-<div class="w-10 h-10 rounded-xl bg-status-warning-bg flex items-center justify-center text-status-warning-text">
-<span class="material-symbols-outlined text-[22px]">inventory</span>
-</div>
-<span class="px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm">Risk: Idle Modal</span>
-</div>
-<div class="mt-4">
-<div class="flex items-baseline gap-2">
-<span class="font-metric-display text-metric-display text-on-surface">4</span>
-<span class="font-body-sm text-body-sm text-outline">SKU Barang</span>
-</div>
-<span class="font-title-md text-title-md text-status-warning-text block">OVERSTOCK WARNING</span>
-<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Turnover melambat, potensi dead stock &amp; penyusutan.</p>
-</div>
-</div>
-<!-- Safe -->
-<div class="status-card cursor-pointer group bg-card-bg rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between border-l-4 border-l-primary" onclick="filterStatus('SAFE')">
-<div class="flex items-start justify-between">
-<div class="w-10 h-10 rounded-xl bg-status-success-bg flex items-center justify-center text-status-success-text">
-<span class="material-symbols-outlined text-[22px]">verified</span>
-</div>
-<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm">Sehat</span>
-</div>
-<div class="mt-4">
-<div class="flex items-baseline gap-2">
-<span class="font-metric-display text-metric-display text-on-surface">280</span>
-<span class="font-body-sm text-body-sm text-outline">SKU Barang</span>
-</div>
-<span class="font-title-md text-title-md text-status-success-text block">SAFE LEVEL</span>
-<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Buffer stock terjaga dalam rentang aman 25-45 hari.</p>
-</div>
-</div>
-<!-- Insufficient Data -->
-<div class="status-card cursor-pointer group bg-card-bg rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between border-l-4 border-l-outline-variant" onclick="filterStatus('ALL')">
-<div class="flex items-start justify-between">
-<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-outline">
-<span class="material-symbols-outlined text-[22px]">hourglass_empty</span>
-</div>
-<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Baru / Rendah</span>
-</div>
-<div class="mt-4">
-<div class="flex items-baseline gap-2">
-<span class="font-metric-display text-metric-display text-on-surface">10</span>
-<span class="font-body-sm text-body-sm text-outline">SKU Barang</span>
-</div>
-<span class="font-title-md text-title-md text-on-surface-variant block">INSUFFICIENT DATA</span>
-<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Riwayat &lt; 2 periode. Gunakan estimasi manual kualitatif.</p>
-</div>
-</div>
-</div>
-<!-- Main Forecast & Trend Analysis Bento Grid -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
-<!-- Left Visualization Card (7 Cols) -->
-<div class="lg:col-span-8 bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-sm">
-<div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-[20px]">auto_graph</span>
-<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Analisis Deep Dive Produk</span>
-</div>
-<div class="flex items-center gap-3 mt-1">
-<h2 class="font-headline-md text-headline-md text-on-surface">Buku Tulis KIKY 38 Lembar</h2>
-<span class="px-2.5 py-0.5 rounded-md bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm">High Velocity SKU</span>
-</div>
-</div>
-<!-- Product Switcher Dropdown -->
-<div class="relative min-w-[200px]">
-<select class="w-full bg-surface-container-low text-on-surface font-title-md text-title-md rounded-xl py-2 px-space-md pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
-<option selected="">Buku Tulis KIKY 38 Lembar (B-0104)</option>
-<option>Pena Pilot G2 0.5 Black (P-0012)</option>
-<option>Kertas HVS A4 Sinar Dunia 75gr (K-0322)</option>
-<option>Map Snellhecter Plastik Biru (M-0087)</option>
-</select>
-<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-outline pointer-events-none text-[18px]">expand_more</span>
-</div>
-</div>
-<!-- Legend & Stats Row -->
-<div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2 pt-2 bg-surface-container-low/60 rounded-xl px-space-md py-2">
-<div class="flex items-center gap-2">
-<span class="w-3 h-3 rounded-full bg-chart-bar-default"></span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Demand Riil Bulanan (Unit)</span>
-</div>
-<div class="flex items-center gap-2">
-<span class="w-3.5 h-1 rounded-full bg-primary"></span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Garis Tren OLS (Slope Positif)</span>
-</div>
-<div class="flex items-center gap-2">
-<span class="w-3 h-3 rounded-full bg-secondary-container ring-2 ring-secondary-fixed"></span>
-<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Prediksi Bln Depan (WMA)</span>
-</div>
-</div>
-</div>
-<!-- Chart Display with High Polish Floating Tooltip like inspiration -->
-<div class="relative w-full mt-6 pt-4">
-<!-- Floating Insight Tooltip -->
-<div class="absolute top-2 right-12 sm:right-24 z-20 bg-surface-container-lowest text-on-surface rounded-2xl p-space-sm shadow-xl flex items-center gap-3">
-<div class="w-8 h-8 rounded-xl bg-secondary-container flex items-center justify-center text-sidebar-dark">
-<span class="material-symbols-outlined text-[18px]">bolt</span>
-</div>
-<div class="flex flex-col pr-1">
-<span class="font-label-sm text-label-sm text-outline">Target Suplai November</span>
-<span class="font-title-lg text-title-lg text-primary font-bold">158 Unit <span class="font-label-sm text-status-success-text text-label-sm font-semibold">(+27.4%)</span></span>
-</div>
-</div>
-<!-- SVG Composite Chart -->
-<div class="w-full overflow-x-auto pb-2">
-<svg class="w-full h-56 min-w-[580px] overflow-visible" viewbox="0 0 740 240">
-<defs>
-<lineargradient id="barTealGradient" x1="0%" x2="0%" y1="0%" y2="100%">
-<stop offset="0%" stop-color="#9cf2e8"></stop>
-<stop offset="100%" stop-color="#cffafe"></stop>
-</lineargradient>
-<lineargradient id="barHighlightGradient" x1="0%" x2="0%" y1="0%" y2="100%">
-<stop offset="0%" stop-color="#ffc329"></stop>
-<stop offset="100%" stop-color="#fde047"></stop>
-</lineargradient>
-<lineargradient id="trendGradient" x1="0%" x2="100%" y1="0%" y2="0%">
-<stop offset="0%" stop-color="#005c55" stop-opacity="0.3"></stop>
-<stop offset="100%" stop-color="#005c55" stop-opacity="1"></stop>
-</lineargradient>
-</defs>
-<!-- Gridlines -->
-<line stroke="#eff4ff" stroke-dasharray="4 4" stroke-width="1.5" x1="50" x2="710" y1="40" y2="40"></line>
-<text fill="#6e7977" font-family="Inter" font-size="11" text-anchor="end" x="40" y="44">180</text>
-<line stroke="#eff4ff" stroke-dasharray="4 4" stroke-width="1.5" x1="50" x2="710" y1="90" y2="90"></line>
-<text fill="#6e7977" font-family="Inter" font-size="11" text-anchor="end" x="40" y="94">120</text>
-<line stroke="#eff4ff" stroke-dasharray="4 4" stroke-width="1.5" x1="50" x2="710" y1="140" y2="140"></line>
-<text fill="#6e7977" font-family="Inter" font-size="11" text-anchor="end" x="40" y="144">60</text>
-<line stroke="#dce9ff" stroke-width="1.5" x1="50" x2="710" y1="190" y2="190"></line>
-<text fill="#6e7977" font-family="Inter" font-size="11" text-anchor="end" x="40" y="194">0</text>
-<!-- Demand Bars (Actual Demand per month) -->
-<!-- Mei (72) -->
-<rect class="transition-all hover:opacity-80" fill="url(#barTealGradient)" height="60" rx="6" width="34" x="75" y="130"></rect>
-<text fill="#005c55" font-family="Plus Jakarta Sans" font-size="11" font-weight="600" text-anchor="middle" x="92" y="122">72</text>
-<text fill="#6e7977" font-family="Inter" font-size="12" text-anchor="middle" x="92" y="210">Mei</text>
-<!-- Jun (88) -->
-<rect class="transition-all hover:opacity-80" fill="url(#barTealGradient)" height="73" rx="6" width="34" x="155" y="117"></rect>
-<text fill="#005c55" font-family="Plus Jakarta Sans" font-size="11" font-weight="600" text-anchor="middle" x="172" y="109">88</text>
-<text fill="#6e7977" font-family="Inter" font-size="12" text-anchor="middle" x="172" y="210">Jun</text>
-<!-- Jul (104) -->
-<rect class="transition-all hover:opacity-80" fill="url(#barTealGradient)" height="87" rx="6" width="34" x="235" y="103"></rect>
-<text fill="#005c55" font-family="Plus Jakarta Sans" font-size="11" font-weight="600" text-anchor="middle" x="252" y="95">104</text>
-<text fill="#6e7977" font-family="Inter" font-size="12" text-anchor="middle" x="252" y="210">Jul</text>
-<!-- Agu (112) -->
-<rect class="transition-all hover:opacity-80" fill="url(#barTealGradient)" height="93" rx="6" width="34" x="315" y="97"></rect>
-<text fill="#005c55" font-family="Plus Jakarta Sans" font-size="11" font-weight="600" text-anchor="middle" x="332" y="89">112</text>
-<text fill="#6e7977" font-family="Inter" font-size="12" text-anchor="middle" x="332" y="210">Agu</text>
-<!-- Sep (130) -->
-<rect class="transition-all hover:opacity-80" fill="url(#barTealGradient)" height="108" rx="6" width="34" x="395" y="82"></rect>
-<text fill="#005c55" font-family="Plus Jakarta Sans" font-size="11" font-weight="600" text-anchor="middle" x="412" y="74">130</text>
-<text fill="#6e7977" font-family="Inter" font-size="12" text-anchor="middle" x="412" y="210">Sep</text>
-<!-- Okt (145) -->
-<rect class="transition-all hover:opacity-80" fill="url(#barTealGradient)" height="121" rx="6" width="34" x="475" y="69"></rect>
-<text fill="#005c55" font-family="Plus Jakarta Sans" font-size="11" font-weight="600" text-anchor="middle" x="492" y="61">145</text>
-<text fill="#6e7977" font-family="Inter" font-size="12" text-anchor="middle" x="492" y="210">Okt</text>
-<!-- Forecast Point: Nov (158 - WMA/OLS Hybrid) Highlighted -->
-<rect class="filter drop-shadow-md" fill="url(#barHighlightGradient)" height="132" rx="8" width="40" x="565" y="58"></rect>
-<text fill="#795900" font-family="Plus Jakarta Sans" font-size="12" font-weight="700" text-anchor="middle" x="585" y="48">158*</text>
-<text fill="#005c55" font-family="Inter" font-size="12" font-weight="600" text-anchor="middle" x="585" y="210">Nov (Est)</text>
-<!-- Trend Line (OLS Regression) -->
-<path d="M 92 135 L 172 120 L 252 105 L 332 92 L 412 78 L 492 65 L 585 55" fill="none" stroke="url(#trendGradient)" stroke-linecap="round" stroke-width="3"></path>
-<!-- Point markers on regression line -->
-<circle cx="92" cy="135" fill="#ffffff" r="3.5" stroke="#005c55" stroke-width="2"></circle>
-<circle cx="172" cy="120" fill="#ffffff" r="3.5" stroke="#005c55" stroke-width="2"></circle>
-<circle cx="252" cy="105" fill="#ffffff" r="3.5" stroke="#005c55" stroke-width="2"></circle>
-<circle cx="332" cy="92" fill="#ffffff" r="3.5" stroke="#005c55" stroke-width="2"></circle>
-<circle cx="412" cy="78" fill="#ffffff" r="3.5" stroke="#005c55" stroke-width="2"></circle>
-<circle cx="492" cy="65" fill="#ffffff" r="3.5" stroke="#005c55" stroke-width="2"></circle>
-<circle cx="585" cy="55" fill="#ffc329" r="5" stroke="#005c55" stroke-width="2.5"></circle>
-</svg>
-</div>
-</div>
-<div class="flex items-center justify-between pt-3 border-t-0 bg-surface-bright rounded-xl p-space-sm">
-<span class="font-body-sm text-body-sm text-outline flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[16px] text-primary">info</span>
-          Model OLS R² = 0.948 (Tingkat kepercayaan sangat tinggi)
-        </span>
-<button class="font-label-sm text-label-sm text-primary hover:underline flex items-center gap-1">
-          Formula Parameter WMA (W1: 0.5, W2: 0.3, W3: 0.2)
-          <span class="material-symbols-outlined text-[14px]">tune</span>
-</button>
-</div>
-</div>
-<!-- Right Metric Breakdown & Action Promo Card (4 Cols) -->
-<div class="lg:col-span-4 flex flex-col gap-space-md">
-<!-- 4 Parameter Sub-Cards -->
-<div class="grid grid-cols-2 gap-space-sm">
-<!-- WMA 3-Bulan -->
-<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-<div class="flex items-center justify-between">
-<span class="font-label-sm text-label-sm text-outline uppercase">WMA 3-Bulan</span>
-<span class="material-symbols-outlined text-primary text-[18px]">functions</span>
-</div>
-<div class="mt-2">
-<span class="font-metric-display text-metric-display text-on-surface">124</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant block">unit rataan terbobot</span>
-</div>
-</div>
-<!-- Koefisien Slope (m) -->
-<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-<div class="flex items-center justify-between">
-<span class="font-label-sm text-label-sm text-outline uppercase">Slope OLS (m)</span>
-<span class="material-symbols-outlined text-status-success-text text-[18px]">trending_up</span>
-</div>
-<div class="mt-2">
-<span class="font-metric-display text-metric-display text-status-success-text">+14.2</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant block">unit / bulan</span>
-</div>
-</div>
-<!-- Prediksi Bulan Depan -->
-<div class="bg-card-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-<div class="flex items-center justify-between">
-<span class="font-label-sm text-label-sm text-outline uppercase">Prediksi Nov</span>
-<span class="material-symbols-outlined text-primary text-[18px]">query_stats</span>
-</div>
-<div class="mt-2">
-<span class="font-metric-display text-metric-display text-primary">158</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant block">unit kebutuhan pasar</span>
-</div>
-</div>
-<!-- Rekomendasi Restock -->
-<div class="bg-status-critical-bg p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-<div class="flex items-center justify-between">
-<span class="font-label-sm text-label-sm text-status-critical-text uppercase font-bold">Rekomendasi</span>
-<span class="material-symbols-outlined text-status-critical-text text-[18px]">add_shopping_cart</span>
-</div>
-<div class="mt-2">
-<span class="font-metric-display text-metric-display text-status-critical-text">+120</span>
-<span class="font-body-sm text-body-sm text-status-critical-text/80 block">unit perlu dipesan</span>
-</div>
-</div>
-</div>
-<!-- Action & Procurement Banner (Inspired by side panel in reference) -->
-<div class="bg-gradient-to-br from-surface-container-high to-surface-container rounded-2xl p-space-md shadow-sm relative overflow-hidden flex-1 flex flex-col justify-between">
-<div class="relative z-10">
-<div class="flex items-center justify-between">
-<span class="px-2 py-0.5 rounded-md bg-secondary-container text-sidebar-dark font-label-sm text-label-sm font-bold">Quick PO Generator</span>
-<span class="material-symbols-outlined text-primary text-[22px]">assignment_turned_in</span>
-</div>
-<h3 class="font-title-lg text-title-lg text-on-surface mt-2">Buat Draft Purchase Order</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
-            6 item berkategori <strong>CRITICAL</strong> membutuhkan pengadaan senilai estimasi <strong>Rp 4.850.000</strong> ke Supplier Mitra KOPMA.
-          </p>
-</div>
-<div class="pt-4 relative z-10 flex flex-col gap-2">
-<button class="w-full bg-secondary-container hover:bg-secondary-fixed text-sidebar-dark font-label-lg text-label-lg py-2.5 rounded-xl shadow-sm font-semibold transition-colors flex items-center justify-center gap-2" type="button">
-<span class="material-symbols-outlined text-[18px]">post_add</span>
-<span>Terbitkan PO Massal</span>
-</button>
-<span class="font-label-sm text-label-sm text-outline text-center">Tersinkronisasi otomatis ke Modul Form Pesanan</span>
-</div>
-<!-- Ambient decorative shapes -->
-<div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-primary/10 pointer-events-none"></div>
-</div>
-</div>
-</div>
-<!-- Forecast Results Data Table Section -->
-<div class="bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
-<!-- Table Header Controls -->
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div class="flex items-center gap-space-sm">
-<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-[22px]">table_chart</span>
-</div>
-<div>
-<h2 class="font-title-lg text-title-lg text-on-surface">Matriks Data Forecast &amp; Restock Barang</h2>
-<span class="font-body-sm text-body-sm text-outline">Menampilkan komputasi gabungan stok fisik, run-rate, dan rekomendasi batching.</span>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-space-sm">
-<!-- Search filter within table -->
-<div class="relative min-w-[220px]">
-<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[18px] pointer-events-none">search</span>
-<input class="w-full pl-9 pr-space-md py-1.5 bg-surface-bright rounded-xl text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all" id="tableSearch" placeholder="Cari nama / kode SKU..." type="search"/>
-</div>
-<!-- Filter Category -->
-<select class="bg-surface-bright text-on-surface font-label-md text-label-md rounded-xl py-2 px-space-md focus:outline-none cursor-pointer">
-<option value="ALL">Semua Kategori</option>
-<option value="ATK">Alat Tulis Kantor (ATK)</option>
-<option value="MAKANAN">Makanan &amp; Minuman</option>
-<option value="MERCHANDISE">Merchandise Kampus</option>
-<option value="CETAK">Jasa &amp; Bahan Cetak</option>
-</select>
-</div>
-</div>
-<!-- Data Table Container -->
-<div class="overflow-x-auto rounded-xl">
-<table class="w-full text-left border-collapse" id="forecastTable">
-<thead>
-<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
-<th class="py-3 px-space-md rounded-l-xl">Kode Barang</th>
-<th class="py-3 px-space-md">Nama Produk</th>
-<th class="py-3 px-space-md">Kategori</th>
-<th class="py-3 px-space-md text-right">Stok Fisik</th>
-<th class="py-3 px-space-md text-right">Rata-rata Penjualan</th>
-<th class="py-3 px-space-md text-right">Prediksi Bln Depan</th>
-<th class="py-3 px-space-md text-right">Rekomendasi Restock</th>
-<th class="py-3 px-space-md text-center">Status</th>
-<th class="py-3 px-space-md text-center rounded-r-xl">Aksi</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-surface-container text-on-surface font-body-md text-body-md">
-<!-- Row 1: CRITICAL (KIKY 38) -->
-<tr class="hover:bg-surface-bright transition-colors" data-status="CRITICAL">
-<td class="py-3.5 px-space-md font-mono text-label-md text-primary font-semibold">B-0104</td>
-<td class="py-3.5 px-space-md">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-on-surface">Buku Tulis KIKY 38 Lembar</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Pak (10 pcs) • Rp 38.500</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">ATK Sekolah</span>
-</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-status-critical-text">38 unit</td>
-<td class="py-3.5 px-space-md text-right text-on-surface-variant">124 unit/bln</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-primary">158 unit</td>
-<td class="py-3.5 px-space-md text-right">
-<span class="px-2.5 py-1 rounded-lg bg-status-critical-bg text-status-critical-text font-title-md text-title-md">+120 unit</span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-critical-text"></span>
-                CRITICAL
-              </span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<div class="flex items-center justify-center gap-1">
-<button class="p-1.5 rounded-lg text-primary hover:bg-surface-container transition-colors" title="Lihat Trend">
-<span class="material-symbols-outlined text-[18px]">show_chart</span>
-</button>
-<button class="p-1.5 rounded-lg text-sidebar-dark bg-secondary-container hover:bg-secondary-fixed transition-colors font-medium" title="Buat Draft PO">
-<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 2: CRITICAL (Kertas HVS A4) -->
-<tr class="hover:bg-surface-bright transition-colors" data-status="CRITICAL">
-<td class="py-3.5 px-space-md font-mono text-label-md text-primary font-semibold">K-0322</td>
-<td class="py-3.5 px-space-md">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-on-surface">Kertas HVS A4 Sinar Dunia 75gr</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Rim (500 lbr) • Rp 46.000</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">ATK Kertas</span>
-</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-status-critical-text">14 rim</td>
-<td class="py-3.5 px-space-md text-right text-on-surface-variant">98 rim/bln</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-primary">115 rim</td>
-<td class="py-3.5 px-space-md text-right">
-<span class="px-2.5 py-1 rounded-lg bg-status-critical-bg text-status-critical-text font-title-md text-title-md">+105 rim</span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-critical-bg text-status-critical-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-critical-text"></span>
-                CRITICAL
-              </span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<div class="flex items-center justify-center gap-1">
-<button class="p-1.5 rounded-lg text-primary hover:bg-surface-container transition-colors" title="Lihat Trend">
-<span class="material-symbols-outlined text-[18px]">show_chart</span>
-</button>
-<button class="p-1.5 rounded-lg text-sidebar-dark bg-secondary-container hover:bg-secondary-fixed transition-colors font-medium" title="Buat Draft PO">
-<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 3: OVERSTOCK_WARNING (Map Snellhecter) -->
-<tr class="hover:bg-surface-bright transition-colors" data-status="OVERSTOCK">
-<td class="py-3.5 px-space-md font-mono text-label-md text-primary font-semibold">M-0087</td>
-<td class="py-3.5 px-space-md">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-on-surface">Map Snellhecter Plastik Biru</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Lusin • Rp 22.000</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Filing &amp; Map</span>
-</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-status-warning-text">240 lsn</td>
-<td class="py-3.5 px-space-md text-right text-on-surface-variant">18 lsn/bln</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-primary">15 lsn</td>
-<td class="py-3.5 px-space-md text-right">
-<span class="px-2.5 py-1 rounded-lg bg-status-warning-bg text-status-warning-text font-title-md text-title-md">0 (Tahan PO)</span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-warning-text"></span>
-                OVERSTOCK
-              </span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<div class="flex items-center justify-center gap-1">
-<button class="p-1.5 rounded-lg text-primary hover:bg-surface-container transition-colors" title="Lihat Trend">
-<span class="material-symbols-outlined text-[18px]">show_chart</span>
-</button>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" title="Promo Diskon">
-<span class="material-symbols-outlined text-[18px]">sell</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 4: SAFE (Pena Pilot G2) -->
-<tr class="hover:bg-surface-bright transition-colors" data-status="SAFE">
-<td class="py-3.5 px-space-md font-mono text-label-md text-primary font-semibold">P-0012</td>
-<td class="py-3.5 px-space-md">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-on-surface">Pena Pilot G2 0.5 Black</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Lusin • Rp 175.000</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">ATK Pena</span>
-</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-status-success-text">85 lsn</td>
-<td class="py-3.5 px-space-md text-right text-on-surface-variant">52 lsn/bln</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-primary">55 lsn</td>
-<td class="py-3.5 px-space-md text-right">
-<span class="px-2.5 py-1 rounded-lg bg-status-success-bg text-status-success-text font-title-md text-title-md">+20 lsn (Buffer)</span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                SAFE
-              </span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<div class="flex items-center justify-center gap-1">
-<button class="p-1.5 rounded-lg text-primary hover:bg-surface-container transition-colors" title="Lihat Trend">
-<span class="material-symbols-outlined text-[18px]">show_chart</span>
-</button>
-<button class="p-1.5 rounded-lg text-outline hover:bg-surface-container transition-colors" title="Reorder Terjadwal">
-<span class="material-symbols-outlined text-[18px]">more_horiz</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 5: SAFE (Air Mineral KOPMA 330ml) -->
-<tr class="hover:bg-surface-bright transition-colors" data-status="SAFE">
-<td class="py-3.5 px-space-md font-mono text-label-md text-primary font-semibold">F-0450</td>
-<td class="py-3.5 px-space-md">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-on-surface">Air Mineral KOPMA 330ml (Dus)</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Dus (24 btl) • Rp 34.000</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Minuman</span>
-</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-status-success-text">110 dus</td>
-<td class="py-3.5 px-space-md text-right text-on-surface-variant">90 dus/bln</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-primary">95 dus</td>
-<td class="py-3.5 px-space-md text-right">
-<span class="px-2.5 py-1 rounded-lg bg-status-success-bg text-status-success-text font-title-md text-title-md">+40 dus</span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-                SAFE
-              </span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<div class="flex items-center justify-center gap-1">
-<button class="p-1.5 rounded-lg text-primary hover:bg-surface-container transition-colors" title="Lihat Trend">
-<span class="material-symbols-outlined text-[18px]">show_chart</span>
-</button>
-<button class="p-1.5 rounded-lg text-outline hover:bg-surface-container transition-colors" title="Reorder Terjadwal">
-<span class="material-symbols-outlined text-[18px]">more_horiz</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 6: INSUFFICIENT_DATA (Kaos Polo Dies Natalis 2024) -->
-<tr class="hover:bg-surface-bright transition-colors" data-status="INSUFFICIENT">
-<td class="py-3.5 px-space-md font-mono text-label-md text-primary font-semibold">M-0901</td>
-<td class="py-3.5 px-space-md">
-<div class="flex flex-col">
-<span class="font-title-md text-title-md text-on-surface">Kaos Polo Dies Natalis Ke-48 (L)</span>
-<span class="font-body-sm text-body-sm text-outline">Satuan: Pcs • Rp 95.000</span>
-</div>
-</td>
-<td class="py-3.5 px-space-md">
-<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Merchandise</span>
-</td>
-<td class="py-3.5 px-space-md text-right font-semibold text-on-surface">45 pcs</td>
-<td class="py-3.5 px-space-md text-right text-outline">-</td>
-<td class="py-3.5 px-space-md text-right text-outline">Data &lt; 2 bln</td>
-<td class="py-3.5 px-space-md text-right">
-<span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-title-md text-title-md">Review Manual</span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-semibold">
-<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
-                NEED DATA
-              </span>
-</td>
-<td class="py-3.5 px-space-md text-center">
-<div class="flex items-center justify-center gap-1">
-<button class="p-1.5 rounded-lg text-outline hover:bg-surface-container transition-colors" title="Input Data Riwayat">
-<span class="material-symbols-outlined text-[18px]">addchart</span>
-</button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Table Pagination Footer -->
-<div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-xs text-on-surface-variant">
-<span class="font-body-sm text-body-sm text-outline">Menampilkan 1-6 dari 300 data barang terdaftar</span>
-<div class="flex items-center gap-1">
-<button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:bg-surface-container transition-colors disabled:opacity-40" disabled="">
-<span class="material-symbols-outlined text-[18px]">chevron_left</span>
-</button>
-<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-on-primary font-title-md text-title-md">1</button>
-<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors font-title-md text-title-md">2</button>
-<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors font-title-md text-title-md">3</button>
-<span class="px-1 text-outline">...</span>
-<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors font-title-md text-title-md">50</button>
-<button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:bg-surface-container transition-colors">
-<span class="material-symbols-outlined text-[18px]">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Interactive JavaScript logic for Recalculate & Filter Badges -->
+</head>
 
-</div></main></div>
+<body class="bg-canvas-bg font-body-md text-on-surface antialiased">
+  <aside
+    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="flex flex-col gap-space-lg">
+      <div class="flex items-center gap-space-sm px-space-sm pt-space-xs">
+        <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span
+            class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div>
+        <div class="flex flex-col"><span
+            class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span
+            class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
+            Analytics</span></div>
+      </div>
+      <nav class="flex flex-col gap-1"
+        data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span
+            class="font-label-lg text-label-lg">Dashboard</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-barang" href="/products"><span
+            class="material-symbols-outlined text-[20px]">inventory_2</span><span
+            class="font-label-lg text-label-lg">Master Barang</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-anggota" href="/members"><span
+            class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master
+            Anggota</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="import-excel-etl" href="/import"><span
+            class="material-symbols-outlined text-[20px]">upload_file</span><span
+            class="font-label-lg text-label-lg">Import Excel ETL</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="form-pesanan" href="/orders"><span
+            class="material-symbols-outlined text-[20px]">shopping_cart</span><span
+            class="font-label-lg text-label-lg">Form Pesanan</span></a><a aria-current="page"
+          class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"
+          data-path="forecast-restock" href="/forecast"><span
+            class="material-symbols-outlined text-[20px]">insights</span><span
+            class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav>
+    </div>
+  </aside>
+  <div class="pl-72 flex flex-col min-h-screen bg-canvas-bg">
+    <header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md">
+      <div class="flex items-center gap-2 text-on-surface-variant">
+        <span class="material-symbols-outlined text-primary">insights</span>
+        <span class="font-title-md text-title-md">Forecast &amp; Restock</span>
+      </div>
+      <div class="inline-flex items-center gap-2 rounded-full bg-status-critical-bg px-3 py-1.5 text-status-critical-text font-label-md text-label-md">
+        <span class="w-2 h-2 rounded-full bg-status-critical-text"></span>
+        <span>Critical</span>
+        <strong id="forecastCriticalNavBadge">—</strong>
+      </div>
+    </header>
+    <main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg">
+      <div class="flex flex-col w-full gap-space-lg">
+        <!-- Page header: PRD requires recalculation, target month and last calculated time. -->
+        <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md pt-2">
+          <div class="max-w-2xl">
+            <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Forecast &amp; Restock</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Prediksi kebutuhan stok bulan depan menggunakan WMA dan regresi linear, disertai rekomendasi restock.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-space-sm">
+            <div class="rounded-xl bg-surface-container-low px-space-md py-2">
+              <div class="font-label-sm text-outline">Bulan target</div>
+              <div id="forecastTargetMonthHeader" class="font-title-md text-on-surface">—</div>
+            </div>
+            <div class="rounded-xl bg-surface-container-low px-space-md py-2">
+              <div class="font-label-sm text-outline">Dihitung terakhir</div>
+              <div id="forecastSyncAt" class="font-title-md text-on-surface">Memuat...</div>
+            </div>
+            <button class="inline-flex items-center gap-2 bg-primary text-on-primary px-space-md py-2.5 rounded-xl font-label-lg text-label-lg shadow-sm hover:bg-primary-container active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+              id="btnRecalculate" type="button">
+              <span class="material-symbols-outlined text-[19px] transition-transform duration-700" id="spinIcon">sync</span>
+              <span>Recalculate</span>
+            </button>
+          </div>
+        </section>
+        <!-- Four forecast status cards, all driven by the Forecast Summary API. -->
+        <section aria-label="Ringkasan status persediaan" class="flex flex-col gap-space-sm">
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+            <button type="button" onclick="filterStatus('CRITICAL')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-error">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-label-sm text-outline uppercase tracking-wide">Critical</span>
+                <span class="material-symbols-outlined text-status-critical-text">warning</span>
+              </div>
+              <div class="mt-1 flex items-baseline gap-2"><span id="forecastCriticalCount" class="font-metric-display text-metric-display text-status-critical-text">—</span><span class="font-body-sm text-outline">SKU wajib restock</span></div>
+            </button>
+            <button type="button" onclick="filterStatus('OVERSTOCK_WARNING')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-secondary-container">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-label-sm text-outline uppercase tracking-wide">Overstock warning</span>
+                <span class="material-symbols-outlined text-status-warning-text">inventory</span>
+              </div>
+              <div class="mt-1 flex items-baseline gap-2"><span id="forecastOverstockCount" class="font-metric-display text-metric-display text-status-warning-text">—</span><span class="font-body-sm text-outline">SKU perlu ditahan pembeliannya</span></div>
+            </button>
+            <button type="button" onclick="filterStatus('SAFE')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-primary">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-label-sm text-outline uppercase tracking-wide">Aman</span>
+                <span class="material-symbols-outlined text-status-success-text">verified</span>
+              </div>
+              <div class="mt-1 flex items-baseline gap-2"><span id="forecastSafeCount" class="font-metric-display text-metric-display text-status-success-text">—</span><span class="font-body-sm text-outline">SKU dengan stok memadai</span></div>
+            </button>
+            <button type="button" onclick="filterStatus('INSUFFICIENT_DATA')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-outline-variant">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-label-sm text-outline uppercase tracking-wide">Insufficient data</span>
+                <span class="material-symbols-outlined text-on-surface-variant">hourglass_empty</span>
+              </div>
+              <div class="mt-1 flex items-baseline gap-2"><span id="forecastInsufficientCount" class="font-metric-display text-metric-display text-on-surface-variant">—</span><span class="font-body-sm text-outline">SKU perlu data historis</span></div>
+            </button>
+          </div>
+        </section>
+        <!-- Product detail: monthly line chart and the model outputs required by the PRD. -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-stretch" aria-label="Analisis forecast produk">
+          <div class="lg:col-span-8 bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+              <div class="min-w-0">
+                <div class="flex items-center flex-wrap gap-2">
+                  <h2 class="font-title-lg text-title-lg text-on-surface">Analisis permintaan produk</h2>
+                  <span id="forecastProductStatusBadge" class="px-2.5 py-1 rounded-full font-label-sm text-label-sm">Memuat...</span>
+                </div>
+                <p id="forecastProductName" class="font-body-sm text-on-surface-variant mt-1">Memuat produk...</p>
+              </div>
+              <label class="min-w-[220px]">
+                <span class="sr-only">Pilih produk untuk analisis</span>
+                <select id="forecastProductSelect" disabled class="w-full bg-surface-container-low text-on-surface font-title-md text-title-md rounded-xl py-2 px-space-md focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                  <option value="">Memuat produk...</option>
+                </select>
+              </label>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-xs text-on-surface-variant">
+              <span id="forecastTargetMonth">Target bulan —</span>
+              <span id="forecastHistoryCount">Memuat periode data...</span>
+            </div>
+            <div class="forecast-chart-shell mt-4">
+              <canvas id="forecastTrendChart" aria-label="Grafik garis penjualan historis, tren OLS, dan prediksi bulan depan" role="img"></canvas>
+              <div id="forecastChartFallback" class="forecast-chart-fallback" hidden></div>
+            </div>
+            <p id="forecastChartNote" class="mt-2 text-xs text-outline"></p>
+            <div class="mt-3 pt-3 border-t border-surface-container flex flex-wrap items-center justify-between gap-2 text-xs text-on-surface-variant">
+              <span>Koefisien determinasi (R²): <strong id="forecastR2Value">—</strong></span>
+              <span>Garis putus-putus menunjukkan tren regresi linear.</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 flex flex-col gap-space-md">
+            <div class="grid grid-cols-2 gap-space-sm">
+              <div class="bg-card-bg rounded-xl p-space-md shadow-sm">
+                <div class="font-label-sm text-outline">Prediksi kebutuhan</div>
+                <div class="mt-2"><span id="forecastMetricDemand" class="font-metric-display text-metric-display text-primary">—</span><span class="block text-xs text-on-surface-variant">unit bulan target</span></div>
+              </div>
+              <div id="forecastMetricRestockCard" class="bg-status-critical-bg rounded-xl p-space-md shadow-sm">
+                <div data-forecast-status-color="main" class="font-label-sm text-status-critical-text">Rekomendasi restock</div>
+                <div class="mt-2"><span id="forecastMetricRestock" data-forecast-status-color="main" class="font-metric-display text-metric-display text-status-critical-text">—</span><span class="block text-xs" data-forecast-status-color="soft">unit</span></div>
+              </div>
+            </div>
+            <div class="bg-card-bg rounded-xl p-space-md shadow-sm flex-1">
+              <h3 class="font-title-md text-title-md text-on-surface">Ringkasan model</h3>
+              <dl class="mt-3 grid grid-cols-2 gap-x-3 gap-y-3">
+                <div><dt class="text-xs text-outline">Stok saat ini</dt><dd id="forecastMetricStock" class="font-title-lg text-on-surface">—</dd></div>
+                <div><dt class="text-xs text-outline">WMA</dt><dd id="forecastMetricWma" class="font-title-lg text-on-surface">—</dd></div>
+                <div><dt class="text-xs text-outline">Regresi OLS</dt><dd id="forecastMetricLinear" class="font-title-lg text-on-surface">—</dd></div>
+                <div><dt class="text-xs text-outline">Slope / bulan</dt><dd id="forecastMetricSlope" class="font-title-lg text-on-surface">—</dd></div>
+              </dl>
+              <p class="mt-3 pt-3 border-t border-surface-container text-xs text-on-surface-variant">Prediksi menggunakan kombinasi WMA dan regresi linear sesuai hasil kalkulasi backend.</p>
+            </div>
+          </div>
+        </section>
+        <!-- Forecast Results Data Table Section -->
+        <div class="bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
+          <!-- Table Header Controls -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+            <div class="flex items-center gap-space-sm">
+              <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[22px]">table_chart</span>
+              </div>
+              <div>
+                <h2 class="font-title-lg text-title-lg text-on-surface">Matriks Data Forecast &amp; Restock Barang</h2>
+                <span class="font-body-sm text-body-sm text-outline">Klik satu produk untuk melihat riwayat bulanan, tren regresi, dan prediksi.</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-space-sm">
+              <!-- Search filter within table -->
+              <div class="relative min-w-[220px]">
+                <span
+                  class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[18px] pointer-events-none">search</span>
+                <input
+                  class="w-full pl-9 pr-space-md py-1.5 bg-surface-bright rounded-xl text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all"
+                  id="tableSearch" placeholder="Cari nama / kode SKU..." type="search" />
+              </div>
+              <!-- Filter Category -->
+              <button id="forecastClearFilter" type="button"
+                class="bg-surface-bright text-on-surface font-label-md text-label-md rounded-xl py-2 px-space-md hover:bg-surface-container transition-colors">
+                Semua Status
+              </button>
+              <select id="forecastSort"
+                class="bg-surface-bright text-on-surface font-label-md text-label-md rounded-xl py-2 px-space-md focus:outline-none cursor-pointer"
+                aria-label="Urutkan hasil forecast">
+                <option value="restock_qty">Restock terbanyak</option>
+                <option value="restock_qty_asc">Restock tersedikit</option>
+                <option value="predicted_demand">Prediksi tertinggi</option>
+                <option value="current_stock">Stok terbanyak</option>
+                <option value="product_code">Kode barang</option>
+              </select>
+            </div>
+          </div>
+          <!-- Data Table Container -->
+          <div class="overflow-x-auto rounded-xl">
+            <table class="w-full text-left border-collapse" id="forecastTable">
+              <thead>
+                <tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+                  <th class="py-3 px-space-md rounded-l-xl">Kode</th>
+                  <th class="py-3 px-space-md">Nama</th>
+                  <th class="py-3 px-space-md text-right">Stok</th>
+                  <th class="py-3 px-space-md text-right">WMA</th>
+                  <th class="py-3 px-space-md text-right">Regresi</th>
+                  <th class="py-3 px-space-md text-right">Prediksi</th>
+                  <th class="py-3 px-space-md text-right">Restock</th>
+                  <th class="py-3 px-space-md text-center rounded-r-xl">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container text-on-surface font-body-md text-body-md">
+                <tr><td class="py-10 px-space-md text-center text-outline" colspan="8">Memuat hasil forecast...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Table Pagination Footer -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-xs text-on-surface-variant">
+            <span id="forecastTableMeta" class="font-body-sm text-body-sm text-outline">Memuat data forecast...</span>
+            <div class="flex items-center gap-2">
+              <button id="forecastPrevPage" type="button"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:bg-surface-container transition-colors disabled:opacity-40"
+                disabled>
+                <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+              </button>
+              <span id="forecastPageLabel" class="font-label-md text-label-md text-on-surface-variant min-w-12 text-center">1 / 1</span>
+              <button id="forecastNextPage" type="button"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:bg-surface-container transition-colors disabled:opacity-40"
+                disabled>
+                <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Interactive JavaScript logic for Recalculate & Filter Badges -->
+
+      </div>
+    </main>
+  </div>
   <script src="/static/js/pages/forecast.js"></script>
-</body></html>
+</body>
+
+</html>

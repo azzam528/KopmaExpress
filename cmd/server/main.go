@@ -131,6 +131,20 @@ func main() {
 		handler.RegisterProductLookupRoutes(api, mongorepo.NewProductLookupRepo(db))
 	}
 
+	// Analytics and Forecasting routes (Orang 4)
+	if db != nil {
+		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
+		forecastRepo := mongorepo.NewForecastRepo(db)
+
+		analyticsService := service.NewAnalyticsService(analyticsRepo)
+		forecastService := service.NewForecastService(forecastRepo, cfg.Workers, 10)
+
+		handler.NewAnalyticsHandler(analyticsService).RegisterRoutes(api)
+		handler.NewForecastHandler(forecastService).RegisterRoutes(api)
+
+		log.Println("[INIT] Analytics and forecasting routes registered")
+	}
+
 	handler.RegisterOrderPages(app)
 
 	// 7. Start Server in Goroutine
