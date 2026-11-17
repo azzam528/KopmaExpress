@@ -1,0 +1,16 @@
+
+.git
+.github
+.env
+.env.*
+!.env.example
+
+bin/
+tmp/
+*.exe
+*.log
+
+.vscode/
+.idea/
+
+node_modules/

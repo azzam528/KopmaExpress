@@ -1,26 +1,50 @@
-/* Custom styles and overrides for KOPMA Express */
+/**
+ * KOPMA Express - Global Stylesheet
+ */
 
-/* Custom scrollbars for data tables and logs */
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    overscroll-behavior: none;
+    background-color: #f8fafc;
+    color: #0b1c30;
+  }
+  main > :first-child {
+    margin-top: 0 !important;
+  }
+  main > :last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar {
+  display: block;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 
-::-webkit-scrollbar-thumb {
+.custom-scrollbar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Subtle transitions */
+/* Transitions */
 a, button {
   transition: all 0.2s ease-in-out;
 }
-
