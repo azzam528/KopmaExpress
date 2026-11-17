@@ -158,6 +158,7 @@ func (s *orderService) Create(
 		Items:       items,
 		TotalAmount: total,
 		Payment:     req.Payment,
+		Channel:     req.Channel,
 		Status:      domain.OrderCompleted,
 		CreatedAt:   now,
 	}
@@ -199,6 +200,18 @@ func (s *orderService) List(
 		details = append(details, domain.ValidationErrorDetail{
 			Field:   "status",
 			Message: "harus COMPLETED atau CANCELLED",
+		})
+	}
+
+	f.Channel = domain.OrderChannel(
+		strings.ToUpper(strings.TrimSpace(string(f.Channel))),
+	)
+	if f.Channel != "" &&
+		f.Channel != domain.ChannelOnline &&
+		f.Channel != domain.ChannelOffline {
+		details = append(details, domain.ValidationErrorDetail{
+			Field:   "channel",
+			Message: "harus ONLINE atau OFFLINE",
 		})
 	}
 
@@ -287,6 +300,29 @@ func normalizeAndValidate(
 		d = append(d, domain.ValidationErrorDetail{
 			Field:   "metode_pembayaran",
 			Message: "harus salah satu dari CASH, TRANSFER, QRIS, KASBON",
+		})
+	}
+
+	req.Channel = domain.OrderChannel(
+		strings.ToUpper(strings.TrimSpace(string(req.Channel))),
+	)
+	if req.Channel == "" {
+		req.Channel = domain.ChannelOffline
+	}
+	switch req.Channel {
+	case domain.ChannelOffline:
+	case domain.ChannelOnline:
+		// Pesanan online dibayar non-tunai saat checkout.
+		if req.Payment != domain.PayQRIS && req.Payment != domain.PayTransfer {
+			d = append(d, domain.ValidationErrorDetail{
+				Field:   "metode_pembayaran",
+				Message: "pesanan online harus QRIS atau TRANSFER",
+			})
+		}
+	default:
+		d = append(d, domain.ValidationErrorDetail{
+			Field:   "channel",
+			Message: "harus ONLINE atau OFFLINE",
 		})
 	}
 

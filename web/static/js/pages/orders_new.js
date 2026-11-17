@@ -196,17 +196,48 @@
     } finally { btn.disabled = false; }
   });
 
-  // ---- transaksi terakhir + batalkan
+  // ---- transaksi terakhir + filter online/offline + detail + batalkan
+  let channelFilter = ''; // '' = semua, 'ONLINE', 'OFFLINE'
+  const CH = { ONLINE: 'Online', OFFLINE: 'Offline' };
+  const CHIP_ON = 'bg-primary text-on-primary', CHIP_OFF = 'bg-canvas-bg text-on-surface hover:bg-surface-container';
+
+  function renderFilter() {
+    const box = $('#recent-filter');
+    if (!box) return;
+    box.replaceChildren(...[['', 'Semua'], ['ONLINE', 'Online'], ['OFFLINE', 'Offline']].map(([v, label]) =>
+      el('button', { type: 'button', class: 'px-3 py-1 rounded-full text-label-sm font-label-sm ' + (channelFilter === v ? CHIP_ON : CHIP_OFF),
+        onclick: () => { channelFilter = v; renderFilter(); recent(); } }, label)));
+  }
+
+  function detailBox(o) {
+    const d = new Date(o.created_at);
+    const when = isNaN(d) ? '-' : d.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+    const ch = o.channel === 'ONLINE' ? 'Online (dipesan anggota)' : 'Offline (dibuat kasir)';
+    return el('div', { class: 'hidden mt-2 p-space-sm rounded-xl bg-canvas-bg text-label-sm font-label-sm text-on-surface' },
+      el('div', { class: 'mb-1' }, `${ch} • ${o.metode_pembayaran} • ${when}`),
+      ...(o.items || []).map((i) => el('div', { class: 'flex justify-between gap-3' },
+        el('span', {}, `${i.qty} × ${i.nama_barang}`), el('span', {}, rp(i.subtotal)))));
+  }
+
   async function recent() {
     const ul = $('#recent');
     try {
-      const r = await apiClient.get('/orders', { limit: 5 });
-      ul.replaceChildren(...(r.data.length ? r.data.map((o) => el('li', { class: 'py-space-sm flex items-center justify-between gap-3 border-b border-surface-container' },
-        el('div', {}, el('div', { class: 'font-title-md text-title-md' }, o.nama_anggota), el('div', { class: 'text-label-sm font-label-sm text-outline' }, `${o.order_no} • ${rp(o.total)} • ${o.metode_pembayaran}`)),
-        el('div', { class: 'flex items-center gap-2' },
-          el('span', { class: 'px-2 py-0.5 rounded-full text-label-sm font-label-sm ' + (o.status === 'COMPLETED' ? 'bg-status-success-bg text-status-success-text' : 'bg-status-critical-bg text-status-critical-text') }, o.status),
-          o.status === 'COMPLETED' ? el('button', { type: 'button', class: 'text-label-sm font-label-sm text-status-critical-text hover:underline', onclick: () => cancel(o.order_no) }, 'Batalkan') : ''))
-      ) : [el('li', { class: 'text-outline py-space-sm' }, 'Belum ada transaksi.')]));
+      const params = { limit: 10 };
+      if (channelFilter) params.channel = channelFilter;
+      const r = await apiClient.get('/orders', params);
+      ul.replaceChildren(...(r.data.length ? r.data.map((o) => {
+        const online = o.channel === 'ONLINE';
+        const box = detailBox(o);
+        return el('li', { class: 'py-space-sm border-b border-surface-container' },
+          el('div', { class: 'flex items-center justify-between gap-3' },
+            el('div', {}, el('div', { class: 'font-title-md text-title-md' }, o.nama_anggota), el('div', { class: 'text-label-sm font-label-sm text-outline' }, `${o.order_no} • ${rp(o.total)} • ${o.metode_pembayaran}`)),
+            el('div', { class: 'flex items-center gap-2 flex-wrap justify-end' },
+              el('span', { class: 'px-2 py-0.5 rounded-full text-label-sm font-label-sm ' + (online ? 'bg-secondary-container/40 text-status-warning-text' : 'bg-canvas-bg text-on-surface') }, CH[o.channel] || 'Offline'),
+              el('span', { class: 'px-2 py-0.5 rounded-full text-label-sm font-label-sm ' + (o.status === 'COMPLETED' ? 'bg-status-success-bg text-status-success-text' : 'bg-status-critical-bg text-status-critical-text') }, o.status),
+              el('button', { type: 'button', class: 'text-label-sm font-label-sm text-primary hover:underline', onclick: () => box.classList.toggle('hidden') }, 'Detail'),
+              o.status === 'COMPLETED' ? el('button', { type: 'button', class: 'text-label-sm font-label-sm text-status-critical-text hover:underline', onclick: () => cancel(o.order_no) }, 'Batalkan') : '')),
+          box);
+      }) : [el('li', { class: 'text-outline py-space-sm' }, 'Belum ada transaksi.')]));
     } catch (e) { ul.replaceChildren(el('li', { class: 'text-outline' }, 'Gagal memuat: ' + e.message)); }
   }
 
@@ -221,5 +252,5 @@
     apiClient.get('/members', { limit: 1 }).catch((e) => {
     if (e.status === 404 || !e.status) { memberOk = false; $('#nim-note').textContent = 'Daftar anggota belum tersedia. Ketik NIM secara manual.'; }
   });
-  render(); recent();
+  renderFilter(); render(); recent();
 })();

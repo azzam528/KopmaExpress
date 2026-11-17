@@ -89,12 +89,19 @@ func main() {
 	app.Get("/orders", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/orders/new.html")
 	})
+	// Portal anggota (belanja online), terpisah dari halaman admin/kasir.
+	app.Get("/masuk", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/shop/masuk.html")
+	})
+	app.Get("/belanja", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/templates/shop/belanja.html")
+	})
 	app.Get("/forecast", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/templates/forecast/index.html")
 	})
 
 	// 6. Base API Group
-	api := app.Group("/api/")
+	api := app.Group("/api/v1")
 
 	// Health Check Endpoint
 	api.Get("/health", func(c *fiber.Ctx) error {
@@ -125,6 +132,11 @@ func main() {
 
 		orderSvc := service.NewOrderService(orderRepo, productRepo, memberRepo)
 		handler.RegisterOrderRoutes(api, orderSvc)
+
+		// Anggota (Orang 2)
+		memberSvc := service.NewMemberService(memberRepo)
+		handler.RegisterMemberRoutes(api, memberSvc)
+
 		// Master Barang (Orang 1): menggantikan RegisterProductLookupRoutes sementara
 		productSvc := service.NewProductService(productRepo)
 		handler.RegisterProductRoutes(api, productSvc)
@@ -139,8 +151,6 @@ func main() {
 		importHandler.Register(api)
 	}
 
-<<<<<<< HEAD
-=======
 	// Analytics and Forecasting routes (Orang 4)
 	if db != nil {
 		analyticsRepo := mongorepo.NewAnalyticsRepo(db)
@@ -157,7 +167,6 @@ func main() {
 
 	handler.RegisterOrderPages(app)
 
->>>>>>> faiz
 	// 7. Start Server in Goroutine
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	go func() {

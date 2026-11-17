@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Belanja - KOPMA Express</title>
+  <link rel="stylesheet" href="/static/css/pages/shop.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="bar-in">
+      <div class="brand">KOPMA<span>Express</span></div>
+      <div class="who">
+        <div><b id="who-name">-</b><small id="who-nim"></small></div>
+        <button class="link-btn" id="logout" type="button">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="msg"></div>
+
+    <div class="grid">
+      <section class="card area-shop">
+        <h1>Belanja</h1>
+        <p class="sub">Cari barang, tambahkan ke keranjang, lalu bayar.</p>
+        <input class="search" id="q" type="search" placeholder="Cari nama atau kode barang" />
+        <ul class="list" id="products"></ul>
+        <button class="btn ghost more hidden" id="more" type="button">Tampilkan lebih banyak</button>
+      </section>
+
+      <section class="card area-orders">
+        <h2>Pesanan saya</h2>
+        <ul class="list" id="orders"></ul>
+      </section>
+
+      <aside class="card cart area-cart">
+        <h2>Keranjang</h2>
+        <ul class="list" id="cart"></ul>
+        <div class="total"><span>Total</span><span id="total">Rp 0</span></div>
+
+        <div class="pay" role="radiogroup" aria-label="Metode pembayaran">
+          <label><input type="radio" name="pay" value="QRIS" checked /><span>QRIS</span></label>
+          <label><input type="radio" name="pay" value="TRANSFER" /><span>Transfer</span></label>
+        </div>
+        <button class="btn" id="checkout" type="button" disabled>Bayar &amp; Pesan</button>
+      </aside>
+    </div>
+  </main>
+
+  <!-- konfirmasi pembayaran (simulasi) -->
+  <div class="modal hidden" id="modal">
+    <div class="modal-box">
+      <h2>Konfirmasi pembayaran</h2>
+      <div class="meta" id="modal-method"></div>
+      <div class="big" id="modal-total"></div>
+      <p class="sim">Pembayaran masih simulasi. Tidak ada uang yang dipotong.</p>
+      <div class="actions">
+        <button class="btn ghost" id="modal-cancel" type="button">Batal</button>
+        <button class="btn" id="modal-pay" type="button">Bayar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/components/api.js"></script>
+  <script src="/static/js/pages/shop.js"></script>
+</body>
+</html>
