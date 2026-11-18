@@ -144,14 +144,60 @@
 
   // ---------------------------------------------------------- modal form
 
+  let nimCheckTimer = null, nimCheckSeq = 0;
+
+  function clearNimError() {
+    const p = byId('e-nim');
+    if (p) {
+      p.textContent = '';
+      p.classList.add('hidden');
+    }
+  }
+
+  async function checkNimDuplicate(nim) {
+    const seq = ++nimCheckSeq;
+    const trimmed = nim.trim();
+    if (!trimmed) {
+      clearNimError();
+      return;
+    }
+    // Jika sedang ubah dan NIM sama dengan aslinya, jangan anggap duplikat ke diri sendiri
+    if (state.editingNim && trimmed === state.editingNim) {
+      clearNimError();
+      return;
+    }
+    try {
+      const res = await apiClient.get('/members/' + encodeURIComponent(trimmed));
+      if (seq !== nimCheckSeq) return; // respons usang, abaikan
+      if (res && res.data && res.data.nim) {
+        const p = byId('e-nim');
+        if (p) {
+          p.textContent = `Anggota dengan NIM ${trimmed} sudah terdaftar`;
+          p.classList.remove('hidden');
+        }
+      }
+    } catch (e) {
+      if (seq !== nimCheckSeq) return;
+      // 404 artinya NIM belum terdaftar (tersedia untuk digunakan)
+      if (e.status === 404 || e.code === 'NOT_FOUND') {
+        clearNimError();
+      }
+    }
+  }
+
   function clearErrors() {
+    clearTimeout(nimCheckTimer);
     document.querySelectorAll('[id^="e-"]').forEach((p) => { p.textContent = ''; p.classList.add('hidden'); });
     const box = $('#form-error');
-    box.textContent = '';
-    box.classList.add('hidden');
+    if (box) {
+      box.textContent = '';
+      box.classList.add('hidden');
+    }
   }
 
   function openForm(m) {
+    clearTimeout(nimCheckTimer);
+    nimCheckSeq++;
     state.editingNim = m ? m.nim : null;
     clearErrors();
     $('#form-title').textContent = m ? 'Ubah Anggota' : 'Tambah Anggota';
@@ -164,7 +210,14 @@
     (m ? $('#f-nama') : $('#f-nim')).focus();
   }
 
-  function closeForm() { $('#form-modal').classList.add('hidden'); }
+  function closeForm() {
+    clearTimeout(nimCheckTimer);
+    nimCheckSeq++;
+    clearErrors();
+    state.editingNim = null;
+    $('#member-form').reset();
+    $('#form-modal').classList.add('hidden');
+  }
 
   function showFormErrors(e) {
     let shown = false;
@@ -176,22 +229,45 @@
     }
     if (e.code === 'DUPLICATE') {
       const p = byId('e-nim');
-      p.textContent = e.message; p.classList.remove('hidden'); shown = true;
+      if (p) {
+        p.textContent = e.message;
+        p.classList.remove('hidden');
+        shown = true;
+      }
     }
     if (!shown) {
       const box = $('#form-error');
-      box.textContent = e.message || 'Terjadi kesalahan.';
-      box.classList.remove('hidden');
+      if (box) {
+        box.textContent = e.message || 'Terjadi kesalahan.';
+        box.classList.remove('hidden');
+      }
     }
   }
 
   async function submitForm(ev) {
     ev.preventDefault();
+    clearTimeout(nimCheckTimer);
     clearErrors();
     const editing = state.editingNim;
     const nimInput = $('#f-nim').value.trim();
+    const namaInput = $('#f-nama').value.trim();
+
+    // Validasi lokal wajib diisi
+    if (!nimInput) {
+      const p = byId('e-nim');
+      if (p) { p.textContent = 'NIM / NIP wajib diisi'; p.classList.remove('hidden'); }
+      $('#f-nim').focus();
+      return;
+    }
+    if (!namaInput) {
+      const p = byId('e-nama');
+      if (p) { p.textContent = 'Nama lengkap wajib diisi'; p.classList.remove('hidden'); }
+      $('#f-nama').focus();
+      return;
+    }
+
     const body = {
-      nama: $('#f-nama').value.trim(),
+      nama: namaInput,
       unit: $('#f-unit').value.trim(),
       telepon: $('#f-telepon').value.trim(),
     };
@@ -291,6 +367,30 @@
   function closeDetail() { detailSeq++; $('#detail-modal').classList.add('hidden'); }
 
   // ---------------------------------------------------------------- event
+
+  $('#f-nim').addEventListener('input', (e) => {
+    clearNimError();
+    clearTimeout(nimCheckTimer);
+    const val = e.target.value.trim();
+    if (val.length >= 3) {
+      nimCheckTimer = setTimeout(() => {
+        checkNimDuplicate(val);
+      }, 400);
+    }
+  });
+
+  ['f-nama', 'f-unit', 'f-telepon'].forEach((id) => {
+    const inputEl = byId(id);
+    if (inputEl) {
+      inputEl.addEventListener('input', () => {
+        const errEl = byId('e-' + id.replace('f-', ''));
+        if (errEl) {
+          errEl.textContent = '';
+          errEl.classList.add('hidden');
+        }
+      });
+    }
+  });
 
   $('#btn-add').addEventListener('click', () => openForm(null));
   $('#member-form').addEventListener('submit', submitForm);

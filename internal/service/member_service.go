@@ -104,6 +104,17 @@ func (s *memberService) Create(ctx context.Context, req *domain.CreateMemberRequ
 		return nil, domain.NewValidationError("Validasi gagal", details...)
 	}
 
+	// 1. Cek duplikasi NIM terlebih dahulu
+	existing, err := s.store.FindByNIM(ctx, req.NIM)
+	if err == nil && existing != nil {
+		return nil, domain.NewDuplicateError(
+			fmt.Sprintf("Anggota dengan NIM %s sudah terdaftar", req.NIM),
+		)
+	}
+	if err != nil && !domain.IsNotFound(err) {
+		return nil, err
+	}
+
 	now := time.Now().Truncate(time.Millisecond)
 	joined := now
 	if req.JoinedAt != nil && !req.JoinedAt.IsZero() {
@@ -113,6 +124,7 @@ func (s *memberService) Create(ctx context.Context, req *domain.CreateMemberRequ
 	m := &domain.Member{
 		NIM:       req.NIM,
 		Name:      req.Name,
+		Email:     strings.TrimSpace(req.Email),
 		Unit:      req.Unit,
 		Phone:     req.Phone,
 		IsActive:  true,
@@ -122,6 +134,12 @@ func (s *memberService) Create(ctx context.Context, req *domain.CreateMemberRequ
 
 	if err := s.store.Create(ctx, m); err != nil {
 		if isDuplicateKey(err) {
+			errMsg := err.Error()
+			if strings.Contains(errMsg, "email") {
+				return nil, domain.NewDuplicateError(
+					fmt.Sprintf("Anggota dengan email %s sudah terdaftar", m.Email),
+				)
+			}
 			return nil, domain.NewDuplicateError(
 				fmt.Sprintf("Anggota dengan NIM %s sudah terdaftar", m.NIM),
 			)
@@ -156,6 +174,12 @@ func (s *memberService) Update(ctx context.Context, nim string, req *domain.Upda
 	var details []domain.ValidationErrorDetail
 	if newNIM != nim {
 		details = validateNIM(newNIM)
+		existing, err := s.store.FindByNIM(ctx, newNIM)
+		if err == nil && existing != nil {
+			return nil, domain.NewDuplicateError(
+				fmt.Sprintf("Anggota dengan NIM %s sudah terdaftar", newNIM),
+			)
+		}
 	}
 	details = append(details, validateMemberFields(req.Name, req.Unit, req.Phone)...)
 	if len(details) > 0 {
@@ -169,6 +193,10 @@ func (s *memberService) Update(ctx context.Context, nim string, req *domain.Upda
 		Phone: req.Phone,
 	}); err != nil {
 		if isDuplicateKey(err) {
+			errMsg := err.Error()
+			if strings.Contains(errMsg, "email") {
+				return nil, domain.NewDuplicateError("Email sudah terdaftar")
+			}
 			return nil, domain.NewDuplicateError(
 				fmt.Sprintf("Anggota dengan NIM %s sudah terdaftar", newNIM),
 			)

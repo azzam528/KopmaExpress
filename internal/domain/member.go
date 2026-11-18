@@ -13,8 +13,8 @@ type Member struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	NIM          string             `bson:"nim" json:"nim" validate:"required,max=20"`
 	Name         string             `bson:"name" json:"nama" validate:"required,max=120"`
-	Email        string             `bson:"email" json:"email"`
-	PasswordHash string             `bson:"password_hash" json:"-"`
+	Email        string             `bson:"email,omitempty" json:"email,omitempty"`
+	PasswordHash string             `bson:"password_hash,omitempty" json:"-"`
 	Unit         string             `bson:"unit" json:"unit"`
 	Phone        string             `bson:"phone" json:"telepon"`
 	IsActive     bool               `bson:"is_active" json:"is_active"`

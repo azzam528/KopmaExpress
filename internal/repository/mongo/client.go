@@ -82,6 +82,9 @@ func EnsureIndexes(ctx context.Context, db *mongo.Database) error {
 			Options: options.Index().SetUnique(true).SetSparse(true).SetName("idx_members_email_unique"),
 		},
 	}
+	// Clean up legacy empty-string emails so sparse index does not conflict on empty strings
+	_, _ = db.Collection("members").UpdateMany(timeoutCtx, bson.M{"email": ""}, bson.M{"$unset": bson.M{"email": ""}})
+
 	if _, err := db.Collection("members").Indexes().CreateMany(timeoutCtx, memberIndexes); err != nil {
 		return fmt.Errorf("error creating indexes for members: %w", err)
 	}

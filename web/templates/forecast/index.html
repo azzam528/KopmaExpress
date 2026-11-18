@@ -39,17 +39,19 @@
     class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
 
   <!-- Standard Sidebar Navigation (Responsive on Mobile) -->
-  <aside
+  <aside id="forecastSidebar"
     class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
     <div class="flex flex-col gap-space-lg">
       <div class="flex items-center justify-between px-space-sm pt-space-xs">
         <div class="flex items-center gap-space-sm">
           <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm shrink-0">
-            <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div>
-          <div class="flex flex-col"><span
-              class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span
-              class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
-              Analytics</span></div>
+            <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span>
+            <span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
+              Analytics</span>
+          </div>
         </div>
         <button id="sidebarClose" type="button" aria-label="Tutup Menu"
           class="lg:hidden p-1.5 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-sidebar-hover transition-colors">
@@ -57,33 +59,45 @@
         </button>
       </div>
       <nav class="flex flex-col gap-1"
-        data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a
-          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-          data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span
-            class="font-label-lg text-label-lg">Dashboard</span></a><a
-          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-          data-path="master-barang" href="/products"><span
-            class="material-symbols-outlined text-[20px]">inventory_2</span><span
-            class="font-label-lg text-label-lg">Master Barang</span></a><a
-          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-          data-path="master-anggota" href="/members"><span
-            class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master
-            Anggota</span></a><a
-          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-          data-path="import-excel-etl" href="/import"><span
-            class="material-symbols-outlined text-[20px]">upload_file</span><span
-            class="font-label-lg text-label-lg">Import Excel ETL</span></a><a
-          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-          data-path="form-pesanan" href="/orders"><span
-            class="material-symbols-outlined text-[20px]">shopping_cart</span><span
-            class="font-label-lg text-label-lg">Form Pesanan</span></a><a aria-current="page"
+        data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl">
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="dashboard" href="/">
+          <span class="material-symbols-outlined text-[20px]">grid_view</span>
+          <span class="font-label-lg text-label-lg">Dashboard</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-barang" href="/products">
+          <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+          <span class="font-label-lg text-label-lg">Master Barang</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-anggota" href="/members">
+          <span class="material-symbols-outlined text-[20px]">group</span>
+          <span class="font-label-lg text-label-lg">Master Anggota</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="import-excel-etl" href="/import">
+          <span class="material-symbols-outlined text-[20px]">upload_file</span>
+          <span class="font-label-lg text-label-lg">Import Excel ETL</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="form-pesanan" href="/orders">
+          <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+          <span class="font-label-lg text-label-lg">Form Pesanan</span>
+        </a>
+        <a aria-current="page"
           class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"
-          data-path="forecast-restock" href="/forecast"><span
-            class="material-symbols-outlined text-[20px]">insights</span><span
-            class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav>
+          data-path="forecast-restock" href="/forecast">
+          <span class="material-symbols-outlined text-[20px]">insights</span>
+          <span class="font-label-lg text-label-lg">Forecast &amp; Restock</span>
+        </a>
+      </nav>
     </div>
   </aside>
+
+  <!-- Main Content Wrapper aligned with standard responsive layout -->
   <div class="pl-0 lg:pl-72 flex flex-col min-h-screen bg-canvas-bg transition-[padding] duration-300">
+    <!-- Top Navigation Bar -->
     <header
       class="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-md sm:px-space-lg flex items-center justify-between gap-space-sm sm:gap-space-md transition-[left] duration-300">
       <div class="flex items-center gap-space-sm">
@@ -109,8 +123,7 @@
             <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
           </div>
           <div class="flex flex-col text-left hidden sm:flex">
-            <span id="userProfileName"
-              class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span>
+            <span id="userProfileName" class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span>
             <span id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span>
           </div>
         </div>
@@ -120,14 +133,14 @@
         </button>
       </div>
     </header>
+
     <main class="w-full pt-16 px-space-md sm:px-space-lg pb-space-2xl bg-canvas-bg">
       <div class="flex flex-col w-full gap-space-lg">
-        <!-- Page header: PRD requires recalculation, target month and last calculated time. -->
+        <!-- Page header: recalculation, target month and last calculated time -->
         <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md pt-2">
           <div class="max-w-2xl">
             <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Forecast &amp; Restock</h1>
-            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Prediksi kebutuhan stok bulan depan
-              menggunakan WMA dan regresi linear, disertai rekomendasi restock.</p>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Prediksi kebutuhan stok bulan depan menggunakan WMA dan regresi linear, disertai rekomendasi restock.</p>
           </div>
           <div class="flex flex-wrap items-center gap-space-sm">
             <div class="rounded-xl bg-surface-container-low px-space-md py-2">
@@ -138,77 +151,74 @@
               <div class="font-label-sm text-outline">Dihitung terakhir</div>
               <div id="forecastSyncAt" class="font-title-md text-on-surface">Memuat...</div>
             </div>
-            <button
-              class="inline-flex items-center gap-2 bg-primary text-on-primary px-space-md py-2.5 rounded-xl font-label-lg text-label-lg shadow-sm hover:bg-primary-container active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+            <button class="inline-flex items-center gap-2 bg-primary text-on-primary px-space-md py-2.5 rounded-xl font-label-lg text-label-lg shadow-sm hover:bg-primary-container active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
               id="btnRecalculate" type="button">
-              <span class="material-symbols-outlined text-[19px] transition-transform duration-700"
-                id="spinIcon">sync</span>
+              <span class="material-symbols-outlined text-[19px] transition-transform duration-700" id="spinIcon">sync</span>
               <span>Recalculate</span>
             </button>
           </div>
         </section>
-        <!-- Four forecast status cards, all driven by the Forecast Summary API. -->
+
+        <!-- Four forecast status cards, all driven by the Forecast Summary API -->
         <section aria-label="Ringkasan status persediaan" class="flex flex-col gap-space-sm">
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
-            <button type="button" onclick="filterStatus('CRITICAL')"
-              class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-error">
+            <button type="button" onclick="filterStatus('CRITICAL')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-error">
               <div class="flex items-center justify-between gap-2">
                 <span class="font-label-sm text-outline uppercase tracking-wide">Critical</span>
                 <span class="material-symbols-outlined text-status-critical-text">warning</span>
               </div>
-              <div class="mt-1 flex items-baseline gap-2"><span id="forecastCriticalCount"
-                  class="font-metric-display text-metric-display text-status-critical-text">—</span><span
-                  class="font-body-sm text-outline">SKU wajib restock</span></div>
+              <div class="mt-1 flex items-baseline gap-2">
+                <span id="forecastCriticalCount" class="font-metric-display text-metric-display text-status-critical-text">—</span>
+                <span class="font-body-sm text-outline">SKU wajib restock</span>
+              </div>
             </button>
-            <button type="button" onclick="filterStatus('OVERSTOCK_WARNING')"
-              class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-secondary-container">
+            <button type="button" onclick="filterStatus('OVERSTOCK_WARNING')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-secondary-container">
               <div class="flex items-center justify-between gap-2">
                 <span class="font-label-sm text-outline uppercase tracking-wide">Overstock warning</span>
                 <span class="material-symbols-outlined text-status-warning-text">inventory</span>
               </div>
-              <div class="mt-1 flex items-baseline gap-2"><span id="forecastOverstockCount"
-                  class="font-metric-display text-metric-display text-status-warning-text">—</span><span
-                  class="font-body-sm text-outline">SKU perlu ditahan pembeliannya</span></div>
+              <div class="mt-1 flex items-baseline gap-2">
+                <span id="forecastOverstockCount" class="font-metric-display text-metric-display text-status-warning-text">—</span>
+                <span class="font-body-sm text-outline">SKU perlu ditahan pembeliannya</span>
+              </div>
             </button>
-            <button type="button" onclick="filterStatus('SAFE')"
-              class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-primary">
+            <button type="button" onclick="filterStatus('SAFE')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-primary">
               <div class="flex items-center justify-between gap-2">
                 <span class="font-label-sm text-outline uppercase tracking-wide">Aman</span>
                 <span class="material-symbols-outlined text-status-success-text">verified</span>
               </div>
-              <div class="mt-1 flex items-baseline gap-2"><span id="forecastSafeCount"
-                  class="font-metric-display text-metric-display text-status-success-text">—</span><span
-                  class="font-body-sm text-outline">SKU dengan stok memadai</span></div>
+              <div class="mt-1 flex items-baseline gap-2">
+                <span id="forecastSafeCount" class="font-metric-display text-metric-display text-status-success-text">—</span>
+                <span class="font-body-sm text-outline">SKU dengan stok memadai</span>
+              </div>
             </button>
-            <button type="button" onclick="filterStatus('INSUFFICIENT_DATA')"
-              class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-outline-variant">
+            <button type="button" onclick="filterStatus('INSUFFICIENT_DATA')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-outline-variant">
               <div class="flex items-center justify-between gap-2">
                 <span class="font-label-sm text-outline uppercase tracking-wide">Insufficient data</span>
                 <span class="material-symbols-outlined text-on-surface-variant">hourglass_empty</span>
               </div>
-              <div class="mt-1 flex items-baseline gap-2"><span id="forecastInsufficientCount"
-                  class="font-metric-display text-metric-display text-on-surface-variant">—</span><span
-                  class="font-body-sm text-outline">SKU perlu data historis</span></div>
+              <div class="mt-1 flex items-baseline gap-2">
+                <span id="forecastInsufficientCount" class="font-metric-display text-metric-display text-on-surface-variant">—</span>
+                <span class="font-body-sm text-outline">SKU perlu data historis</span>
+              </div>
             </button>
           </div>
         </section>
-        <!-- Product detail: monthly line chart and the model outputs required by the PRD. -->
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-stretch"
-          aria-label="Analisis forecast produk">
+
+        <!-- Product detail: monthly line chart and the model outputs -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-stretch" aria-label="Analisis forecast produk">
           <div class="lg:col-span-8 bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
               <div class="min-w-0">
                 <div class="flex items-center flex-wrap gap-2">
                   <h2 class="font-title-lg text-title-lg text-on-surface">Analisis permintaan produk</h2>
-                  <span id="forecastProductStatusBadge"
-                    class="px-2.5 py-1 rounded-full font-label-sm text-label-sm">Memuat...</span>
+                  <span id="forecastProductStatusBadge" class="px-2.5 py-1 rounded-full font-label-sm text-label-sm">Memuat...</span>
                 </div>
                 <p id="forecastProductName" class="font-body-sm text-on-surface-variant mt-1">Memuat produk...</p>
               </div>
               <label class="min-w-[220px]">
                 <span class="sr-only">Pilih produk untuk analisis</span>
-                <select id="forecastProductSelect" disabled
-                  class="w-full bg-surface-container-low text-on-surface font-title-md text-title-md rounded-xl py-2 px-space-md focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                <select id="forecastProductSelect" disabled class="w-full bg-surface-container-low text-on-surface font-title-md text-title-md rounded-xl py-2 px-space-md focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
                   <option value="">Memuat produk...</option>
                 </select>
               </label>
@@ -218,13 +228,11 @@
               <span id="forecastHistoryCount">Memuat periode data...</span>
             </div>
             <div class="forecast-chart-shell mt-4">
-              <canvas id="forecastTrendChart"
-                aria-label="Grafik garis penjualan historis, tren OLS, dan prediksi bulan depan" role="img"></canvas>
+              <canvas id="forecastTrendChart" aria-label="Grafik garis penjualan historis, tren OLS, dan prediksi bulan depan" role="img"></canvas>
               <div id="forecastChartFallback" class="forecast-chart-fallback" hidden></div>
             </div>
             <p id="forecastChartNote" class="mt-2 text-xs text-outline"></p>
-            <div
-              class="mt-3 pt-3 border-t border-surface-container flex flex-wrap items-center justify-between gap-2 text-xs text-on-surface-variant">
+            <div class="mt-3 pt-3 border-t border-surface-container flex flex-wrap items-center justify-between gap-2 text-xs text-on-surface-variant">
               <span>Koefisien determinasi (R²): <strong id="forecastR2Value">—</strong></span>
               <span>Garis putus-putus menunjukkan tren regresi linear.</span>
             </div>
@@ -234,16 +242,17 @@
             <div class="grid grid-cols-2 gap-space-sm">
               <div class="bg-card-bg rounded-xl p-space-md shadow-sm">
                 <div class="font-label-sm text-outline">Prediksi kebutuhan</div>
-                <div class="mt-2"><span id="forecastMetricDemand"
-                    class="font-metric-display text-metric-display text-primary">—</span><span
-                    class="block text-xs text-on-surface-variant">unit bulan target</span></div>
+                <div class="mt-2">
+                  <span id="forecastMetricDemand" class="font-metric-display text-metric-display text-primary">—</span>
+                  <span class="block text-xs text-on-surface-variant">unit bulan target</span>
+                </div>
               </div>
               <div id="forecastMetricRestockCard" class="bg-status-critical-bg rounded-xl p-space-md shadow-sm">
-                <div data-forecast-status-color="main" class="font-label-sm text-status-critical-text">Rekomendasi
-                  restock</div>
-                <div class="mt-2"><span id="forecastMetricRestock" data-forecast-status-color="main"
-                    class="font-metric-display text-metric-display text-status-critical-text">—</span><span
-                    class="block text-xs" data-forecast-status-color="soft">unit</span></div>
+                <div data-forecast-status-color="main" class="font-label-sm text-status-critical-text">Rekomendasi restock</div>
+                <div class="mt-2">
+                  <span id="forecastMetricRestock" data-forecast-status-color="main" class="font-metric-display text-metric-display text-status-critical-text">—</span>
+                  <span class="block text-xs" data-forecast-status-color="soft">unit</span>
+                </div>
               </div>
             </div>
             <div class="bg-card-bg rounded-xl p-space-md shadow-sm flex-1">
@@ -266,11 +275,11 @@
                   <dd id="forecastMetricSlope" class="font-title-lg text-on-surface">—</dd>
                 </div>
               </dl>
-              <p class="mt-3 pt-3 border-t border-surface-container text-xs text-on-surface-variant">Prediksi
-                menggunakan kombinasi WMA dan regresi linear sesuai hasil kalkulasi backend.</p>
+              <p class="mt-3 pt-3 border-t border-surface-container text-xs text-on-surface-variant">Prediksi menggunakan kombinasi WMA dan regresi linear sesuai hasil kalkulasi backend.</p>
             </div>
           </div>
         </section>
+
         <!-- Forecast Results Data Table Section -->
         <div class="bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
           <!-- Table Header Controls -->
@@ -281,8 +290,7 @@
               </div>
               <div>
                 <h2 class="font-title-lg text-title-lg text-on-surface">Matriks Data Forecast &amp; Restock Barang</h2>
-                <span class="font-body-sm text-body-sm text-outline">Klik satu produk untuk melihat riwayat bulanan,
-                  tren regresi, dan prediksi.</span>
+                <span class="font-body-sm text-body-sm text-outline">Klik satu produk untuk melihat riwayat bulanan, tren regresi, dan prediksi.</span>
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-space-sm">
@@ -314,8 +322,7 @@
           <div class="overflow-x-auto rounded-xl">
             <table class="w-full text-left border-collapse" id="forecastTable">
               <thead>
-                <tr
-                  class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+                <tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
                   <th class="py-3 px-space-md rounded-l-xl">Kode</th>
                   <th class="py-3 px-space-md">Nama</th>
                   <th class="py-3 px-space-md text-right">Stok</th>
@@ -327,15 +334,12 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-surface-container text-on-surface font-body-md text-body-md">
-                <tr>
-                  <td class="py-10 px-space-md text-center text-outline" colspan="8">Memuat hasil forecast...</td>
-                </tr>
+                <tr><td class="py-10 px-space-md text-center text-outline" colspan="8">Memuat hasil forecast...</td></tr>
               </tbody>
             </table>
           </div>
           <!-- Table Pagination Footer -->
-          <div
-            class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-xs text-on-surface-variant">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-xs text-on-surface-variant">
             <span id="forecastTableMeta" class="font-body-sm text-body-sm text-outline">Memuat data forecast...</span>
             <div class="flex items-center gap-2">
               <button id="forecastPrevPage" type="button"
@@ -343,8 +347,7 @@
                 disabled>
                 <span class="material-symbols-outlined text-[18px]">chevron_left</span>
               </button>
-              <span id="forecastPageLabel"
-                class="font-label-md text-label-md text-on-surface-variant min-w-12 text-center">1 / 1</span>
+              <span id="forecastPageLabel" class="font-label-md text-label-md text-on-surface-variant min-w-12 text-center">1 / 1</span>
               <button id="forecastNextPage" type="button"
                 class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:bg-surface-container transition-colors disabled:opacity-40"
                 disabled>
@@ -353,7 +356,6 @@
             </div>
           </div>
         </div>
-        <!-- Interactive JavaScript logic for Recalculate & Filter Badges -->
 
       </div>
     </main>

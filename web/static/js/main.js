@@ -22,19 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
       link.className = 'flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200';
     }
   });
-
-  // 2. Global search focus shortcut (Ctrl+K or '/')
-  const searchInput = document.querySelector('header input[type="search"]');
-  if (searchInput) {
-    document.addEventListener('keydown', (e) => {
-      if ((e.key === '/' || (e.ctrlKey && e.key.toLowerCase() === 'k')) && document.activeElement !== searchInput) {
-        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
-          e.preventDefault();
-          searchInput.focus();
-        }
-      }
-    });
-  }
 });
 
 // 3. Global Toast Helper

@@ -91,3 +91,23 @@ func NewInternalError(message string) *AppError {
 	return NewAppError(http.StatusInternalServerError, CodeInternal, message, nil)
 }
 
+func IsNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	if ae, ok := err.(*AppError); ok {
+		return ae.Code == CodeNotFound || ae.HTTPStatus == http.StatusNotFound
+	}
+	return false
+}
+
+func IsDuplicate(err error) bool {
+	if err == nil {
+		return false
+	}
+	if ae, ok := err.(*AppError); ok {
+		return ae.Code == CodeDuplicate || ae.HTTPStatus == http.StatusConflict
+	}
+	return false
+}
+
