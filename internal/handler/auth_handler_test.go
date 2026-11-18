@@ -243,6 +243,9 @@ func setupAuthTestApp(t *testing.T) (*fiber.App, string) {
 		return c.JSON(fiber.Map{"status": "ok", "message": "admin only data"})
 	})
 
+	productSvc := &stubAuthProductSvc{}
+	RegisterProductRoutes(api, productSvc, authMiddleware, adminOnly)
+
 	// Web Routes with redirects
 	memberWebAuth := middleware.WebRequireAuth(jwtSecret, domain.RoleMember, domain.RoleAdmin)
 	adminWebAuth := middleware.WebRequireAuth(jwtSecret, domain.RoleAdmin)
@@ -553,6 +556,68 @@ func TestRoleBasedAuthorization(t *testing.T) {
 			t.Errorf("expected redirect to /belanja, got %s", loc)
 		}
 	})
+
+	t.Run("Member mutating product returns 403 Forbidden", func(t *testing.T) {
+		body := `{"kode_barang": "BRG-NEW", "nama_barang": "Barang Baru", "kategori": "Alat Tulis", "harga": 5000, "stok": 10}`
+		req := httptest.NewRequest("POST", "/api/v1/products", strings.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.AddCookie(&http.Cookie{Name: "auth_token", Value: memberToken})
+
+		resp, err := app.Test(req)
+		if err != nil {
+			t.Fatalf("app.Test failed: %v", err)
+		}
+		if resp.StatusCode != http.StatusForbidden {
+			t.Fatalf("expected 403 Forbidden when member posts product, got %d", resp.StatusCode)
+		}
+	})
+
+	t.Run("Admin mutating product returns 201 Created", func(t *testing.T) {
+		body := `{"kode_barang": "BRG-NEW", "nama_barang": "Barang Baru", "kategori": "Alat Tulis", "harga": 5000, "stok": 10}`
+		req := httptest.NewRequest("POST", "/api/v1/products", strings.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.AddCookie(&http.Cookie{Name: "auth_token", Value: adminToken})
+
+		resp, err := app.Test(req)
+		if err != nil {
+			t.Fatalf("app.Test failed: %v", err)
+		}
+		if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
+			t.Fatalf("expected 201/200 when admin posts product, got %d", resp.StatusCode)
+		}
+	})
+
+	t.Run("Public reading products returns 200 OK without auth", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/api/v1/products", nil)
+		resp, err := app.Test(req)
+		if err != nil {
+			t.Fatalf("app.Test failed: %v", err)
+		}
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("expected 200 OK for public product read, got %d", resp.StatusCode)
+		}
+	})
+}
+
+type stubAuthProductSvc struct {
+	createdReq *domain.CreateProductRequest
+}
+
+func (s *stubAuthProductSvc) Create(_ context.Context, req *domain.CreateProductRequest) (*domain.Product, error) {
+	s.createdReq = req
+	return &domain.Product{Code: req.Code, Name: req.Name, Price: req.Price, Stock: req.Stock, IsActive: true}, nil
+}
+func (s *stubAuthProductSvc) List(_ context.Context, _ domain.ProductFilter) ([]domain.Product, int64, error) {
+	return []domain.Product{{Code: "BRG-01", Name: "Barang 1", IsActive: true}}, 1, nil
+}
+func (s *stubAuthProductSvc) GetByCode(_ context.Context, code string) (*domain.Product, error) {
+	return &domain.Product{Code: code, Name: "Barang 1", IsActive: true}, nil
+}
+func (s *stubAuthProductSvc) Update(_ context.Context, code string, _ *domain.UpdateProductRequest) (*domain.Product, error) {
+	return &domain.Product{Code: code, IsActive: true}, nil
+}
+func (s *stubAuthProductSvc) Delete(_ context.Context, _ string) error {
+	return nil
 }
 
 // Order Ownership Security Tests

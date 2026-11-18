@@ -163,11 +163,11 @@ func main() {
 		// Seed initial testing accounts (idempotent)
 		seedAdminPass := os.Getenv("SEED_ADMIN_PASSWORD")
 		if seedAdminPass == "" {
-			seedAdminPass = "Admin123!"
+			seedAdminPass = "admin123"
 		}
 		seedMemberPass := os.Getenv("SEED_MEMBER_PASSWORD")
 		if seedMemberPass == "" {
-			seedMemberPass = "Member123!"
+			seedMemberPass = "member123"
 		}
 		if seedErr := authSvc.SeedInitialUsers(context.Background(), "000000001", seedAdminPass, "000000002", seedMemberPass); seedErr != nil {
 			log.Printf("[AUTH] Warning: Initial user seeding failed: %v\n", seedErr)
@@ -183,7 +183,7 @@ func main() {
 		handler.RegisterAuthRoutes(api, authSvc, cfg)
 		handler.RegisterOrderRoutes(api, orderSvc, authReq)
 		handler.RegisterMemberRoutes(api, memberSvc, authReq, adminOnly)
-		handler.RegisterProductRoutes(api, productSvc, adminOnly)
+		handler.RegisterProductRoutes(api, productSvc, authReq, adminOnly)
 
 		importHandler := handler.NewImportHandler(etlSvc)
 		importHandler.Register(api, authReq, adminOnly)

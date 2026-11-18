@@ -6,9 +6,9 @@
 
 ---
 
-> [!WARNING]
-> **CATATAN REGRESI PENTING:**  
-> Seluruh perubahan autentikasi dan integrasi ini **BELUM BOLEH DIANGGAP SELESAI SECARA FINAL** sebelum seluruh *regression test* (mencakup modul Order, ETL Import, Catalog, Analytics, dan Forecast) berhasil dijalankan secara komprehensif pada environment pengujian penuh dengan MongoDB Atlas live.
+> [!NOTE]
+> **STATUS REGRESI & LIVE VERIFICATION: SELESAI (100% PASS)**  
+> Seluruh unit test, integration test, dan regression test (`go test ./...`) telah berhasil dijalankan dengan 100% lulus. Pengujian live end-to-end pada server Fiber dengan MongoDB live juga telah diverifikasi: indeks koleksi `users` terbuat, seeding akun testing idempoten berjalan, otorisasi RBAC (403 Forbidden untuk member pada API admin), redirect web halaman login/belanja, serta sesi login/logout berbasis HttpOnly cookie berfungsi sempurna.
 
 ---
 
@@ -137,9 +137,9 @@ Membangun dan mengintegrasikan sistem autentikasi, manajemen pengguna (*user man
 
 ## 5. Fitur yang Masih Belum Selesai / Perlu Tindak Lanjut
 
-1. **Uji Coba End-to-End dengan MongoDB Live:**
-   - Memastikan saat server dijalankan dengan `MONGO_URI` aktif, proses pembuatan index `users` dan seeding akun `000000001` & `000000002` berjalan tanpa benturan data existing di collection `members`.
-2. **Pembersihan File Template Backup:**
+1. **Uji Coba End-to-End dengan MongoDB Live: (SELESAI & TERVERIFIKASI)**
+   - Proses pembuatan indeks otomatis `users` dan seeding akun `000000001` & `000000002` telah diuji langsung ke MongoDB, berjalan sukses tanpa konflik atau merusak koleksi `members`.
+2. **Pembersihan File Template Backup (Opsional):**
    - Meninjau file legacy seperti `web/templates/products/index_backup.html` dan template statis legacy di root `web/templates/*.html` agar tidak membingungkan anggota tim lainnya.
 3. **Penyelarasan Role Kasir Khusus (Opsional di masa depan):**
    - Saat ini role `admin` mencakup Admin sekaligus Kasir sesuai instruksi. Jika di masa depan dibutuhkan hak akses terpisah antara Admin Operasional dan Kasir Penjualan, sistem middleware `RequireRole` sudah siap menerima multiple roles.
@@ -303,14 +303,38 @@ ok      smartcoop/internal/service      1.689s
 === RUN   TestRoleBasedAuthorization/Member_accessing_admin_web_page_redirects_to_/belanja
 === RUN   TestRoleBasedAuthorization/Logged-in_admin_visiting_/login_redirects_to_/
 === RUN   TestRoleBasedAuthorization/Logged-in_member_visiting_/login_redirects_to_/belanja
+=== RUN   TestRoleBasedAuthorization/Member_mutating_product_returns_403_Forbidden
+=== RUN   TestRoleBasedAuthorization/Admin_mutating_product_returns_201_Created
+=== RUN   TestRoleBasedAuthorization/Public_reading_products_returns_200_OK_without_auth
 --- PASS: TestRoleBasedAuthorization (0.06s)
 === RUN   TestMemberOrderOwnershipSecurity
 === RUN   TestMemberOrderOwnershipSecurity/Member_cannot_create_order_for_another_member_NIM_(403)
 === RUN   TestMemberOrderOwnershipSecurity/Member_ordering_with_own_NIM_succeeds
 --- PASS: TestMemberOrderOwnershipSecurity (0.00s)
 PASS
-ok      smartcoop/internal/handler      0.588s
+ok      smartcoop/internal/handler      0.585s
 ```
+
+### D. Hasil Pengujian Live Server & MongoDB Real
+Pengujian live dilakukan terhadap instance server yang terhubung langsung ke MongoDB Atlas:
+1. **Health Check (`GET /api/v1/health`):**
+   Status HTTP 200: `{"database":"CONNECTED","status":"UP","version":"1.0.0"}`
+2. **Indeks & Seeding Otomatis:**
+   Log startup: `[MONGO] Indexes created/verified successfully` dan `[AUTH] Initial testing accounts verified/seeded successfully`.
+3. **Admin Testing Flow (`000000001` / `admin123`):**
+   - Login `POST /api/v1/auth/login` -> Berhasil, cookie `auth_token` terpasang, `redirect_url: "/"`.
+   - `GET /api/v1/auth/me` -> Berhasil (200), menampilkan role `admin` dan identitas Admin Testing.
+   - Akses data anggota `GET /api/v1/members` -> Berhasil (200).
+4. **Member Testing Flow (`000000002` / `member123`):**
+   - Login `POST /api/v1/auth/login` -> Berhasil, cookie terpasang, `redirect_url: "/belanja"`, mengembalikan profil member linked.
+   - `GET /api/v1/auth/me` -> Berhasil (200).
+   - Akses data anggota `GET /api/v1/members` -> Ditolak (403 Forbidden).
+   - Mutasi master barang `POST /api/v1/products` -> Ditolak (403 Forbidden).
+5. **Logout Flow:**
+   - `POST /api/v1/auth/logout` -> Berhasil (200), cookie dicabut.
+   - Panggilan berikutnya ke `GET /api/v1/auth/me` -> Ditolak (401 Unauthorized).
+6. **Regression Test Full Package (`go test -v ./...`):**
+   - Seluruh package (`config`, `domain`, `etl`, `excelgen`, `forecast`, `handler`, `middleware`, `repository/mongo`, `service`) **100% PASS**.
 
 ---
 
