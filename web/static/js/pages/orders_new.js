@@ -68,6 +68,20 @@
     it.qty = q; render();
   }
 
+  // Ambil SEMUA data dari endpoint berpaginasi (server membatasi maks. 100 per halaman).
+  async function fetchAll(endpoint, q) {
+    const PAGE_SIZE = 100, MAX_PAGES = 100; // pengaman: maks. 10.000 data
+    let page = 1, totalPages = 1, all = [], first = null;
+    do {
+      const r = await apiClient.get(endpoint, { q, page, limit: PAGE_SIZE });
+      if (!first) first = r;
+      all = all.concat(r.data || []);
+      totalPages = (r.meta && r.meta.total_pages) || 1;
+      page++;
+    } while (page <= totalPages && page <= MAX_PAGES);
+    return { ...first, data: all };
+  }
+
   function addToCart(p) {
     const ex = cart.find((c) => c.code === p.kode_barang);
     if (ex) chg(cart.indexOf(ex), 1);
@@ -84,7 +98,7 @@
   async function search(q) {
     const ul = $('#suggest');
     try {
-      const r = await apiClient.get('/products', { q, limit: 8 });
+      const r = await fetchAll('/products', q);
       catalogOk = true; $('#catalog-note').textContent = '';
       lastResults = r.data || [];
       ul.replaceChildren(...(lastResults.length ? lastResults.map((p) => {
@@ -128,7 +142,7 @@
   async function searchMember(q) {
     const ul = $('#nim-suggest'), seq = ++memberSeq;
     try {
-      const r = await apiClient.get('/members', { q, limit: 8 });
+      const r = await fetchAll('/members', q);
       if (seq !== memberSeq) return; // respons usang, abaikan
       memberOk = true; $('#nim-note').textContent = '';
       memberResults = r.data || []; memberQuery = q;
