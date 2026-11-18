@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 3. Global Toast Helper
-window.showToast = function(type, title, message) {
+window.showToast = function (type, title, message) {
   let container = document.getElementById('toast-container');
   if (!container) {
     container = document.createElement('div');
@@ -118,7 +118,7 @@ async function syncUserProfile() {
   }
 }
 
-window.logoutUser = async function() {
+window.logoutUser = async function () {
   try {
     await fetch('/api/v1/auth/logout', { method: 'POST' });
   } catch (e) {
@@ -136,5 +136,35 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       window.logoutUser();
     });
+  });
+
+  // 5. Mobile Sidebar Responsiveness
+  const sidebar = document.querySelector('aside');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const closeBtn = document.getElementById('sidebarClose');
+  const backdrop = document.getElementById('sidebarBackdrop');
+
+  function openSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.remove('-translate-x-full');
+    sidebar.classList.add('translate-x-0');
+    if (backdrop) backdrop.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden', 'lg:overflow-auto');
+  }
+
+  function closeSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.add('-translate-x-full');
+    sidebar.classList.remove('translate-x-0');
+    if (backdrop) backdrop.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
+  }
+
+  if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+  if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+  if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebar();
   });
 });

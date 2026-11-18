@@ -29,13 +29,17 @@
 </head>
 
 <body class="bg-canvas-bg font-body-md text-on-surface antialiased">
-  <div class="dashboard-layout">
-    <!-- Standard KOPMA Express Sidebar Component -->
-    <aside
-      class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] overflow-y-auto">
-      <div class="flex flex-col gap-space-lg">
-        <div class="flex items-center gap-space-sm px-space-sm pt-space-xs">
-          <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm">
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebarBackdrop"
+    class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
+
+  <!-- Standard Sidebar Navigation (Responsive on Mobile) -->
+  <aside
+    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
+    <div class="flex flex-col gap-space-lg">
+      <div class="flex items-center justify-between px-space-sm pt-space-xs">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm shrink-0">
             <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span>
           </div>
           <div class="flex flex-col">
@@ -44,361 +48,430 @@
               Analytics</span>
           </div>
         </div>
-        <nav class="flex flex-col gap-1"
-          data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl">
-          <a aria-current="page"
-            class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"
-            data-path="dashboard" href="/">
-            <span class="material-symbols-outlined text-[20px]">grid_view</span>
-            <span class="font-label-lg text-label-lg">Dashboard</span>
-          </a>
-          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-            data-path="master-barang" href="/products">
-            <span class="material-symbols-outlined text-[20px]">inventory_2</span>
-            <span class="font-label-lg text-label-lg">Master Barang</span>
-          </a>
-          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-            data-path="master-anggota" href="/members">
-            <span class="material-symbols-outlined text-[20px]">group</span>
-            <span class="font-label-lg text-label-lg">Master Anggota</span>
-          </a>
-          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-            data-path="import-excel-etl" href="/import">
-            <span class="material-symbols-outlined text-[20px]">upload_file</span>
-            <span class="font-label-lg text-label-lg">Import Excel ETL</span>
-          </a>
-          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-            data-path="form-pesanan" href="/orders">
-            <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
-            <span class="font-label-lg text-label-lg">Form Pesanan</span>
-          </a>
-          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
-            data-path="forecast-restock" href="/forecast">
-            <span class="material-symbols-outlined text-[20px]">insights</span>
-            <span class="font-label-lg text-label-lg">Forecast &amp; Restock</span>
-          </a>
-        </nav>
+        <button id="sidebarClose" type="button" aria-label="Tutup Menu"
+          class="lg:hidden p-1.5 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-sidebar-hover transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
       </div>
-      <div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm">
-        <div class="flex items-center justify-between">
-          <span
-            class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI
-            Engine</span>
-          <span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span>
-          <p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi
-            suplai.</p>
-        </div>
-        <a class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center"
-          data-path="forecast-restock" href="/forecast">
-          <span>Lihat Analitik</span>
-          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+      <nav class="flex flex-col gap-1"
+        data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl">
+        <a aria-current="page"
+          class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"
+          data-path="dashboard" href="/">
+          <span class="material-symbols-outlined text-[20px]">grid_view</span>
+          <span class="font-label-lg text-label-lg">Dashboard</span>
         </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-barang" href="/products">
+          <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+          <span class="font-label-lg text-label-lg">Master Barang</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-anggota" href="/members">
+          <span class="material-symbols-outlined text-[20px]">group</span>
+          <span class="font-label-lg text-label-lg">Master Anggota</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="import-excel-etl" href="/import">
+          <span class="material-symbols-outlined text-[20px]">upload_file</span>
+          <span class="font-label-lg text-label-lg">Import Excel ETL</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="form-pesanan" href="/orders">
+          <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+          <span class="font-label-lg text-label-lg">Form Pesanan</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="forecast-restock" href="/forecast">
+          <span class="material-symbols-outlined text-[20px]">insights</span>
+          <span class="font-label-lg text-label-lg">Forecast &amp; Restock</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper aligned with other pages -->
+  <div class="pl-0 lg:pl-72 flex flex-col min-h-screen bg-canvas-bg transition-[padding] duration-300">
+    <!-- Top Navigation Bar aligned with other pages -->
+    <header
+      class="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-md sm:px-space-lg flex items-center justify-between gap-space-sm sm:gap-space-md transition-[left] duration-300">
+      <div class="flex items-center gap-space-sm flex-1 max-w-xl">
+        <!-- Hamburger button for mobile (HP) -->
+        <button id="sidebarToggle" type="button" aria-label="Buka Menu"
+          class="lg:hidden p-2 rounded-xl text-on-surface hover:bg-surface-container-low transition-colors shrink-0">
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+        <div class="relative flex items-center w-full">
+          <span
+            class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span>
+          <input
+            class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200"
+            placeholder="Cari kode barang, anggota, transaksi... (Tekan /)" type="search" />
+        </div>
       </div>
-    </aside>
-
-    <div class="dashboard-main">
-      <header class="dashboard-topbar">
-        <div>
-          <p class="dashboard-eyebrow">OVERVIEW</p>
-          <h1>Dashboard Analitik</h1>
+      <div class="flex items-center gap-space-xs sm:gap-space-md">
+        <!-- Database status indicator matching theme -->
+        <div
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm"
+          id="backendStatus" data-state="checking">
+          <span class="dashboard-status-dot"></span>
+          <span id="backendStatusText" class="hidden sm:inline">Memeriksa koneksi</span>
         </div>
-        <div class="dashboard-topbar-actions">
-          <span class="dashboard-connection" id="backendStatus" data-state="checking">
-            <span class="dashboard-status-dot"></span>
-            <span id="backendStatusText">Memeriksa koneksi</span>
-          </span>
-          <button class="dashboard-refresh-btn" id="refreshDashboard" type="button">
-            <span class="material-symbols-outlined">refresh</span>
-            <span>Perbarui</span>
-          </button>
-          <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
-            <div class="flex flex-col text-right">
-              <span id="userProfileName" class="text-xs font-semibold text-slate-800">Memuat...</span>
-              <span id="userProfileRole" class="text-[11px] text-slate-500">...</span>
-            </div>
-            <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar"
-              class="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors">
-              <span class="material-symbols-outlined text-[18px]">logout</span>
-            </button>
+
+        <!-- Refresh button matching theme -->
+        <button id="refreshDashboard" type="button" aria-label="Perbarui Dashboard"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-primary hover:bg-surface-container-low font-label-md text-label-md transition-colors shadow-2xs">
+          <span class="material-symbols-outlined text-[18px]">refresh</span>
+          <span class="hidden sm:inline font-semibold">Perbarui</span>
+        </button>
+
+        <button aria-label="Notifikasi"
+          class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
+          type="button">
+          <span class="material-symbols-outlined text-[22px]">notifications</span>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span>
+        </button>
+
+        <div class="h-8 w-px bg-surface-container"></div>
+
+        <div class="flex items-center gap-space-sm pl-space-xs">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+          <div class="flex flex-col text-left hidden sm:flex">
+            <span id="userProfileName"
+              class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span>
+            <span id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span>
           </div>
         </div>
-      </header>
 
-      <div class="pl-72 flex flex-col min-h-screen bg-canvas-bg">
-        <header
-          class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md">
-          <div class="flex-1 max-w-xl">
-            <div class="relative flex items-center w-full"><span
-                class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span><input
-                class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200"
-                placeholder="Cari kode barang, anggota, transaksi..." type="search" /></div>
+        <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar"
+          class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors ml-1">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="w-full pt-16 px-space-md sm:px-space-lg pb-space-2xl bg-canvas-bg">
+      <div class="flex flex-col w-full gap-space-lg">
+        <!-- Page Header Section -->
+        <section class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pt-2">
+          <div class="flex flex-col">
+            <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Dashboard Analitik</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Ringkasan koperasi: ikhtisar produk,
+              anggota, transaksi, dan kondisi persediaan.</p>
           </div>
-          <div class="flex items-center gap-space-md"><button aria-label="Notifikasi"
-              class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
-              type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span
-                class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button>
-            <div class="h-8 w-px bg-surface-container"></div>
-            <div class="flex items-center gap-space-sm pl-space-xs">
-              <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
-                  class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
-              <div class="flex flex-col text-left"><span id="userProfileName"
-                  class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span><span
-                  id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span></div>
-            </div>
-            <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar"
-              class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors ml-1">
-              <span class="material-symbols-outlined text-[20px]">logout</span>
-            </button>
+          <div class="flex items-center gap-space-sm">
+            <span class="font-label-sm text-label-sm text-outline" id="lastUpdated">Memuat data...</span>
           </div>
-        </header>
+        </section>
 
-        <main class="dashboard-content w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg">
-          <!-- Heading halaman (pola sama dengan Master Anggota / Master Barang) -->
-          <div class="flex flex-wrap items-center justify-between gap-space-md">
-            <div>
-              <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Dashboard Analitik</h1>
-              <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Ikhtisar produk, anggota, transaksi,
-                dan kondisi persediaan.</p>
+        <!-- 5 KPI Cards Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md"
+          aria-label="Indikator utama koperasi">
+          <!-- KPI 1: Total Barang Aktif -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">SKU
+                Aktif</span>
             </div>
-            <div class="flex items-center gap-space-md">
-              <span id="lastUpdated" class="font-body-sm text-body-sm text-on-surface-variant">Memuat data...</span>
-              <button id="refreshDashboard" type="button"
-                class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-xl bg-primary text-on-primary shadow-sm hover:bg-primary-container font-label-lg text-label-lg transition-all disabled:opacity-60 disabled:cursor-wait">
-                <span class="material-symbols-outlined text-[18px]">refresh</span>
-                <span>Perbarui</span>
-              </button>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Total Barang Aktif</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block"
+                id="kpiTotalProduk">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">SKU aktif terdaftar</span>
             </div>
-          </div>
-          <section class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-space-md"
-            aria-label="Indikator utama koperasi">
-            <div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-              <div class="flex items-center justify-between gap-space-sm">
-                <span class="font-label-md text-label-md text-on-surface-variant">Total Barang Aktif</span>
-                <div
-                  class="w-9 h-9 shrink-0 rounded-xl bg-surface-container-high/60 flex items-center justify-center text-primary">
-                  <span class="material-symbols-outlined text-[20px]">inventory_2</span>
-                </div>
+          </article>
+
+          <!-- KPI 2: Total Anggota -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+                <span class="material-symbols-outlined text-[20px]">groups</span>
               </div>
-              <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface"
-                  id="kpiTotalProduk">—</span></div>
-              <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant">SKU aktif terdaftar</span>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold">Aktif</span>
             </div>
-
-            <div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-              <div class="flex items-center justify-between gap-space-sm">
-                <span class="font-label-md text-label-md text-on-surface-variant">Total Anggota</span>
-                <div
-                  class="w-9 h-9 shrink-0 rounded-xl bg-tertiary-fixed/40 flex items-center justify-center text-tertiary">
-                  <span class="material-symbols-outlined text-[20px]">groups</span>
-                </div>
-              </div>
-              <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface"
-                  id="kpiTotalAnggota">—</span></div>
-              <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant">Anggota aktif</span>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Total Anggota</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block"
+                id="kpiTotalAnggota">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">Anggota terdaftar</span>
             </div>
+          </article>
 
-            <div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-              <div class="flex items-center justify-between gap-space-sm">
-                <span class="font-label-md text-label-md text-on-surface-variant">Pesanan Bulan Ini</span>
-                <div
-                  class="w-9 h-9 shrink-0 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary">
-                  <span class="material-symbols-outlined text-[20px]">receipt_long</span>
-                </div>
+          <!-- KPI 3: Pesanan Bulan Ini -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div
+                class="w-10 h-10 rounded-xl bg-status-warning-bg flex items-center justify-center text-status-warning-text">
+                <span class="material-symbols-outlined text-[20px]">receipt_long</span>
               </div>
-              <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface"
-                  id="kpiTotalPesanan">—</span></div>
-              <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant"
-                id="currentMonthOrdersCaption">Pesanan selesai bulan berjalan</span>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">Bulan
+                Ini</span>
             </div>
-
-            <div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-              <div class="flex items-center justify-between gap-space-sm">
-                <span class="font-label-md text-label-md text-on-surface-variant">Omzet Bulan Ini</span>
-                <div
-                  class="w-9 h-9 shrink-0 rounded-xl bg-status-success-bg flex items-center justify-center text-status-success-text">
-                  <span class="material-symbols-outlined text-[20px]">payments</span>
-                </div>
-              </div>
-              <div class="mt-3"><span class="font-headline-lg text-[20px] leading-7 text-on-surface break-words"
-                  id="kpiOmzet">—</span></div>
-              <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant">Dari pesanan selesai</span>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Pesanan Bulan Ini</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block"
+                id="kpiTotalPesanan">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block truncate"
+                id="currentMonthOrdersCaption">Pesanan selesai</span>
             </div>
+          </article>
 
-            <div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between">
-              <div class="flex items-center justify-between gap-space-sm">
-                <span class="font-label-md text-label-md text-on-surface-variant">Valuasi Gudang</span>
-                <div
-                  class="w-9 h-9 shrink-0 rounded-xl bg-primary-fixed/50 flex items-center justify-center text-primary">
-                  <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
-                </div>
+          <!-- KPI 4: Omzet Bulan Ini -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div
+                class="w-10 h-10 rounded-xl bg-status-success-bg flex items-center justify-center text-status-success-text">
+                <span class="material-symbols-outlined text-[20px]">payments</span>
               </div>
-              <div class="mt-3"><span class="font-headline-lg text-[20px] leading-7 text-on-surface break-words"
-                  id="kpiValuasi">—</span></div>
-              <span class="mt-2 font-label-sm text-label-sm text-on-surface-variant">Stok aktif × harga barang</span>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-bright text-outline font-label-sm text-label-sm font-medium">Realisasi</span>
             </div>
-          </section>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Omzet Bulan Ini</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block truncate"
+                id="kpiOmzet">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">Dari pesanan selesai</span>
+            </div>
+          </article>
 
-          <section class="dashboard-section-grid" aria-label="Analitik produk">
-            <article class="dashboard-panel">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <h2>Barang Terlaris</h2>
-                  <p>Produk dengan kuantitas penjualan tertinggi.</p>
-                </div>
-                <div class="dashboard-period-switch" role="group" aria-label="Periode Top Selling">
-                  <button type="button" data-period="3m" aria-pressed="true">3 Bulan</button>
-                  <button type="button" data-period="6m" aria-pressed="false">6 Bulan</button>
-                  <button type="button" data-period="all" aria-pressed="false">Semua</button>
-                </div>
+          <!-- KPI 5: Valuasi Gudang -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div
+                class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
               </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">Aset
+                Stok</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Valuasi Gudang</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block truncate"
+                id="kpiValuasi">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">Stok aktif × harga barang</span>
+            </div>
+          </article>
+        </section>
 
-              <div class="dashboard-chart-wrap">
-                <canvas id="topSellingChart" aria-label="Grafik sepuluh barang terlaris" role="img"></canvas>
-                <p class="dashboard-chart-state" id="topSellingChartState">Memuat data barang terlaris...</p>
-              </div>
-
-              <div class="dashboard-table-wrap">
-                <table class="dashboard-table">
-                  <thead>
-                    <tr>
-                      <th>Produk</th>
-                      <th class="align-right">Terjual</th>
-                      <th class="align-right">Omzet</th>
-                    </tr>
-                  </thead>
-                  <tbody id="topSellingRows">
-                    <tr>
-                      <td colspan="3" class="dashboard-empty-cell">Memuat data...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p class="dashboard-data-note" id="topSellingPeriodNote">Periode: 3 bulan terakhir</p>
-            </article>
-
-            <article class="dashboard-panel">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <h2>Stok Terbanyak</h2>
-                  <p>Produk dengan jumlah stok aktif tertinggi.</p>
-                </div>
-                <span class="dashboard-panel-tag">Top 10</span>
-              </div>
-
-              <div class="dashboard-chart-wrap">
-                <canvas id="topStockChart" aria-label="Grafik sepuluh produk dengan stok terbanyak" role="img"></canvas>
-                <p class="dashboard-chart-state" id="topStockChartState">Memuat data stok...</p>
-              </div>
-
-              <div class="dashboard-table-wrap">
-                <table class="dashboard-table">
-                  <thead>
-                    <tr>
-                      <th>Produk</th>
-                      <th class="align-right">Stok</th>
-                      <th class="align-right">Nilai Aset</th>
-                    </tr>
-                  </thead>
-                  <tbody id="topStockRows">
-                    <tr>
-                      <td colspan="3" class="dashboard-empty-cell">Memuat data...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p class="dashboard-data-note" id="topStockValuationNote">Menghitung valuasi gudang...</p>
-            </article>
-          </section>
-
-          <section class="dashboard-section-grid dashboard-lower-grid"
-            aria-label="Tren penjualan dan status persediaan">
-            <article class="dashboard-panel">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <h2>Tren Penjualan Produk</h2>
-                  <p>Pergerakan kuantitas penjualan per bulan.</p>
-                </div>
-                <div class="dashboard-search" id="trendSearchBox">
-                  <div class="relative">
-                    <span
-                      class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px] pointer-events-none">search</span>
-                    <input id="trendSearchInput" type="search" autocomplete="off" role="combobox" aria-expanded="false"
-                      aria-controls="trendSearchList" placeholder="Cari kode atau nama barang..."
-                      class="w-full pl-10 pr-3 py-2.5 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline border border-surface-container focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all" />
-                  </div>
-                  <ul id="trendSearchList" class="dashboard-search-list" role="listbox" hidden></ul>
-                </div>
-              </div>
-              <p class="dashboard-trend-selected" id="trendSelectedLabel"></p>
-              <div class="dashboard-chart-wrap dashboard-trend-chart-wrap">
-                <canvas id="monthlyTrendChart" aria-label="Grafik tren penjualan bulanan" role="img"></canvas>
-                <p class="dashboard-chart-state" id="monthlyTrendState">Memuat tren penjualan...</p>
-              </div>
-            </article>
-
-            <article class="dashboard-panel">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <h2>Status Forecast &amp; Restock</h2>
-                  <p>Distribusi hasil klasifikasi persediaan.</p>
-                </div>
-                <p class="dashboard-trend-selected" id="trendSelectedLabel"></p>
-                <a class="dashboard-text-link" href="/forecast">Buka Forecast <span
-                    class="material-symbols-outlined">arrow_forward</span></a>
-              </div>
-              <div class="dashboard-forecast-summary">
-                <div class="dashboard-donut-wrap">
-                  <canvas id="forecastStatusChart" aria-label="Diagram status forecast" role="img"></canvas>
-                  <p class="dashboard-chart-state" id="forecastStatusState">Memuat status forecast...</p>
-                </div>
-                <div class="dashboard-forecast-legend" id="forecastStatusLegend">
-                  <p class="dashboard-empty-cell">Memuat status...</p>
-                </div>
-              </div>
-              <div class="dashboard-critical-summary">
-                <span>Produk berstatus Critical</span>
-                <strong id="criticalCount">—</strong>
-              </div>
-            </article>
-          </section>
-
-          <section class="dashboard-panel dashboard-critical-panel">
-            <div class="dashboard-panel-heading">
+        <!-- Top Selling & Top Stock Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg" aria-label="Analitik produk">
+          <!-- Panel: Barang Terlaris -->
+          <article
+            class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2>Prioritas Restock</h2>
-                <p>Lima produk Critical dengan kebutuhan restock tertinggi.</p>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Barang Terlaris</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Produk dengan kuantitas penjualan tertinggi.
+                </p>
               </div>
-              <a class="dashboard-text-link" href="/forecast">Lihat semua <span
-                  class="material-symbols-outlined">arrow_forward</span></a>
+              <div class="inline-flex items-center bg-canvas-bg rounded-xl p-1 shadow-sm gap-1" role="group"
+                aria-label="Periode Top Selling">
+                <button type="button" data-period="3m" aria-pressed="true"
+                  class="px-3 py-1 rounded-lg text-primary bg-surface-container-lowest font-title-md text-title-md shadow-xs transition-all text-xs">3
+                  Bulan</button>
+                <button type="button" data-period="6m" aria-pressed="false"
+                  class="px-3 py-1 rounded-lg text-outline hover:text-on-surface font-label-lg text-label-lg transition-all text-xs">6
+                  Bulan</button>
+                <button type="button" data-period="all" aria-pressed="false"
+                  class="px-3 py-1 rounded-lg text-outline hover:text-on-surface font-label-lg text-label-lg transition-all text-xs">Semua</button>
+              </div>
             </div>
-            <div class="dashboard-table-wrap">
-              <table class="dashboard-table dashboard-critical-table">
+
+            <div class="dashboard-chart-wrap">
+              <canvas id="topSellingChart" aria-label="Grafik sepuluh barang terlaris" role="img"></canvas>
+              <p class="dashboard-chart-state" id="topSellingChartState">Memuat data barang terlaris...</p>
+            </div>
+
+            <div class="overflow-x-auto border-t border-surface-container pt-2">
+              <table class="w-full text-left font-body-sm text-body-sm">
                 <thead>
-                  <tr>
-                    <th>Produk</th>
-                    <th class="align-right">Stok Saat Ini</th>
-                    <th class="align-right">Prediksi Permintaan</th>
-                    <th class="align-right">Rekomendasi Restock</th>
-                    <th>Status</th>
+                  <tr class="border-b border-surface-container">
+                    <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Produk
+                    </th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Terjual</th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Omzet</th>
                   </tr>
                 </thead>
-                <tbody id="criticalRows">
+                <tbody id="topSellingRows" class="divide-y divide-surface-container">
                   <tr>
-                    <td colspan="5" class="dashboard-empty-cell">Memuat prioritas restock...</td>
+                    <td colspan="3" class="py-6 text-center text-outline font-body-sm text-body-sm">Memuat data...</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <p class="dashboard-data-note" id="criticalListNote">Sumber: Forecast API.</p>
-          </section>
+            <p class="font-body-sm text-body-sm text-outline mt-auto pt-1" id="topSellingPeriodNote">Periode: 3 bulan
+              terakhir</p>
+          </article>
 
-          <div class="dashboard-error-banner" id="dashboardError" role="status" hidden></div>
-        </main>
+          <!-- Panel: Stok Terbanyak -->
+          <article
+            class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Stok Terbanyak</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Produk dengan jumlah stok aktif tertinggi.</p>
+              </div>
+              <span
+                class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold">Top
+                10</span>
+            </div>
+
+            <div class="dashboard-chart-wrap">
+              <canvas id="topStockChart" aria-label="Grafik sepuluh produk dengan stok terbanyak" role="img"></canvas>
+              <p class="dashboard-chart-state" id="topStockChartState">Memuat data stok...</p>
+            </div>
+
+            <div class="overflow-x-auto border-t border-surface-container pt-2">
+              <table class="w-full text-left font-body-sm text-body-sm">
+                <thead>
+                  <tr class="border-b border-surface-container">
+                    <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Produk
+                    </th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Stok</th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Nilai Aset</th>
+                  </tr>
+                </thead>
+                <tbody id="topStockRows" class="divide-y divide-surface-container">
+                  <tr>
+                    <td colspan="3" class="py-6 text-center text-outline font-body-sm text-body-sm">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="font-body-sm text-body-sm text-outline mt-auto pt-1" id="topStockValuationNote">Menghitung valuasi
+              gudang...</p>
+          </article>
+        </section>
+
+        <!-- Monthly Trend & Forecast Summary Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg"
+          aria-label="Tren penjualan dan status persediaan">
+          <!-- Panel: Tren Penjualan Produk (7 cols) -->
+          <article
+            class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Tren Penjualan Produk</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Pergerakan kuantitas penjualan per bulan.</p>
+              </div>
+              <label class="flex items-center gap-2 font-label-sm text-label-sm text-outline" for="trendProductSelect">
+                <span>Produk</span>
+                <select id="trendProductSelect" disabled
+                  class="px-3 py-1.5 bg-surface-bright rounded-xl text-on-surface font-body-sm text-body-sm border border-outline-variant/50 focus:outline-none focus:bg-surface-container-lowest max-w-[210px]">
+                  <option value="">Menunggu daftar produk...</option>
+                </select>
+              </label>
+            </div>
+            <div class="dashboard-chart-wrap dashboard-trend-chart-wrap">
+              <canvas id="monthlyTrendChart" aria-label="Grafik tren penjualan bulanan" role="img"></canvas>
+              <p class="dashboard-chart-state" id="monthlyTrendState">Memuat tren penjualan...</p>
+            </div>
+          </article>
+
+          <!-- Panel: Status Forecast & Restock (5 cols) -->
+          <article
+            class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between gap-space-md">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Status Forecast &amp; Restock</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Distribusi hasil klasifikasi persediaan.</p>
+              </div>
+              <a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary hover:text-primary-container font-semibold transition-colors"
+                href="/forecast">
+                <span>Buka Forecast</span>
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <div class="dashboard-forecast-summary">
+              <div class="dashboard-donut-wrap">
+                <canvas id="forecastStatusChart" aria-label="Diagram status forecast" role="img"></canvas>
+                <p class="dashboard-chart-state" id="forecastStatusState">Memuat status forecast...</p>
+              </div>
+              <div class="dashboard-forecast-legend" id="forecastStatusLegend">
+                <p class="py-4 text-center text-outline font-body-sm text-body-sm">Memuat status...</p>
+              </div>
+            </div>
+
+            <div
+              class="flex items-center justify-between p-space-md rounded-xl bg-status-critical-bg text-status-critical-text">
+              <span class="font-label-md text-label-md font-medium">Produk berstatus Critical</span>
+              <strong id="criticalCount"
+                class="font-metric-display text-metric-display font-bold text-status-critical-text">—</strong>
+            </div>
+          </article>
+        </section>
+
+        <!-- Panel: Prioritas Restock -->
+        <section
+          class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md"
+          aria-label="Prioritas restock">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h2 class="font-headline-md text-headline-md text-on-surface">Prioritas Restock</h2>
+              <p class="font-body-sm text-body-sm text-outline mt-0.5">Lima produk Critical dengan kebutuhan restock
+                tertinggi.</p>
+            </div>
+            <a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary hover:text-primary-container font-semibold transition-colors"
+              href="/forecast">
+              <span>Lihat semua</span>
+              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </a>
+          </div>
+          <div class="overflow-x-auto border-t border-surface-container pt-2">
+            <table class="w-full text-left font-body-sm text-body-sm">
+              <thead>
+                <tr class="border-b border-surface-container">
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Produk</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                    Stok Saat Ini</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                    Prediksi Permintaan</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                    Rekomendasi Restock</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody id="criticalRows" class="divide-y divide-surface-container">
+                <tr>
+                  <td colspan="5" class="py-6 text-center text-outline font-body-sm text-body-sm">Memuat prioritas
+                    restock...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="font-body-sm text-body-sm text-outline mt-auto pt-1" id="criticalListNote">Sumber: Forecast API.</p>
+        </section>
+
+        <!-- Error Banner -->
+        <div
+          class="p-4 rounded-xl border border-error-container bg-error-container/20 text-error font-body-sm text-body-sm"
+          id="dashboardError" role="status" hidden></div>
       </div>
-    </div>
+    </main>
+  </div>
 </body>
 
 </html>

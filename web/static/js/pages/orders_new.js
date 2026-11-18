@@ -103,8 +103,10 @@
       lastResults = r.data || [];
       ul.replaceChildren(...(lastResults.length ? lastResults.map((p) => {
         const out = p.is_active === false || p.stok < 1;
-        return el('li', { class: 'px-space-md py-space-sm flex justify-between gap-3 ' + (out ? 'opacity-50' : 'cursor-pointer hover:bg-canvas-bg'),
-          onclick: () => { if (out) return; addToCart(p); $('#q').value = ''; ul.classList.add('hidden'); } },
+        return el('li', {
+          class: 'px-space-md py-space-sm flex justify-between gap-3 ' + (out ? 'opacity-50' : 'cursor-pointer hover:bg-canvas-bg'),
+          onclick: () => { if (out) return; addToCart(p); $('#q').value = ''; ul.classList.add('hidden'); }
+        },
           el('div', {}, el('div', { class: 'font-title-md text-title-md' }, p.nama_barang), el('div', { class: 'text-label-sm font-label-sm text-outline' }, p.kode_barang + ' • Stok ' + p.stok)),
           el('div', { class: 'text-label-lg font-label-lg text-primary whitespace-nowrap' }, out ? 'Habis' : rp(p.harga)));
       }) : [el('li', { class: 'px-space-md py-space-sm text-outline' }, 'Barang tidak ditemukan.')]));
@@ -142,15 +144,17 @@
   async function searchMember(q) {
     const ul = $('#nim-suggest'), seq = ++memberSeq;
     try {
-      const r = await fetchAll('/members', q);
+      const r = await apiClient.get('/members', { q, limit: 8 });
       if (seq !== memberSeq) return; // respons usang, abaikan
       memberOk = true; $('#nim-note').textContent = '';
       memberResults = r.data || []; memberQuery = q;
       setMemberInfo(memberResults.find((m) => m.nim === q && m.is_active !== false) || null);
       ul.replaceChildren(...(memberResults.length ? memberResults.map((m) => {
         const off = m.is_active === false;
-        return el('li', { class: 'px-space-md py-space-sm flex justify-between gap-3 ' + (off ? 'opacity-50' : 'cursor-pointer hover:bg-canvas-bg'),
-          onclick: () => { if (!off) pickMember(m); } },
+        return el('li', {
+          class: 'px-space-md py-space-sm flex justify-between gap-3 ' + (off ? 'opacity-50' : 'cursor-pointer hover:bg-canvas-bg'),
+          onclick: () => { if (!off) pickMember(m); }
+        },
           el('div', {}, el('div', { class: 'font-title-md text-title-md' }, m.nama), el('div', { class: 'text-label-sm font-label-sm text-outline' }, m.nim + (m.unit ? ' • ' + m.unit : ''))),
           off ? el('div', { class: 'text-label-lg font-label-lg text-status-critical-text whitespace-nowrap' }, 'Tidak aktif') : '');
       }) : [el('li', { class: 'px-space-md py-space-sm text-outline' }, 'Anggota tidak ditemukan. NIM tetap bisa diketik penuh.')]));
@@ -186,15 +190,15 @@
   document.querySelectorAll('input[name=pay]').forEach((r) => r.addEventListener('change', () => {
     pay = r.value; $('#cash-box').classList.toggle('hidden', pay !== 'CASH'); calcChange();
   }));
-  $('#cash').addEventListener('input', calcChange)  ;
-    $('#btn-pas').addEventListener('click', () => { if (total != null) { $('#cash').value = String(total); calcChange(); } });
+  $('#cash').addEventListener('input', calcChange);
+  $('#btn-pas').addEventListener('click', () => { if (total != null) { $('#cash').value = String(total); calcChange(); } });
 
   // ---- kirim pesanan
   $('#btn-submit').addEventListener('click', async () => {
     const nim = $('#nim').value.trim();
     if (!nim) return alertBox('err', 'NIM wajib diisi');
     if (!cart.length) return alertBox('err', 'Keranjang masih kosong');
-        if (pay === 'CASH' && total != null) {
+    if (pay === 'CASH' && total != null) {
       const paid = parseInt(($('#cash').value || '').replace(/[^0-9]/g, '') || '0', 10);
       if (paid < total) return alertBox('err', 'Uang tunai belum cukup',
         paid ? `Kurang ${rp(total - paid)} dari total ${rp(total)}.` : `Isi uang tunai yang diterima (total ${rp(total)}) atau klik "Uang pas".`);
@@ -219,8 +223,10 @@
     const box = $('#recent-filter');
     if (!box) return;
     box.replaceChildren(...[['', 'Semua'], ['ONLINE', 'Online'], ['OFFLINE', 'Offline']].map(([v, label]) =>
-      el('button', { type: 'button', class: 'px-3 py-1 rounded-full text-label-sm font-label-sm ' + (channelFilter === v ? CHIP_ON : CHIP_OFF),
-        onclick: () => { channelFilter = v; renderFilter(); recent(); } }, label)));
+      el('button', {
+        type: 'button', class: 'px-3 py-1 rounded-full text-label-sm font-label-sm ' + (channelFilter === v ? CHIP_ON : CHIP_OFF),
+        onclick: () => { channelFilter = v; renderFilter(); recent(); }
+      }, label)));
   }
 
   function detailBox(o) {
@@ -263,7 +269,7 @@
   }
 
   apiClient.get('/products', { limit: 1 }).catch((e) => { if (e.status === 404 || !e.status) unavailable(); });
-    apiClient.get('/members', { limit: 1 }).catch((e) => {
+  apiClient.get('/members', { limit: 1 }).catch((e) => {
     if (e.status === 404 || !e.status) { memberOk = false; $('#nim-note').textContent = 'Daftar anggota belum tersedia. Ketik NIM secara manual.'; }
   });
   renderFilter(); render(); recent();

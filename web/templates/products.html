@@ -34,16 +34,29 @@
 </head>
 
 <body class="bg-canvas-bg font-body-md text-on-surface antialiased">
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebarBackdrop"
+    class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
+
+  <!-- Standard Sidebar Navigation (Responsive on Mobile) -->
   <aside
-    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
     <div class="flex flex-col gap-space-lg">
-      <div class="flex items-center gap-space-sm px-space-sm pt-space-xs">
-        <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span
-            class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div>
-        <div class="flex flex-col"><span
-            class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span
-            class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
-            Analytics</span></div>
+      <div class="flex items-center justify-between px-space-sm pt-space-xs">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm shrink-0">
+            <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span>
+            <span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
+              Analytics</span>
+          </div>
+        </div>
+        <button id="sidebarClose" type="button" aria-label="Tutup Menu"
+          class="lg:hidden p-1.5 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-sidebar-hover transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
       </div>
       <nav class="flex flex-col gap-1"
         data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a
@@ -71,47 +84,39 @@
             class="material-symbols-outlined text-[20px]">insights</span><span
             class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav>
     </div>
-    <div class="p-space-md rounded-2xl bg-sidebar-dark text-on-primary shadow-sm flex flex-col gap-space-sm">
-      <div class="flex items-center justify-between"><span
-          class="px-space-xs py-0.5 rounded bg-primary-fixed-dim/20 text-primary-fixed font-label-sm text-label-sm">AI
-          Engine</span><span class="material-symbols-outlined text-secondary-container text-[20px]">auto_awesome</span>
-      </div>
-      <div class="flex flex-col"><span class="font-title-md text-title-md text-on-primary">Smart Forecasting</span>
-        <p class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Model WMA &amp; Regresi OLS aktif untuk akurasi
-          suplai.</p>
-      </div><a
-        class="mt-space-xs inline-flex items-center justify-center gap-space-xs bg-secondary-container text-sidebar-dark font-label-lg text-label-lg py-2 px-space-md rounded-xl hover:bg-secondary-fixed transition-colors text-center"
-        data-path="forecast-restock" href="/forecast"><span>Lihat Analitik</span><span
-          class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
-    </div>
   </aside>
-  <div class="pl-72 flex flex-col min-h-screen bg-canvas-bg">
+  <div class="pl-0 lg:pl-72 flex flex-col min-h-screen bg-canvas-bg transition-[padding] duration-300">
     <header
-      class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md">
-      <div class="flex-1 max-w-xl">
+      class="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-md sm:px-space-lg flex items-center justify-between gap-space-sm sm:gap-space-md transition-[left] duration-300">
+      <div class="flex items-center gap-space-sm flex-1 max-w-xl">
+        <button id="sidebarToggle" type="button" aria-label="Buka Menu"
+          class="lg:hidden p-2 rounded-xl text-on-surface hover:bg-surface-container-low transition-colors shrink-0">
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
         <div class="relative flex items-center w-full"><span
             class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span><input
             class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200"
             placeholder="Cari kode barang, anggota, transaksi..." type="search" /></div>
       </div>
-      <div class="flex items-center gap-space-md"><button aria-label="Notifikasi"
+      <div class="flex items-center gap-space-xs sm:gap-space-md"><button aria-label="Notifikasi"
           class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
           type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span
             class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button>
         <div class="h-8 w-px bg-surface-container"></div>
         <div class="flex items-center gap-space-sm pl-space-xs">
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span
               class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
-          <div class="flex flex-col text-left"><span
-              id="userProfileName" class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span><span
+          <div class="flex flex-col text-left hidden sm:flex"><span id="userProfileName"
+              class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span><span
               id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span></div>
         </div>
-        <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar" class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors ml-1">
+        <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar"
+          class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors ml-1">
           <span class="material-symbols-outlined text-[20px]">logout</span>
         </button>
       </div>
     </header>
-    <main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg">
+    <main class="w-full pt-16 px-space-md sm:px-space-lg pb-space-2xl bg-canvas-bg">
       <div class="flex flex-col w-full gap-space-lg">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
@@ -135,7 +140,8 @@
               <span class="font-label-md text-label-md text-on-surface-variant">Total Barang Aktif</span>
               <div
                 class="w-9 h-9 rounded-xl bg-surface-container-high/60 flex items-center justify-center text-primary">
-                <span class="material-symbols-outlined text-[20px]">inventory_2</span></div>
+                <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+              </div>
             </div>
             <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface" id="kpi-total">…</span>
             </div>
@@ -147,7 +153,8 @@
             <div class="flex items-center justify-between">
               <span class="font-label-md text-label-md text-on-surface-variant">Total Valuasi Stok</span>
               <div class="w-9 h-9 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary">
-                <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span></div>
+                <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+              </div>
             </div>
             <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface"
                 id="kpi-valuation">…</span></div>
@@ -159,7 +166,8 @@
               <span class="font-label-md text-label-md text-on-surface-variant">Perlu Restock Segera</span>
               <div
                 class="w-9 h-9 rounded-xl bg-status-critical-bg flex items-center justify-center text-status-critical-text">
-                <span class="material-symbols-outlined text-[20px]">warning</span></div>
+                <span class="material-symbols-outlined text-[20px]">warning</span>
+              </div>
             </div>
             <div class="mt-3"><span class="font-headline-lg text-headline-lg text-on-surface" id="kpi-critical">…</span>
             </div>
@@ -255,7 +263,8 @@
             <div class="px-space-lg py-space-md bg-surface-bright flex items-center justify-between">
               <div class="flex items-center gap-space-xs">
                 <div class="w-8 h-8 rounded-lg bg-primary-fixed-dim/30 text-primary flex items-center justify-center">
-                  <span class="material-symbols-outlined text-[20px]">add_box</span></div>
+                  <span class="material-symbols-outlined text-[20px]">add_box</span>
+                </div>
                 <div class="flex flex-col">
                   <span class="font-title-lg text-title-lg text-on-surface" id="modal-title">Tambah Barang Baru</span>
                   <span class="font-label-sm text-label-sm text-outline">Katalog Master KOPMA Express</span>
