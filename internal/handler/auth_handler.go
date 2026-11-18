@@ -4,53 +4,35 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"smartcoop/internal/config"
 	"smartcoop/internal/domain"
 	"smartcoop/internal/httpx"
 	"smartcoop/internal/middleware"
-	"smartcoop/internal/security"
 	"smartcoop/internal/service"
 )
 
 type AuthHandler struct {
-	authSvc    *service.AuthService
-	memberRepo domain.MemberRepository
-	cfg        *config.Config
+	authSvc *service.AuthService
+	cfg     *config.Config
 }
 
-func NewAuthHandler(authSvc *service.AuthService, memberRepo domain.MemberRepository, cfg *config.Config) *AuthHandler {
+func NewAuthHandler(authSvc *service.AuthService, cfg *config.Config) *AuthHandler {
 	return &AuthHandler{
-		authSvc:    authSvc,
-		memberRepo: memberRepo,
-		cfg:        cfg,
+		authSvc: authSvc,
+		cfg:     cfg,
 	}
 }
 
-// RegisterAuthRoutes registers all authentication-related endpoints
-func RegisterAuthRoutes(api fiber.Router, authSvc *service.AuthService, memberRepo domain.MemberRepository, cfg *config.Config) {
-	h := NewAuthHandler(authSvc, memberRepo, cfg)
+// RegisterAuthRoutes registers all authentication-related API endpoints under /auth
+func RegisterAuthRoutes(api fiber.Router, authSvc *service.AuthService, cfg *config.Config) {
+	h := NewAuthHandler(authSvc, cfg)
 
 	g := api.Group("/auth")
-	g.Post("/register", h.Register)
 	g.Post("/login", h.Login)
 	g.Post("/logout", h.Logout)
 	g.Get("/me", middleware.RequireAuth(cfg.JWTSecret), h.Me)
-}
-
-// POST /api/v1/auth/register
-func (h *AuthHandler) Register(c *fiber.Ctx) error {
-	var req domain.CreateMemberRequest
-	if err := c.BodyParser(&req); err != nil {
-		return domain.NewValidationError("Body harus berupa JSON yang valid (Content-Type: application/json)")
-	}
-
-	member, err := h.authSvc.Register(c.UserContext(), &req)
-	if err != nil {
-		return err
-	}
-
-	return httpx.WriteCreated(c, member)
 }
 
 // POST /api/v1/auth/login
@@ -60,7 +42,7 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 		return domain.NewValidationError("Body harus berupa JSON yang valid (Content-Type: application/json)")
 	}
 
-	member, err := h.authSvc.Login(c.UserContext(), &req)
+	user, member, token, err := h.authSvc.Login(c.UserContext(), &req)
 	if err != nil {
 		return err
 	}
@@ -68,17 +50,6 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 	ttl := time.Duration(h.cfg.JWTTTLHours) * time.Hour
 	if ttl <= 0 {
 		ttl = 24 * time.Hour
-	}
-
-	claims := security.JWTClaims{
-		NIM:   member.NIM,
-		Email: member.Email,
-		Name:  member.Name,
-	}
-
-	token, err := security.GenerateToken(h.cfg.JWTSecret, claims, ttl)
-	if err != nil {
-		return domain.NewInternalError("Gagal membuat token autentikasi")
 	}
 
 	isSecure := c.Protocol() == "https" || h.cfg.AppEnv == "production"
@@ -94,10 +65,35 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 		SameSite: "Lax",
 	})
 
-	return httpx.WriteOK(c, fiber.Map{
-		"member": member,
-		"token":  token,
-	})
+	redirectURL := "/"
+	if user.Role == domain.RoleMember {
+		redirectURL = "/belanja"
+	}
+
+	res := fiber.Map{
+		"user": fiber.Map{
+			"id":     user.ID.Hex(),
+			"nim":    user.NIM,
+			"name":   user.Name,
+			"role":   user.Role,
+			"status": user.Status,
+		},
+		"token":        token,
+		"redirect_url": redirectURL,
+	}
+
+	if member != nil {
+		res["member"] = fiber.Map{
+			"id":       member.ID.Hex(),
+			"nim":      member.NIM,
+			"nama":     member.Name,
+			"unit":     member.Unit,
+			"telepon":  member.Phone,
+			"is_active": member.IsActive,
+		}
+	}
+
+	return httpx.WriteOK(c, res)
 }
 
 // GET /api/v1/auth/me
@@ -107,19 +103,24 @@ func (h *AuthHandler) Me(c *fiber.Ctx) error {
 		return domain.NewUnauthorizedError("Pengguna belum diautentikasi")
 	}
 
-	if h.memberRepo != nil {
-		member, err := h.memberRepo.FindByNIM(c.UserContext(), claims.NIM)
-		if err == nil && member != nil {
-			return httpx.WriteOK(c, member)
-		}
+	var uid primitive.ObjectID
+	if claims.UserID != "" {
+		uid, _ = primitive.ObjectIDFromHex(claims.UserID)
 	}
 
-	// Fallback ke data dari claims jika repo tidak tersedia
-	return httpx.WriteOK(c, fiber.Map{
-		"nim":   claims.NIM,
-		"email": claims.Email,
-		"nama":  claims.Name,
-	})
+	profile, err := h.authSvc.GetProfile(c.UserContext(), uid, claims.NIM)
+	if err != nil || profile == nil {
+		// Fallback safely to token claims if user lookup failed
+		return httpx.WriteOK(c, fiber.Map{
+			"user_id": claims.UserID,
+			"nim":     claims.NIM,
+			"name":    claims.Name,
+			"role":    claims.Role,
+			"status":  domain.UserStatusActive,
+		})
+	}
+
+	return httpx.WriteOK(c, profile)
 }
 
 // POST /api/v1/auth/logout

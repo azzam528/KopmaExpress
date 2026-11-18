@@ -2,22 +2,42 @@
  * KOPMA Express - /belanja (belanja online anggota).
  * Alur: cari barang -> keranjang -> pilih QRIS/Transfer -> konfirmasi (simulasi) -> POST /orders (channel ONLINE).
  */
-(function () {
-  const KEY = 'kopma_member';
+(async function () {
   const PAGE_SIZE = 20;
   const $ = (s) => document.querySelector(s);
   const rp = (n) => formatCurrency(n);
 
-  // ---- sesi sementara
-  let member = null;
-  try { member = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (_) { /* abaikan */ }
-  if (!member || !member.nim) { location.replace('/masuk'); return; }
+  // ---- sesi autentikasi
+  let currentUser = null;
+  try {
+    const res = await fetch('/api/v1/auth/me', {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) {
+      location.replace('/login');
+      return;
+    }
+    const json = await res.json();
+    if (!json || !json.success || !json.data) {
+      location.replace('/login');
+      return;
+    }
+    currentUser = json.data;
+  } catch (err) {
+    location.replace('/login');
+    return;
+  }
 
-  $('#who-name').textContent = member.nama || member.nim;
-  $('#who-nim').textContent = member.nim;
-  $('#logout').addEventListener('click', () => {
-    try { localStorage.removeItem(KEY); } catch (_) { /* abaikan */ }
-    location.href = '/masuk';
+  const memberName = currentUser.name || (currentUser.member && currentUser.member.nama) || currentUser.nim;
+  const memberNim = currentUser.nim;
+
+  $('#who-name').textContent = memberName;
+  $('#who-nim').textContent = memberNim;
+  $('#logout').addEventListener('click', async () => {
+    try {
+      await fetch('/api/v1/auth/logout', { method: 'POST' });
+    } catch (_) {}
+    location.href = '/login';
   });
 
   // ---- util
@@ -148,7 +168,7 @@
     btn.disabled = true;
     try {
       const r = await apiClient.post('/orders', {
-        nim: member.nim,
+        nim: memberNim,
         channel: 'ONLINE',
         metode_pembayaran: payMethod(),
         items: [...cart.values()].map((it) => ({ kode_barang: it.kode_barang, qty: it.qty })),
@@ -172,7 +192,7 @@
   async function loadOrders() {
     const ul = $('#orders');
     try {
-      const r = await apiClient.get('/orders', { nim: member.nim, limit: 5 });
+      const r = await apiClient.get('/orders', { nim: memberNim, limit: 5 });
       const data = r.data || [];
       ul.replaceChildren(...(data.length ? data.map((o) => {
         const d = new Date(o.created_at);

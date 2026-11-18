@@ -81,14 +81,14 @@
         <div id="alertBox" class="hidden my-space-sm p-3 rounded-xl font-body-sm text-body-sm flex items-center gap-2"></div>
         <form id="loginForm" class="mt-space-md flex flex-col gap-space-md">
           <div class="flex flex-col gap-1.5">
-            <label class="font-label-md text-label-md text-on-surface" for="identifier">
-              Email atau Username
+            <label class="font-label-md text-label-md text-on-surface" for="nim">
+              NIM
             </label>
             <div class="relative flex items-center">
               <input
                 class="w-full bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md rounded-xl px-space-md py-2.5 outline-none transition-all focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container"
-                id="identifier" name="identifier" placeholder="Masukkan email kampus atau username" required=""
-                type="text" />
+                id="nim" name="nim" placeholder="Masukkan NIM Anda" required=""
+                type="text" inputmode="numeric" autocomplete="username" />
             </div>
           </div>
           <div class="flex flex-col gap-1.5">
@@ -98,7 +98,7 @@
             <div class="relative flex items-center">
               <input
                 class="w-full bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md rounded-xl pl-space-md pr-11 py-2.5 outline-none transition-all focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container"
-                id="password" name="password" placeholder="••••••••" required="" type="password" />
+                id="password" name="password" placeholder="••••••••" required="" type="password" autocomplete="current-password" />
               <button aria-label="Lihat kata sandi"
                 class="absolute right-3 text-outline hover:text-on-surface flex items-center justify-center p-1 rounded-lg transition-colors"
                 id="togglePassword" type="button">
@@ -114,14 +114,6 @@
             <span id="btnSpinner" class="hidden material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
           </button>
         </form>
-        <div class="mt-space-lg text-center">
-          <p class="font-body-sm text-body-sm text-on-surface-variant">
-            Belum punya akun?
-              <a class="font-label-md text-label-md text-primary font-semibold hover:underline" href="/register">
-                Daftar di sini
-              </a>
-          </p>
-        </div>
       </div>
       <script>
         const passwordInput = document.getElementById('password');
@@ -169,11 +161,11 @@
             e.preventDefault();
             hideAlert();
 
-            const identifier = document.getElementById('identifier').value.trim();
+            const nim = document.getElementById('nim').value.trim();
             const password = document.getElementById('password').value;
 
-            if (!identifier || !password) {
-              showAlert('Email/Username dan kata sandi wajib diisi.');
+            if (!nim || !password) {
+              showAlert('NIM dan kata sandi wajib diisi.');
               return;
             }
 
@@ -187,7 +179,7 @@
                   'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                  email: identifier,
+                  nim: nim,
                   password: password
                 })
               });
@@ -197,16 +189,20 @@
               if (!resp.ok || !result.success) {
                 const errMsg = (result && result.error && result.error.message)
                   ? result.error.message
-                  : 'Email atau password salah.';
+                  : 'NIM atau kata sandi salah.';
                 showAlert(errMsg, false);
                 setLoading(false);
                 return;
               }
 
               showAlert('Login berhasil! Mengalihkan...', true);
+              const targetUrl = (result.data && result.data.redirect_url)
+                ? result.data.redirect_url
+                : (result.data && result.data.user && result.data.user.role === 'admin' ? '/' : '/belanja');
+
               setTimeout(() => {
-                window.location.href = '/';
-              }, 700);
+                window.location.href = targetUrl;
+              }, 500);
 
             } catch (err) {
               showAlert('Gagal terhubung ke server. Periksa koneksi Anda.', false);

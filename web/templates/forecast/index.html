@@ -78,10 +78,25 @@
         <span class="material-symbols-outlined text-primary">insights</span>
         <span class="font-title-md text-title-md">Forecast &amp; Restock</span>
       </div>
-      <div class="inline-flex items-center gap-2 rounded-full bg-status-critical-bg px-3 py-1.5 text-status-critical-text font-label-md text-label-md">
-        <span class="w-2 h-2 rounded-full bg-status-critical-text"></span>
-        <span>Critical</span>
-        <strong id="forecastCriticalNavBadge">—</strong>
+      <div class="flex items-center gap-space-md">
+        <div class="inline-flex items-center gap-2 rounded-full bg-status-critical-bg px-3 py-1.5 text-status-critical-text font-label-md text-label-md">
+          <span class="w-2 h-2 rounded-full bg-status-critical-text"></span>
+          <span>Critical</span>
+          <strong id="forecastCriticalNavBadge">—</strong>
+        </div>
+        <div class="h-8 w-px bg-surface-container"></div>
+        <div class="flex items-center gap-space-sm pl-space-xs">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+          <div class="flex flex-col text-left">
+            <span id="userProfileName" class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span>
+            <span id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span>
+          </div>
+        </div>
+        <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar" class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </button>
       </div>
     </header>
     <main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg">

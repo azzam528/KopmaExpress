@@ -17,8 +17,13 @@ func NewAnalyticsHandler(service domain.AnalyticsService) *AnalyticsHandler {
 	return &AnalyticsHandler{service: service}
 }
 
-func (h *AnalyticsHandler) RegisterRoutes(api fiber.Router) {
+func (h *AnalyticsHandler) RegisterRoutes(api fiber.Router, middlewares ...fiber.Handler) {
 	group := api.Group("/analytics")
+	for _, m := range middlewares {
+		if m != nil {
+			group.Use(m)
+		}
+	}
 	group.Get("/top-selling", h.GetTopSelling)
 	group.Get("/top-stock", h.GetTopStock)
 	group.Get("/summary", h.GetSummary)

@@ -29,6 +29,9 @@ const apiClient = {
       const json = await response.json();
 
       if (!response.ok || !json.success) {
+        if (response.status === 401 && !window.location.pathname.startsWith('/login')) {
+          window.location.href = '/login';
+        }
         const error = new Error(json.error?.message || 'Permintaan gagal');
         error.status = response.status;
         error.code = json.error?.code || 'UNKNOWN_ERROR';

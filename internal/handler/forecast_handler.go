@@ -18,12 +18,17 @@ func NewForecastHandler(service domain.ForecastService) *ForecastHandler {
 	return &ForecastHandler{service: service}
 }
 
-func (h *ForecastHandler) RegisterRoutes(api fiber.Router) {
-	api.Post("/forecast/recalculate", h.Recalculate)
-	api.Get("/forecast/summary", h.GetSummary)
-	api.Get("/forecast", h.List)
-	api.Get("/forecast/", h.List)
-	api.Get("/forecast/:code", h.GetByProductCode)
+func (h *ForecastHandler) RegisterRoutes(api fiber.Router, middlewares ...fiber.Handler) {
+	group := api.Group("/forecast")
+	for _, m := range middlewares {
+		if m != nil {
+			group.Use(m)
+		}
+	}
+	group.Post("/recalculate", h.Recalculate)
+	group.Get("/summary", h.GetSummary)
+	group.Get("/", h.List)
+	group.Get("/:code", h.GetByProductCode)
 }
 
 func (h *ForecastHandler) Recalculate(c *fiber.Ctx) error {

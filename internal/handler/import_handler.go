@@ -25,10 +25,18 @@ func NewImportHandler(svc domain.ETLService) *ImportHandler {
 	return &ImportHandler{svc: svc}
 }
 
-func (h *ImportHandler) Register(r fiber.Router) {
-	r.Post("/import/excel", h.Import)
-	r.Get("/import/jobs", h.ListJobs)
-	r.Get("/import/jobs/:id", h.GetJob)
+func (h *ImportHandler) Register(r fiber.Router, middlewares ...fiber.Handler) {
+	g := r.Group("/import")
+	for _, m := range middlewares {
+		if m != nil {
+			g.Use(m)
+		}
+	}
+
+	g.Post("/excel", h.Import)
+	g.Get("/jobs", h.ListJobs)
+	g.Get("/jobs/:id", h.GetJob)
+
 	r.Get("/export/dummy-excel", h.DummyExcel)
 }
 

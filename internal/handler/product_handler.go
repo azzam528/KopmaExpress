@@ -15,16 +15,29 @@ type ProductHandler struct {
 }
 
 // RegisterProductRoutes mendaftarkan rute /products.
-// Dipanggil dari main.go: handler.RegisterProductRoutes(api, productSvc)
-func RegisterProductRoutes(api fiber.Router, svc domain.ProductService) {
+// Rute pembacaan (GET) terbuka untuk katalog belanja dan kasir,
+// sedangkan rute mutasi (POST, PUT, DELETE) dilindungi middleware admin.
+func RegisterProductRoutes(api fiber.Router, svc domain.ProductService, adminMiddlewares ...fiber.Handler) {
 	h := &ProductHandler{svc: svc}
 
 	g := api.Group("/products")
 	g.Get("/", h.List)
-	g.Post("/", h.Create)
 	g.Get("/:code", h.Get)
-	g.Put("/:code", h.Update)
-	g.Delete("/:code", h.Delete)
+
+	var mws []fiber.Handler
+	for _, m := range adminMiddlewares {
+		if m != nil {
+			mws = append(mws, m)
+		}
+	}
+
+	postHandlers := append(append([]fiber.Handler{}, mws...), h.Create)
+	putHandlers := append(append([]fiber.Handler{}, mws...), h.Update)
+	deleteHandlers := append(append([]fiber.Handler{}, mws...), h.Delete)
+
+	g.Post("/", postHandlers...)
+	g.Put("/:code", putHandlers...)
+	g.Delete("/:code", deleteHandlers...)
 }
 
 // GET /products?q=&category=&sort=&page=1&limit=20
