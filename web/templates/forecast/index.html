@@ -34,8 +34,8 @@
 </head>
 
 <body class="bg-canvas-bg font-body-md text-on-surface antialiased">
-  <aside
-    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+  <aside id="forecastSidebar" aria-hidden="false"
+    class="forecast-sidebar fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
     <div class="flex flex-col gap-space-lg">
       <div class="flex items-center gap-space-sm px-space-sm pt-space-xs">
         <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm"><span
@@ -72,19 +72,17 @@
             class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav>
     </div>
   </aside>
-  <div class="pl-72 flex flex-col min-h-screen bg-canvas-bg">
-    <header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md">
+  <button id="forecastSidebarOverlay" class="forecast-sidebar-overlay" type="button" aria-label="Tutup menu navigasi" tabindex="-1"></button>
+  <div class="forecast-app-shell pl-72 flex flex-col min-h-screen bg-canvas-bg">
+    <header class="forecast-topbar fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md">
       <div class="flex items-center gap-2 text-on-surface-variant">
+        <button id="forecastMenuToggle" class="forecast-menu-toggle" type="button" aria-label="Buka menu navigasi" aria-controls="forecastSidebar" aria-expanded="false">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <span class="material-symbols-outlined text-primary">insights</span>
         <span class="font-title-md text-title-md">Forecast &amp; Restock</span>
       </div>
       <div class="flex items-center gap-space-md">
-        <div class="inline-flex items-center gap-2 rounded-full bg-status-critical-bg px-3 py-1.5 text-status-critical-text font-label-md text-label-md">
-          <span class="w-2 h-2 rounded-full bg-status-critical-text"></span>
-          <span>Critical</span>
-          <strong id="forecastCriticalNavBadge">—</strong>
-        </div>
-        <div class="h-8 w-px bg-surface-container"></div>
         <div class="flex items-center gap-space-sm pl-space-xs">
           <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
             <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
@@ -99,24 +97,24 @@
         </button>
       </div>
     </header>
-    <main class="w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg">
-      <div class="flex flex-col w-full gap-space-lg">
+    <main class="forecast-page-main w-full pt-16 px-space-lg pb-space-2xl bg-canvas-bg">
+      <div class="forecast-page-content flex flex-col w-full gap-space-lg">
         <!-- Page header: PRD requires recalculation, target month and last calculated time. -->
-        <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md pt-2">
-          <div class="max-w-2xl">
+        <section class="forecast-page-heading pt-2" aria-label="Informasi dan kontrol forecast">
+          <div class="forecast-page-copy">
             <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Forecast &amp; Restock</h1>
             <p class="font-body-md text-body-md text-on-surface-variant mt-1">Prediksi kebutuhan stok bulan depan menggunakan WMA dan regresi linear, disertai rekomendasi restock.</p>
           </div>
-          <div class="flex flex-wrap items-center gap-space-sm">
-            <div class="rounded-xl bg-surface-container-low px-space-md py-2">
-              <div class="font-label-sm text-outline">Bulan target</div>
-              <div id="forecastTargetMonthHeader" class="font-title-md text-on-surface">—</div>
+          <div class="forecast-header-controls">
+            <div class="forecast-meta-card rounded-xl bg-surface-container-low">
+              <span class="forecast-meta-label font-label-sm text-outline">Bulan target</span>
+              <strong id="forecastTargetMonthHeader" class="forecast-meta-value font-title-md text-on-surface">—</strong>
             </div>
-            <div class="rounded-xl bg-surface-container-low px-space-md py-2">
-              <div class="font-label-sm text-outline">Dihitung terakhir</div>
-              <div id="forecastSyncAt" class="font-title-md text-on-surface">Memuat...</div>
+            <div class="forecast-meta-card rounded-xl bg-surface-container-low">
+              <span class="forecast-meta-label font-label-sm text-outline">Dihitung terakhir</span>
+              <strong id="forecastSyncAt" class="forecast-meta-value font-title-md text-on-surface">Memuat...</strong>
             </div>
-            <button class="inline-flex items-center gap-2 bg-primary text-on-primary px-space-md py-2.5 rounded-xl font-label-lg text-label-lg shadow-sm hover:bg-primary-container active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+            <button class="forecast-recalculate-button bg-primary text-on-primary rounded-xl font-label-lg text-label-lg shadow-sm hover:bg-primary-container active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
               id="btnRecalculate" type="button">
               <span class="material-symbols-outlined text-[19px] transition-transform duration-700" id="spinIcon">sync</span>
               <span>Recalculate</span>
@@ -125,7 +123,7 @@
         </section>
         <!-- Four forecast status cards, all driven by the Forecast Summary API. -->
         <section aria-label="Ringkasan status persediaan" class="flex flex-col gap-space-sm">
-          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+          <div class="forecast-status-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
             <button type="button" onclick="filterStatus('CRITICAL')" class="status-card text-left bg-card-bg rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-error">
               <div class="flex items-center justify-between gap-2">
                 <span class="font-label-sm text-outline uppercase tracking-wide">Critical</span>
@@ -157,8 +155,8 @@
           </div>
         </section>
         <!-- Product detail: monthly line chart and the model outputs required by the PRD. -->
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-stretch" aria-label="Analisis forecast produk">
-          <div class="lg:col-span-8 bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col">
+        <section class="forecast-analysis-grid grid grid-cols-1 lg:grid-cols-12 gap-space-md items-stretch" aria-label="Analisis forecast produk">
+          <div class="forecast-chart-card lg:col-span-8 bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
               <div class="min-w-0">
                 <div class="flex items-center flex-wrap gap-2">
@@ -178,18 +176,46 @@
               <span id="forecastTargetMonth">Target bulan —</span>
               <span id="forecastHistoryCount">Memuat periode data...</span>
             </div>
-            <div class="forecast-chart-shell mt-4">
-              <canvas id="forecastTrendChart" aria-label="Grafik garis penjualan historis, tren OLS, dan prediksi bulan depan" role="img"></canvas>
-              <div id="forecastChartFallback" class="forecast-chart-fallback" hidden></div>
+            <div class="forecast-chart-visual-layout mt-4">
+              <div class="forecast-chart-shell">
+                <canvas id="forecastTrendChart" aria-label="Grafik garis penjualan historis, tren OLS, dan prediksi bulan depan" role="img"></canvas>
+                <div id="forecastChartFallback" class="forecast-chart-fallback" hidden></div>
+              </div>
+              <aside class="forecast-chart-legend" aria-label="Keterangan grafik">
+                <h3 class="forecast-legend-heading">Keterangan grafik</h3>
+                <div class="forecast-legend-item">
+                  <span class="forecast-legend-swatch forecast-legend-history" aria-hidden="true"></span>
+                  <div class="forecast-legend-copy">
+                    <strong>Penjualan historis</strong>
+                    <span>Data penjualan aktual setiap bulan.</span>
+                  </div>
+                </div>
+                <div class="forecast-legend-item">
+                  <span class="forecast-legend-swatch forecast-legend-ols" aria-hidden="true"></span>
+                  <div class="forecast-legend-copy">
+                    <strong>Tren regresi OLS</strong>
+                    <span>Garis tren linear dari data historis.</span>
+                  </div>
+                </div>
+                <div class="forecast-legend-item">
+                  <span class="forecast-legend-swatch forecast-legend-prediction" aria-hidden="true"></span>
+                  <div class="forecast-legend-copy">
+                    <strong>Prediksi bulan depan</strong>
+                    <span>Hasil kombinasi WMA dan regresi OLS.</span>
+                  </div>
+                </div>
+              </aside>
             </div>
-            <p id="forecastChartNote" class="mt-2 text-xs text-outline"></p>
-            <div class="mt-3 pt-3 border-t border-surface-container flex flex-wrap items-center justify-between gap-2 text-xs text-on-surface-variant">
-              <span>Koefisien determinasi (R²): <strong id="forecastR2Value">—</strong></span>
-              <span>Garis putus-putus menunjukkan tren regresi linear.</span>
+            <div class="forecast-chart-footer">
+              <p id="forecastChartNote" class="forecast-chart-note"></p>
+              <div class="forecast-r2-summary">
+                <span>Koefisien determinasi (R²)</span>
+                <strong id="forecastR2Value">—</strong>
+              </div>
             </div>
           </div>
 
-          <div class="lg:col-span-4 flex flex-col gap-space-md">
+          <div class="forecast-model-column lg:col-span-4 flex flex-col gap-space-md">
             <div class="grid grid-cols-2 gap-space-sm">
               <div class="bg-card-bg rounded-xl p-space-md shadow-sm">
                 <div class="font-label-sm text-outline">Prediksi kebutuhan</div>
@@ -213,7 +239,7 @@
           </div>
         </section>
         <!-- Forecast Results Data Table Section -->
-        <div class="bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
+        <div class="forecast-table-card bg-card-bg rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
           <!-- Table Header Controls -->
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
             <div class="flex items-center gap-space-sm">
@@ -225,7 +251,7 @@
                 <span class="font-body-sm text-body-sm text-outline">Klik satu produk untuk melihat riwayat bulanan, tren regresi, dan prediksi.</span>
               </div>
             </div>
-            <div class="flex flex-wrap items-center gap-space-sm">
+            <div class="forecast-table-controls flex flex-wrap items-center gap-space-sm">
               <!-- Search filter within table -->
               <div class="relative min-w-[220px]">
                 <span
@@ -251,8 +277,8 @@
             </div>
           </div>
           <!-- Data Table Container -->
-          <div class="overflow-x-auto rounded-xl">
-            <table class="w-full text-left border-collapse" id="forecastTable">
+          <div class="forecast-table-scroll overflow-x-auto rounded-xl">
+            <table class="forecast-data-table w-full text-left border-collapse" id="forecastTable">
               <thead>
                 <tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
                   <th class="py-3 px-space-md rounded-l-xl">Kode</th>

@@ -402,17 +402,8 @@
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              boxWidth: 8,
-              boxHeight: 8,
-              color: '#52615e',
-              font: { family: 'Inter', size: 11 },
-              padding: 14,
-            },
-          },
+          // The legend is rendered as an aligned HTML panel beside the plot.
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label(context) {
@@ -437,7 +428,7 @@
 
     const chartNote = $('forecastChartNote');
     if (chartNote) {
-      chartNote.textContent = `Penjualan historis ditampilkan sebagai garis solid; tren OLS sebagai garis putus-putus; titik merah menunjukkan prediksi gabungan WMA + OLS. ${number(periods.length)} periode historis.`;
+      chartNote.textContent = `${number(periods.length)} periode historis digunakan untuk memperkirakan kebutuhan ${monthName(detail.bulan_target)}.`;
     }
   }
 
@@ -562,7 +553,38 @@
     loadDashboard();
   }
 
+  function bindForecastSidebar() {
+    const toggle = $('forecastMenuToggle');
+    const overlay = $('forecastSidebarOverlay');
+    const sidebar = $('forecastSidebar');
+    if (!toggle || !overlay || !sidebar) return;
+
+    const setOpen = (open) => {
+      document.body.classList.toggle('forecast-sidebar-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Tutup menu navigasi' : 'Buka menu navigasi');
+      overlay.tabIndex = open ? 0 : -1;
+      sidebar.setAttribute('aria-hidden', String(!open && window.innerWidth <= 1100));
+      sidebar.inert = !open && window.innerWidth <= 1100;
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(!document.body.classList.contains('forecast-sidebar-open'));
+    });
+    overlay.addEventListener('click', () => setOpen(false));
+    sidebar.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1100) setOpen(false);
+    });
+  }
+
   function bindEvents() {
+    bindForecastSidebar();
     const button = $('btnRecalculate');
     const spinIcon = $('spinIcon');
     if (button) {
