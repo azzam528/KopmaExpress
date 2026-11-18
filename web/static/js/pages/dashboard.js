@@ -1,10 +1,11 @@
 /**
  * KOPMA Express - Dashboard Analytics
- * Data source: Analytics API and Forecast API.
+ * Data source: Analytics API, Forecast API, dan Products API (sama dengan Master Barang).
  */
 document.addEventListener('DOMContentLoaded', () => {
   const state = {
     period: '3m',
+    trendProduct: null,
     summary: null,
     topSelling: [],
     topStock: [],
@@ -19,9 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const STATUS_META = [
-    { key: 'CRITICAL', label: 'Critical', color: '#c6534d' },
-    { key: 'OVERSTOCK_WARNING', label: 'Overstock Warning', color: '#d49a35' },
-    { key: 'SAFE', label: 'Safe', color: '#27865f' },
+    { key: 'CRITICAL', label: 'Critical', color: '#b91c1c' },
+    { key: 'OVERSTOCK_WARNING', label: 'Overstock Warning', color: '#b45309' },
+    { key: 'SAFE', label: 'Safe', color: '#047857' },
     { key: 'INSUFFICIENT_DATA', label: 'Insufficient Data', color: '#87948f' },
   ];
 
@@ -67,6 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
   }
 
+  function truncateLabel(label) {
+    return label.length > 26 ? `${label.slice(0, 24)}…` : label;
+  }
+
   function renderSummary(summary = {}) {
     state.summary = summary;
     setText('kpiTotalProduk', formatNumber(summary.total_produk));
@@ -107,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         state.charts.topSelling.destroy();
         state.charts.topSelling = null;
       }
-      setText('topSellingRows', '');
       el('topSellingRows').innerHTML = '<tr><td colspan="3" class="dashboard-empty-cell">Belum ada data penjualan.</td></tr>';
       updateTrendProductOptions();
       return;
@@ -121,8 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
         datasets: [{
           label: 'Qty Terjual',
           data: state.topSelling.map((item) => toNumber(item.total_qty)),
-          backgroundColor: '#1b8378',
-          hoverBackgroundColor: '#11675e',
+          backgroundColor: '#0f766e',
+          hoverBackgroundColor: '#005c55',
           borderRadius: 5,
           borderSkipped: false,
           barThickness: 13,
@@ -136,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         plugins: {
           legend: { display: false },
           tooltip: {
+            bodyFont: { size: 13 },
             callbacks: {
               label: (context) => ` ${formatNumber(context.raw)} unit terjual`,
             },
@@ -144,17 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
         scales: {
           x: {
             beginAtZero: true,
-            grid: { color: '#edf2f0' },
-            ticks: { color: '#81908c', precision: 0, font: { size: 9 } },
+            grid: { color: '#e5eeff' },
+            ticks: { color: '#6e7977', precision: 0, font: { size: 13 } },
           },
           y: {
             grid: { display: false },
             ticks: {
-              color: '#4f625d',
-              font: { size: 9 },
+              color: '#3e4947',
+              font: { size: 13 },
               callback(value) {
-                const label = this.getLabelForValue(value);
-                return label.length > 23 ? `${label.slice(0, 21)}…` : label;
+                return truncateLabel(this.getLabelForValue(value));
               },
             },
           },
@@ -201,8 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
         datasets: [{
           label: 'Stok',
           data: state.topStock.map((item) => toNumber(item.stok)),
-          backgroundColor: '#d7a13e',
-          hoverBackgroundColor: '#bd8527',
+          backgroundColor: '#f9bd22',
+          hoverBackgroundColor: '#d9a000',
           borderRadius: 5,
           borderSkipped: false,
           barThickness: 13,
@@ -216,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         plugins: {
           legend: { display: false },
           tooltip: {
+            bodyFont: { size: 13 },
             callbacks: {
               label: (context) => ` ${formatNumber(context.raw)} unit tersedia`,
             },
@@ -224,17 +229,16 @@ document.addEventListener('DOMContentLoaded', () => {
         scales: {
           x: {
             beginAtZero: true,
-            grid: { color: '#edf2f0' },
-            ticks: { color: '#81908c', precision: 0, font: { size: 9 } },
+            grid: { color: '#e5eeff' },
+            ticks: { color: '#6e7977', precision: 0, font: { size: 13 } },
           },
           y: {
             grid: { display: false },
             ticks: {
-              color: '#4f625d',
-              font: { size: 9 },
+              color: '#3e4947',
+              font: { size: 13 },
               callback(value) {
-                const label = this.getLabelForValue(value);
-                return label.length > 23 ? `${label.slice(0, 21)}…` : label;
+                return truncateLabel(this.getLabelForValue(value));
               },
             },
           },
@@ -313,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 'forecastStatusState');
   }
 
-  function renderCriticalItems(rows = []) {
+  function renderCriticalItems(rows = [], meta = {}) {
     state.criticalItems = Array.isArray(rows) ? rows.slice() : [];
     state.criticalItems.sort((a, b) => toNumber(b.rekomendasi_restock) - toNumber(a.rekomendasi_restock));
 
@@ -335,51 +339,35 @@ document.addEventListener('DOMContentLoaded', () => {
         <td class="align-right">${formatNumber(item.stok_saat_ini)}</td>
         <td class="align-right">${formatNumber(item.prediksi_bulan_depan)}</td>
         <td class="align-right"><strong>${formatNumber(item.rekomendasi_restock)}</strong></td>
-        <td><span class="dashboard-status-pill"><span class="dashboard-legend-dot" style="background:#c6534d"></span>CRITICAL</span></td>
+        <td><span class="dashboard-status-pill"><span class="dashboard-legend-dot" style="background:#b91c1c"></span>CRITICAL</span></td>
       </tr>
     `).join('');
 
-    setText('criticalListNote', `Menampilkan ${state.criticalItems.length} produk Critical dengan rekomendasi restock terbesar.`);
+    const calculated = meta.calculated_at
+      ? new Date(meta.calculated_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+      : '-';
+    setText('criticalListNote', `Menampilkan ${state.criticalItems.length} produk Critical dengan rekomendasi restock terbesar · dihitung ${calculated}.`);
   }
 
+  // Memilih barang awal untuk grafik tren (barang terlaris No. 1) agar grafik tidak kosong.
   function updateTrendProductOptions() {
-    const select = el('trendProductSelect');
-    if (!select) return;
-
-    const products = new Map();
-    [...state.topSelling, ...state.topStock].forEach((item) => {
-      if (item.kode_barang) {
-        products.set(item.kode_barang, item.nama_barang || item.kode_barang);
-      }
-    });
-
-    const options = [...products.entries()];
-    const previousValue = select.value;
-    select.innerHTML = options.length
-      ? options.map(([code, name]) => `<option value="${escapeHTML(code)}">${escapeHTML(name)} (${escapeHTML(code)})</option>`).join('')
-      : '<option value="">Belum ada produk dengan data analitik</option>';
-    select.disabled = options.length === 0;
-
-    const stillExists = options.some(([code]) => code === previousValue);
-    if (stillExists) {
-      select.value = previousValue;
-    } else if (options.length) {
-      select.value = options[0][0];
-      loadMonthlyTrend(select.value);
+    if (state.trendProduct) return; // sudah ada barang terpilih, jangan ditimpa
+    const first = state.topSelling[0] || state.topStock[0];
+    if (first) {
+      selectTrendProduct(first);
     } else {
-      setStateMessage('monthlyTrendState', 'Pilih periode dengan data penjualan untuk melihat tren.');
-      if (state.charts.monthlyTrend) {
-        state.charts.monthlyTrend.destroy();
-        state.charts.monthlyTrend = null;
-      }
+      setStateMessage('monthlyTrendState', 'Cari barang untuk melihat tren penjualannya.');
     }
   }
 
+  let trendRequestId = 0;
   async function loadMonthlyTrend(productCode) {
     if (!productCode) return;
+    const requestId = ++trendRequestId;
     setStateMessage('monthlyTrendState', 'Memuat tren penjualan...', true);
     try {
       const response = await window.apiClient.get('/analytics/monthly-trend', { code: productCode });
+      if (requestId !== trendRequestId) return;
       const rows = Array.isArray(response.data) ? response.data : [];
 
       if (!rows.length) {
@@ -399,8 +387,8 @@ document.addEventListener('DOMContentLoaded', () => {
           datasets: [{
             label: 'Unit Terjual',
             data: rows.map((row) => toNumber(row.qty_terjual)),
-            borderColor: '#16776d',
-            backgroundColor: 'rgba(22,119,109,.10)',
+            borderColor: '#0f766e',
+            backgroundColor: 'rgba(15,118,110,.10)',
             fill: true,
             tension: .28,
             borderWidth: 2,
@@ -414,20 +402,22 @@ document.addEventListener('DOMContentLoaded', () => {
           plugins: {
             legend: { display: false },
             tooltip: {
+              bodyFont: { size: 13 },
               callbacks: { label: (context) => ` ${formatNumber(context.raw)} unit terjual` },
             },
           },
           scales: {
-            x: { grid: { display: false }, ticks: { color: '#81908c', font: { size: 9 } } },
+            x: { grid: { display: false }, ticks: { color: '#6e7977', font: { size: 13 } } },
             y: {
               beginAtZero: true,
-              grid: { color: '#edf2f0' },
-              ticks: { color: '#81908c', precision: 0, font: { size: 9 } },
+              grid: { color: '#e5eeff' },
+              ticks: { color: '#6e7977', precision: 0, font: { size: 13 } },
             },
           },
         },
       });
     } catch (error) {
+      if (requestId !== trendRequestId) return;
       console.error('[Dashboard] Monthly trend:', error);
       setStateMessage('monthlyTrendState', error.message || 'Gagal memuat tren penjualan.');
     }
@@ -445,7 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ['topStock', () => window.apiClient.get('/analytics/top-stock', { limit: 10 })],
       ['forecastSummary', () => window.apiClient.get('/forecast/summary')],
       ['criticalItems', () => window.apiClient.get('/forecast', { status: 'CRITICAL', limit: 5, page: 1, sort: 'restock_qty' })],
-      ['health', () => window.apiClient.get('/health')],
     ];
 
     const results = await Promise.allSettled(jobs.map(([, request]) => request()));
@@ -473,15 +462,8 @@ document.addEventListener('DOMContentLoaded', () => {
           renderForecastStatus(response.data || {});
           break;
         case 'criticalItems':
-          renderCriticalItems(response.data || []);
+          renderCriticalItems(response.data || [], response.meta || {});
           break;
-        case 'health': {
-          const status = response.data?.database === 'CONNECTED' ? 'connected' : 'error';
-          const statusNode = el('backendStatus');
-          if (statusNode) statusNode.dataset.state = status;
-          setText('backendStatusText', status === 'connected' ? 'Database terhubung' : `Database ${response.data?.database || 'tidak diketahui'}`);
-          break;
-        }
       }
     });
 
@@ -492,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (button) button.disabled = false;
   }
 
+  // ---- Periode Barang Terlaris ----
   document.querySelectorAll('[data-period]').forEach((button) => {
     button.addEventListener('click', async () => {
       const period = button.dataset.period;
@@ -514,9 +497,104 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const trendSelect = el('trendProductSelect');
-  if (trendSelect) {
-    trendSelect.addEventListener('change', () => loadMonthlyTrend(trendSelect.value));
+  // ---- Pencarian barang untuk Tren Penjualan (sumber: GET /api/v1/products, sama dengan Master Barang) ----
+  const trendInput = el('trendSearchInput');
+  const trendList = el('trendSearchList');
+  let trendResults = [];
+  let trendResultsQuery = '';
+  let trendActive = -1;
+  let trendSearchSeq = 0;
+  let trendTimer = null;
+
+  function closeTrendList() {
+    if (!trendList) return;
+    trendList.hidden = true;
+    trendList.innerHTML = '';
+    trendActive = -1;
+    if (trendInput) trendInput.setAttribute('aria-expanded', 'false');
+  }
+
+  function selectTrendProduct(product) {
+    if (!product || !product.kode_barang) return;
+    state.trendProduct = product;
+    setText('trendSelectedLabel', `Menampilkan: ${product.nama_barang || product.kode_barang} · ${product.kode_barang}`);
+    if (trendInput) trendInput.value = '';
+    closeTrendList();
+    loadMonthlyTrend(product.kode_barang);
+  }
+
+  function renderTrendList(rows, query) {
+    trendResults = rows;
+    trendResultsQuery = query;
+    trendActive = rows.length ? 0 : -1;
+    trendList.innerHTML = rows.length
+      ? rows.map((item, index) => `
+          <li class="dashboard-search-item" role="option" data-index="${index}" aria-selected="${index === 0}">
+            <span class="name">${escapeHTML(item.nama_barang)}</span>
+            <span class="meta">${escapeHTML(item.kode_barang)}${item.kategori ? ` · ${escapeHTML(item.kategori)}` : ''} · Stok ${formatNumber(item.stok)}</span>
+          </li>`).join('')
+      : `<li class="dashboard-search-empty">Tidak ada barang untuk "${escapeHTML(query)}"</li>`;
+    trendList.hidden = false;
+    trendInput.setAttribute('aria-expanded', 'true');
+  }
+
+  async function searchTrendProducts(query) {
+    const seq = ++trendSearchSeq;
+    try {
+      const response = await window.apiClient.get('/products', { q: query, limit: 8 });
+      if (seq !== trendSearchSeq) return;
+      renderTrendList(Array.isArray(response.data) ? response.data : [], query);
+    } catch (error) {
+      if (seq !== trendSearchSeq) return;
+      trendResults = [];
+      trendList.innerHTML = '<li class="dashboard-search-empty">Gagal memuat daftar barang.</li>';
+      trendList.hidden = false;
+    }
+  }
+
+  if (trendInput && trendList) {
+    trendInput.addEventListener('input', () => {
+      clearTimeout(trendTimer);
+      const query = trendInput.value.trim();
+      if (!query) {
+        trendSearchSeq += 1;
+        closeTrendList();
+        return;
+      }
+      trendTimer = setTimeout(() => searchTrendProducts(query), 250);
+    });
+
+    trendInput.addEventListener('keydown', (event) => {
+      const items = trendList.querySelectorAll('[data-index]');
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        if (!items.length) return;
+        event.preventDefault();
+        trendActive = (trendActive + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+        items.forEach((item, index) => item.setAttribute('aria-selected', String(index === trendActive)));
+        items[trendActive].scrollIntoView({ block: 'nearest' });
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        // Hanya pilih jika hasil di layar memang untuk teks yang sedang diketik
+        if (trendResultsQuery === trendInput.value.trim() && trendResults[trendActive]) {
+          selectTrendProduct(trendResults[trendActive]);
+        }
+      } else if (event.key === 'Escape') {
+        closeTrendList();
+      }
+    });
+
+    // mousedown (bukan click) agar pilihan terbaca sebelum input kehilangan fokus
+    trendList.addEventListener('mousedown', (event) => {
+      const item = event.target.closest('[data-index]');
+      if (!item) return;
+      event.preventDefault();
+      selectTrendProduct(trendResults[Number(item.dataset.index)]);
+    });
+
+    document.addEventListener('click', (event) => {
+      const box = el('trendSearchBox');
+      if (box && !box.contains(event.target)) closeTrendList();
+    });
   }
 
   const refreshButton = el('refreshDashboard');
