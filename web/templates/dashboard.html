@@ -378,13 +378,32 @@
                 <h2 class="font-headline-md text-headline-md text-on-surface">Tren Penjualan Produk</h2>
                 <p class="font-body-sm text-body-sm text-outline mt-0.5">Pergerakan kuantitas penjualan per bulan.</p>
               </div>
-              <label class="flex items-center gap-2 font-label-sm text-label-sm text-outline" for="trendProductSelect">
-                <span>Produk</span>
-                <select id="trendProductSelect" disabled
-                  class="px-3 py-1.5 bg-surface-bright rounded-xl text-on-surface font-body-sm text-body-sm border border-outline-variant/50 focus:outline-none focus:bg-surface-container-lowest max-w-[210px]">
-                  <option value="">Menunggu daftar produk...</option>
-                </select>
-              </label>
+              <div class="relative w-full sm:w-64 md:w-72" id="trendSearchContainer">
+                <div class="relative flex items-center">
+                  <span class="material-symbols-outlined absolute left-2.5 text-outline text-[18px] pointer-events-none select-none">search</span>
+                  <input
+                    type="text"
+                    id="trendProductSearch"
+                    placeholder="Cari nama / kode produk..."
+                    autocomplete="off"
+                    aria-autocomplete="list"
+                    aria-expanded="false"
+                    class="w-full pl-8 pr-7 py-1.5 bg-surface-bright rounded-xl text-on-surface font-body-sm text-body-sm border border-outline-variant/50 focus:outline-none focus:bg-surface-container-lowest focus:border-primary transition-colors">
+                  <button
+                    type="button"
+                    id="trendProductClear"
+                    class="absolute right-2 text-outline hover:text-on-surface hidden p-0.5 rounded transition-colors focus:outline-none"
+                    title="Hapus pencarian">
+                    <span class="material-symbols-outlined text-[16px] block">close</span>
+                  </button>
+                </div>
+                <!-- Dropdown suggestions -->
+                <ul
+                  id="trendProductSuggest"
+                  role="listbox"
+                  class="hidden absolute z-30 left-0 right-0 top-full mt-1.5 max-h-60 overflow-y-auto bg-surface-container-lowest border border-outline-variant/40 rounded-xl shadow-lg py-1 divide-y divide-outline-variant/20 font-body-sm text-body-sm">
+                </ul>
+              </div>
             </div>
             <div class="dashboard-chart-wrap dashboard-trend-chart-wrap">
               <canvas id="monthlyTrendChart" aria-label="Grafik tren penjualan bulanan" role="img"></canvas>

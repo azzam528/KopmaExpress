@@ -202,3 +202,23 @@
 .dashboard-critical-table {
   min-width: 650px;
 }
+
+/* Product Search Autocomplete in Trend Chart */
+#trendProductSuggest {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+#trendProductSuggest::-webkit-scrollbar {
+  width: 6px;
+}
+
+#trendProductSuggest::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+}
+
+#trendProductSuggest li.is-selected {
+  background-color: #f0fdfa;
+  color: #0f766e;
+}

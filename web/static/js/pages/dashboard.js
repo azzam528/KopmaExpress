@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     topStock: [],
     forecastSummary: {},
     criticalItems: [],
+    selectedProduct: null,
     charts: {
       topSelling: null,
       topStock: null,
@@ -109,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       setText('topSellingRows', '');
       el('topSellingRows').innerHTML = '<tr><td colspan="3" class="dashboard-empty-cell">Belum ada data penjualan.</td></tr>';
-      updateTrendProductOptions();
+      ensureDefaultTrendProduct();
       return;
     }
 
@@ -173,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </tr>
     `).join('');
 
-    updateTrendProductOptions();
+    ensureDefaultTrendProduct();
   }
 
   function renderTopStock(rows = [], meta = {}) {
@@ -189,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.charts.topStock = null;
       }
       el('topStockRows').innerHTML = '<tr><td colspan="3" class="dashboard-empty-cell">Belum ada data stok.</td></tr>';
-      updateTrendProductOptions();
+      ensureDefaultTrendProduct();
       return;
     }
 
@@ -253,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </tr>
     `).join('');
 
-    updateTrendProductOptions();
+    ensureDefaultTrendProduct();
   }
 
   function renderForecastStatus(summary = {}) {
@@ -342,40 +343,225 @@ document.addEventListener('DOMContentLoaded', () => {
     setText('criticalListNote', `Menampilkan ${state.criticalItems.length} produk Critical dengan rekomendasi restock terbesar.`);
   }
 
-  function updateTrendProductOptions() {
-    const select = el('trendProductSelect');
-    if (!select) return;
+  let trendSearchTimer = null;
+  let activeSuggestIndex = -1;
 
-    const products = new Map();
-    [...state.topSelling, ...state.topStock].forEach((item) => {
-      if (item.kode_barang) {
-        products.set(item.kode_barang, item.nama_barang || item.kode_barang);
+  function showTrendSuggestions() {
+    const suggest = el('trendProductSuggest');
+    const input = el('trendProductSearch');
+    if (suggest) {
+      suggest.classList.remove('hidden');
+      input?.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  function hideTrendSuggestions() {
+    const suggest = el('trendProductSuggest');
+    const input = el('trendProductSearch');
+    if (suggest) {
+      suggest.classList.add('hidden');
+      input?.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  function selectTrendProduct(code, name) {
+    if (!code) return;
+    const displayName = name || code;
+    state.selectedProduct = { code, name: displayName };
+
+    const searchInput = el('trendProductSearch');
+    if (searchInput) {
+      searchInput.value = `${displayName} (${code})`;
+    }
+    const clearBtn = el('trendProductClear');
+    if (clearBtn) {
+      clearBtn.classList.remove('hidden');
+    }
+    hideTrendSuggestions();
+    loadMonthlyTrend(code, displayName);
+  }
+
+  async function ensureDefaultTrendProduct() {
+    if (state.selectedProduct) return;
+    const candidate = state.topSelling[0] || state.topStock[0];
+    if (candidate && candidate.kode_barang) {
+      selectTrendProduct(candidate.kode_barang, candidate.nama_barang);
+      return;
+    }
+    try {
+      const res = await window.apiClient.get('/products', { limit: 1 });
+      const first = res.data && res.data[0];
+      if (first && first.kode_barang && !state.selectedProduct) {
+        selectTrendProduct(first.kode_barang, first.nama_barang);
+      } else if (!state.selectedProduct) {
+        setStateMessage('monthlyTrendState', 'Pilih atau cari produk untuk melihat tren penjualan.');
       }
-    });
-
-    const options = [...products.entries()];
-    const previousValue = select.value;
-    select.innerHTML = options.length
-      ? options.map(([code, name]) => `<option value="${escapeHTML(code)}">${escapeHTML(name)} (${escapeHTML(code)})</option>`).join('')
-      : '<option value="">Belum ada produk dengan data analitik</option>';
-    select.disabled = options.length === 0;
-
-    const stillExists = options.some(([code]) => code === previousValue);
-    if (stillExists) {
-      select.value = previousValue;
-    } else if (options.length) {
-      select.value = options[0][0];
-      loadMonthlyTrend(select.value);
-    } else {
-      setStateMessage('monthlyTrendState', 'Pilih periode dengan data penjualan untuk melihat tren.');
-      if (state.charts.monthlyTrend) {
-        state.charts.monthlyTrend.destroy();
-        state.charts.monthlyTrend = null;
+    } catch (err) {
+      if (!state.selectedProduct) {
+        setStateMessage('monthlyTrendState', 'Pilih atau cari produk untuk melihat tren penjualan.');
       }
     }
   }
 
-  async function loadMonthlyTrend(productCode) {
+  async function searchTrendProducts(query) {
+    const suggest = el('trendProductSuggest');
+    if (!suggest) return;
+
+    showTrendSuggestions();
+    suggest.innerHTML = '<li class="px-3 py-3 text-center text-outline font-body-sm text-body-sm">Mencari produk...</li>';
+    activeSuggestIndex = -1;
+
+    try {
+      const res = await window.apiClient.get('/products', { q: query || '', limit: 10 });
+      const items = Array.isArray(res.data) ? res.data : [];
+      renderTrendSuggestions(items, query);
+    } catch (err) {
+      console.warn('[Dashboard] /products search failed, using local items:', err);
+      const seen = new Set();
+      const local = [...state.topSelling, ...state.topStock].filter((it) => {
+        if (!it.kode_barang || seen.has(it.kode_barang)) return false;
+        seen.add(it.kode_barang);
+        if (!query) return true;
+        const q = query.toLowerCase();
+        return (it.nama_barang && it.nama_barang.toLowerCase().includes(q)) ||
+               it.kode_barang.toLowerCase().includes(q);
+      });
+      renderTrendSuggestions(local, query);
+    }
+  }
+
+  function renderTrendSuggestions(items, query) {
+    const suggest = el('trendProductSuggest');
+    if (!suggest) return;
+
+    if (!items.length) {
+      suggest.innerHTML = `<li class="px-3 py-3 text-center text-outline font-body-sm text-body-sm">
+        ${query ? `Produk "${escapeHTML(query)}" tidak ditemukan.` : 'Belum ada data produk.'}
+      </li>`;
+      return;
+    }
+
+    suggest.innerHTML = items.map((p, idx) => {
+      const code = p.kode_barang || '';
+      const name = p.nama_barang || code;
+      const category = p.kategori ? ` · ${escapeHTML(p.kategori)}` : '';
+      const stock = p.stok != null ? `<span class="text-xs text-outline shrink-0 font-body-sm">Stok ${formatNumber(p.stok)}</span>` : '';
+      return `
+        <li class="px-3 py-2 cursor-pointer hover:bg-canvas-bg transition-colors flex items-center justify-between gap-2"
+            data-index="${idx}" data-code="${escapeHTML(code)}" data-name="${escapeHTML(name)}" role="option">
+          <div class="min-w-0">
+            <div class="font-medium text-on-surface truncate font-body-sm text-body-sm">${escapeHTML(name)}</div>
+            <div class="text-xs text-outline font-body-sm">${escapeHTML(code)}${category}</div>
+          </div>
+          ${stock}
+        </li>
+      `;
+    }).join('');
+
+    suggest.querySelectorAll('li[data-code]').forEach((li) => {
+      li.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const code = li.getAttribute('data-code');
+        const name = li.getAttribute('data-name');
+        selectTrendProduct(code, name);
+      });
+    });
+  }
+
+  function updateActiveSuggestion(options) {
+    options.forEach((opt, idx) => {
+      if (idx === activeSuggestIndex) {
+        opt.classList.add('is-selected');
+        opt.scrollIntoView({ block: 'nearest' });
+      } else {
+        opt.classList.remove('is-selected');
+      }
+    });
+  }
+
+  function setupTrendProductSearch() {
+    const searchInput = el('trendProductSearch');
+    const clearBtn = el('trendProductClear');
+    const suggest = el('trendProductSuggest');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !e.target.value);
+      }
+      clearTimeout(trendSearchTimer);
+      trendSearchTimer = setTimeout(() => {
+        searchTrendProducts(query);
+      }, 200);
+    });
+
+    searchInput.addEventListener('focus', () => {
+      searchInput.select();
+      searchTrendProducts('');
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (!suggest || suggest.classList.contains('hidden')) {
+        if (e.key === 'ArrowDown') {
+          showTrendSuggestions();
+          searchTrendProducts('');
+        }
+        return;
+      }
+
+      const options = suggest.querySelectorAll('li[data-code]');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!options.length) return;
+        activeSuggestIndex = (activeSuggestIndex + 1) % options.length;
+        updateActiveSuggestion(options);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!options.length) return;
+        activeSuggestIndex = (activeSuggestIndex - 1 + options.length) % options.length;
+        updateActiveSuggestion(options);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeSuggestIndex >= 0 && options[activeSuggestIndex]) {
+          const li = options[activeSuggestIndex];
+          selectTrendProduct(li.getAttribute('data-code'), li.getAttribute('data-name'));
+        } else if (options.length > 0) {
+          const li = options[0];
+          selectTrendProduct(li.getAttribute('data-code'), li.getAttribute('data-name'));
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        hideTrendSuggestions();
+        if (state.selectedProduct) {
+          searchInput.value = `${state.selectedProduct.name} (${state.selectedProduct.code})`;
+          clearBtn?.classList.remove('hidden');
+        }
+      }
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        searchInput.value = '';
+        clearBtn.classList.add('hidden');
+        searchInput.focus();
+        searchTrendProducts('');
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      const container = el('trendSearchContainer');
+      if (!container || container.contains(e.target)) return;
+      hideTrendSuggestions();
+      if (state.selectedProduct && searchInput.value !== `${state.selectedProduct.name} (${state.selectedProduct.code})`) {
+        searchInput.value = `${state.selectedProduct.name} (${state.selectedProduct.code})`;
+        clearBtn?.classList.remove('hidden');
+      }
+    });
+  }
+
+  async function loadMonthlyTrend(productCode, productName) {
     if (!productCode) return;
     setStateMessage('monthlyTrendState', 'Memuat tren penjualan...', true);
     try {
@@ -383,7 +569,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const rows = Array.isArray(response.data) ? response.data : [];
 
       if (!rows.length) {
-        setStateMessage('monthlyTrendState', 'Belum ada riwayat penjualan untuk produk ini.');
+        const displayName = productName || productCode;
+        setStateMessage('monthlyTrendState', `Belum ada riwayat penjualan untuk ${displayName}.`);
         if (state.charts.monthlyTrend) {
           state.charts.monthlyTrend.destroy();
           state.charts.monthlyTrend = null;
@@ -514,10 +701,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const trendSelect = el('trendProductSelect');
-  if (trendSelect) {
-    trendSelect.addEventListener('change', () => loadMonthlyTrend(trendSelect.value));
-  }
+  setupTrendProductSearch();
 
   const refreshButton = el('refreshDashboard');
   if (refreshButton) refreshButton.addEventListener('click', refreshDashboard);
