@@ -1,25 +1,32 @@
 <!-- Top Navigation Bar Component -->
-<header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md">
-  <div class="flex-1 max-w-xl">
+<header class="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-md sm:px-space-lg flex items-center justify-between gap-space-sm sm:gap-space-md transition-[left] duration-300">
+  <div class="flex items-center gap-space-sm flex-1 max-w-xl">
+    <!-- Hamburger button for mobile (HP) -->
+    <button id="sidebarToggle" type="button" aria-label="Buka Menu" class="lg:hidden p-2 rounded-xl text-on-surface hover:bg-surface-container-low transition-colors shrink-0">
+      <span class="material-symbols-outlined text-[24px]">menu</span>
+    </button>
     <div class="relative flex items-center w-full">
       <span class="material-symbols-outlined absolute left-space-md text-outline text-[20px] pointer-events-none">search</span>
       <input class="w-full pl-11 pr-space-md py-2 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all duration-200" placeholder="Cari kode barang, anggota, transaksi... (Tekan /)" type="search" />
     </div>
   </div>
-  <div class="flex items-center gap-space-md">
+  <div class="flex items-center gap-space-xs sm:gap-space-md">
     <button aria-label="Notifikasi" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button">
       <span class="material-symbols-outlined text-[22px]">notifications</span>
       <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span>
     </button>
     <div class="h-8 w-px bg-surface-container"></div>
     <div class="flex items-center gap-space-sm pl-space-xs">
-      <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+      <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
         <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
       </div>
-      <div class="flex flex-col text-left">
-        <span class="font-title-md text-title-md text-on-surface leading-tight">Nur Sabrina Hanifa</span>
-        <span class="font-label-sm text-label-sm text-outline">Administrator</span>
+      <div class="flex flex-col text-left hidden sm:flex">
+        <span id="userProfileName" class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span>
+        <span id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span>
       </div>
     </div>
+    <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar" class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors ml-1">
+      <span class="material-symbols-outlined text-[20px]">logout</span>
+    </button>
   </div>
 </header>

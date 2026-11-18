@@ -2,3 +2,42 @@
 .metric-card-gradient {
   background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
 }
+
+/* Dynamic Chart.js canvas used by the live Forecast API page. */
+.forecast-chart-shell {
+  position: relative;
+  width: 100%;
+  min-height: 16rem;
+  height: 16rem;
+}
+
+.forecast-chart-shell canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.forecast-chart-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: #6e7977;
+  text-align: center;
+  font-size: 0.875rem;
+  background: rgba(248, 250, 252, 0.7);
+  border-radius: 0.75rem;
+}
+
+.forecast-chart-fallback[hidden] {
+  display: none;
+}
+
+
+/* Compact, PRD-aligned Forecast page refinements. */
+.status-card { min-height: 6.25rem; }
+.status-card:focus-visible { outline: 2px solid #16877b; outline-offset: 2px; }
+.forecast-data-row:focus-visible { outline: 2px solid #16877b; outline-offset: -2px; }
+.forecast-data-row:hover { cursor: pointer; }

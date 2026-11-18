@@ -161,6 +161,13 @@ func (r *OrderRepo) FindAll(ctx context.Context, f domain.OrderFilter) ([]domain
 	if f.Status != "" {
 		q["status"] = f.Status
 	}
+	switch f.Channel {
+	case domain.ChannelOnline:
+		q["channel"] = domain.ChannelOnline
+	case domain.ChannelOffline:
+		// pesanan lama tidak punya field channel -> dianggap OFFLINE
+		q["channel"] = bson.M{"$ne": domain.ChannelOnline}
+	}
 	if f.From != nil || f.To != nil {
 		rng := bson.M{}
 		if f.From != nil {

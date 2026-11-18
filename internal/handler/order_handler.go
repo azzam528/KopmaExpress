@@ -8,6 +8,7 @@ import (
 
 	"smartcoop/internal/domain"
 	"smartcoop/internal/httpx"
+	"smartcoop/internal/middleware"
 )
 
 // wib: tanggal tanpa jam pada filter (?from=2026-11-01) dianggap waktu WIB.
@@ -18,11 +19,17 @@ type OrderHandler struct {
 }
 
 // RegisterOrderRoutes mendaftarkan seluruh rute pesanan di bawah /orders.
-// Dipanggil dari main.go: handler.RegisterOrderRoutes(api, orderSvc)
-func RegisterOrderRoutes(api fiber.Router, svc domain.OrderService) {
+// Dipanggil dari main.go: handler.RegisterOrderRoutes(api, orderSvc, authMiddleware)
+func RegisterOrderRoutes(api fiber.Router, svc domain.OrderService, middlewares ...fiber.Handler) {
 	h := &OrderHandler{svc: svc}
 
 	g := api.Group("/orders")
+	for _, m := range middlewares {
+		if m != nil {
+			g.Use(m)
+		}
+	}
+
 	g.Post("/", h.Create)
 	g.Get("/", h.List)
 	g.Get("/:order_no", h.GetByOrderNo)
@@ -38,6 +45,14 @@ func (h *OrderHandler) Create(c *fiber.Ctx) error {
 		return domain.NewValidationError("Body harus berupa JSON yang valid (Content-Type: application/json)")
 	}
 
+	claims := middleware.GetCurrentUser(c)
+	if claims != nil && claims.Role == domain.RoleMember {
+		if req.MemberNIM != "" && strings.TrimSpace(req.MemberNIM) != claims.NIM {
+			return domain.NewForbiddenError("Anda hanya dapat membuat pesanan untuk akun Anda sendiri")
+		}
+		req.MemberNIM = claims.NIM
+	}
+
 	order, err := h.svc.Create(c.UserContext(), &req)
 	if err != nil {
 		return err
@@ -45,13 +60,19 @@ func (h *OrderHandler) Create(c *fiber.Ctx) error {
 	return httpx.WriteCreated(c, order)
 }
 
-// GET /orders?nim=&from=&to=&status=&page=&limit=
+// GET /orders?nim=&from=&to=&status=&channel=&page=&limit=
 func (h *OrderHandler) List(c *fiber.Ctx) error {
 	f := domain.OrderFilter{
 		MemberNIM: c.Query("nim"),
 		Status:    domain.OrderStatus(c.Query("status")),
+		Channel:   domain.OrderChannel(c.Query("channel")),
 		Page:      c.QueryInt("page", 1),
 		Limit:     c.QueryInt("limit", 20),
+	}
+
+	claims := middleware.GetCurrentUser(c)
+	if claims != nil && claims.Role == domain.RoleMember {
+		f.MemberNIM = claims.NIM
 	}
 
 	var details []domain.ValidationErrorDetail
@@ -109,12 +130,30 @@ func (h *OrderHandler) GetByOrderNo(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
+	claims := middleware.GetCurrentUser(c)
+	if claims != nil && claims.Role == domain.RoleMember && order.MemberNIM != claims.NIM {
+		return domain.NewForbiddenError("Anda tidak memiliki akses ke pesanan ini")
+	}
+
 	return httpx.WriteOK(c, order)
 }
 
 // POST /orders/:order_no/cancel
 func (h *OrderHandler) Cancel(c *fiber.Ctx) error {
 	orderNo := c.Params("order_no")
+
+	claims := middleware.GetCurrentUser(c)
+	if claims != nil && claims.Role == domain.RoleMember {
+		order, err := h.svc.GetByOrderNo(c.UserContext(), orderNo)
+		if err != nil {
+			return err
+		}
+		if order.MemberNIM != claims.NIM {
+			return domain.NewForbiddenError("Anda tidak memiliki akses untuk membatalkan pesanan ini")
+		}
+	}
+
 	if err := h.svc.Cancel(c.UserContext(), orderNo); err != nil {
 		return err
 	}

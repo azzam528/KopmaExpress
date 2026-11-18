@@ -87,6 +87,7 @@ tailwind.config = {
         "gutter-mobile": "1rem"
       },
       "fontFamily": {
+        "sans": ["Inter", "system-ui", "-apple-system", "sans-serif"],
         "headline-md": ["Plus Jakarta Sans", "sans-serif"],
         "label-lg": ["Inter", "sans-serif"],
         "body-sm": ["Inter", "sans-serif"],

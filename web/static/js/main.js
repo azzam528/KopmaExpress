@@ -94,18 +94,24 @@ async function syncUserProfile() {
     const res = await fetch('/api/v1/auth/me', {
       headers: { 'Accept': 'application/json' }
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      if (res.status === 401 && !window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
+      return;
+    }
     const json = await res.json();
     if (json && json.success && json.data) {
       const user = json.data;
-      const userNameEl = document.querySelector('header .flex-col span.font-title-md');
-      const userRoleEl = document.querySelector('header .flex-col span.font-label-sm');
-      if (userNameEl && (user.nama || user.name)) {
-        userNameEl.textContent = user.nama || user.name;
-      }
-      if (userRoleEl && user.nim) {
-        userRoleEl.textContent = user.nim;
-      }
+      const displayName = user.name || user.nama || user.nim || 'Pengguna';
+      const roleText = user.role === 'admin' ? 'Administrator' : 'Anggota';
+      const roleSub = user.nim ? `${roleText} • ${user.nim}` : roleText;
+
+      const userNameEls = document.querySelectorAll('#userProfileName, header .flex-col span.font-title-md');
+      const userRoleEls = document.querySelectorAll('#userProfileRole, header .flex-col span.font-label-sm');
+
+      userNameEls.forEach(el => { el.textContent = displayName; });
+      userRoleEls.forEach(el => { el.textContent = roleSub; });
     }
   } catch (e) {
     // ignore
@@ -124,4 +130,41 @@ window.logoutUser = async function() {
 
 document.addEventListener('DOMContentLoaded', () => {
   syncUserProfile();
+
+  document.querySelectorAll('#logoutBtn, [data-action="logout"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.logoutUser();
+    });
+  });
+
+  // 5. Mobile Sidebar Responsiveness
+  const sidebar = document.querySelector('aside');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const closeBtn = document.getElementById('sidebarClose');
+  const backdrop = document.getElementById('sidebarBackdrop');
+
+  function openSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.remove('-translate-x-full');
+    sidebar.classList.add('translate-x-0');
+    if (backdrop) backdrop.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden', 'lg:overflow-auto');
+  }
+
+  function closeSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.add('-translate-x-full');
+    sidebar.classList.remove('translate-x-0');
+    if (backdrop) backdrop.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
+  }
+
+  if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+  if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+  if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebar();
+  });
 });

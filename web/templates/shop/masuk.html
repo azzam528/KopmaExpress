@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Masuk Anggota - KOPMA Express</title>
+  <link rel="stylesheet" href="/static/css/pages/shop.css" />
+</head>
+<body>
+  <main class="center">
+    <form class="card login" id="form" autocomplete="off">
+      <div class="brand">KOPMA<span>Express</span></div>
+      <h1 style="text-align:center">Masuk Anggota</h1>
+      <p class="sub" style="text-align:center">Masukkan NIM untuk mulai berbelanja.</p>
+
+      <div id="msg"></div>
+
+      <label class="lbl" for="nim">NIM</label>
+      <input class="field" id="nim" inputmode="numeric" placeholder="contoh: 2105120401" autofocus required />
+
+      <button class="btn" id="go" type="submit">Masuk</button>
+      <p class="hint">Akses sementara: belum memakai kata sandi.</p>
+    </form>
+  </main>
+
+  <script src="/static/js/components/api.js"></script>
+  <script src="/static/js/pages/shop_login.js"></script>
+</body>
+</html>

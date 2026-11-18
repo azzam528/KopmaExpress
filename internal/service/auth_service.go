@@ -2,175 +2,259 @@ package service
 
 import (
 	"context"
-	"errors"
-	"net/mail"
 	"strings"
 	"time"
 
-	"smartcoop/internal/domain"
-
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
+
+	"smartcoop/internal/domain"
+	"smartcoop/internal/security"
 )
 
 type AuthService struct {
+	userRepo   domain.UserRepository
 	memberRepo domain.MemberRepository
+	jwtSecret  string
+	jwtTTL     time.Duration
 }
 
-func NewAuthService(memberRepo domain.MemberRepository) *AuthService {
+func NewAuthService(userRepo domain.UserRepository, memberRepo domain.MemberRepository, jwtSecret string, jwtTTL time.Duration) *AuthService {
+	if jwtTTL <= 0 {
+		jwtTTL = 24 * time.Hour
+	}
 	return &AuthService{
+		userRepo:   userRepo,
 		memberRepo: memberRepo,
+		jwtSecret:  jwtSecret,
+		jwtTTL:     jwtTTL,
 	}
 }
 
-func isAuthNotFound(err error) bool {
-	var appErr *domain.AppError
-	return errors.As(err, &appErr) && appErr.Code == domain.CodeNotFound
-}
-
-func isValidEmail(email string) bool {
-	if email == "" || len(email) > 254 {
-		return false
-	}
-	addr, err := mail.ParseAddress(email)
-	if err != nil || addr.Address != email {
-		return false
-	}
-	parts := strings.Split(email, "@")
-	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		return false
-	}
-	domainPart := parts[1]
-	if !strings.Contains(domainPart, ".") || strings.HasPrefix(domainPart, ".") || strings.HasSuffix(domainPart, ".") {
-		return false
-	}
-	return true
-}
-
-func (s *AuthService) Register(ctx context.Context, req *domain.CreateMemberRequest) (*domain.Member, error) {
+// Login authenticates a user using NIM and password against the "users" collection.
+func (s *AuthService) Login(ctx context.Context, req *domain.LoginRequest) (*domain.User, *domain.Member, string, error) {
 	if req == nil {
-		return nil, domain.NewValidationError("Data pendaftaran tidak boleh kosong")
+		return nil, nil, "", domain.NewValidationError("Data login tidak boleh kosong")
 	}
 
-	req.NIM = strings.TrimSpace(req.NIM)
-	req.Name = strings.TrimSpace(req.Name)
-	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
-	req.Unit = strings.TrimSpace(req.Unit)
-	req.Phone = strings.TrimSpace(req.Phone)
-
-	var validationDetails []domain.ValidationErrorDetail
-
-	if req.NIM == "" {
-		validationDetails = append(validationDetails, domain.ValidationErrorDetail{Field: "nim", Message: "NIM wajib diisi"})
-	} else if len(req.NIM) > 20 {
-		validationDetails = append(validationDetails, domain.ValidationErrorDetail{Field: "nim", Message: "NIM maksimal 20 karakter"})
+	nim := strings.TrimSpace(req.NIM)
+	if nim == "" {
+		nim = strings.TrimSpace(req.Email) // Fallback for backward compatibility
 	}
-
-	if req.Name == "" {
-		validationDetails = append(validationDetails, domain.ValidationErrorDetail{Field: "nama", Message: "Nama lengkap wajib diisi"})
-	} else if len(req.Name) > 120 {
-		validationDetails = append(validationDetails, domain.ValidationErrorDetail{Field: "nama", Message: "Nama lengkap maksimal 120 karakter"})
-	}
-
-	if req.Email == "" {
-		validationDetails = append(validationDetails, domain.ValidationErrorDetail{Field: "email", Message: "Email wajib diisi"})
-	} else if !isValidEmail(req.Email) {
-		validationDetails = append(validationDetails, domain.ValidationErrorDetail{Field: "email", Message: "Format email tidak valid"})
-	}
-
-	passBytes := []byte(req.Password)
-	if len(passBytes) < 8 || len(passBytes) > 72 {
-		validationDetails = append(validationDetails, domain.ValidationErrorDetail{Field: "password", Message: "Password harus 8-72 karakter"})
-	}
-
-	if len(validationDetails) > 0 {
-		return nil, domain.NewValidationError("Validasi pendaftaran gagal", validationDetails...)
-	}
-
-	existingNIM, err := s.memberRepo.FindByNIM(ctx, req.NIM)
-	if err == nil && existingNIM != nil {
-		return nil, domain.NewDuplicateError("NIM sudah terdaftar")
-	}
-	if err != nil && !isAuthNotFound(err) {
-		return nil, err
-	}
-
-	existingEmail, err := s.memberRepo.FindByEmail(ctx, req.Email)
-	if err == nil && existingEmail != nil {
-		return nil, domain.NewDuplicateError("Email sudah terdaftar")
-	}
-	if err != nil && !isAuthNotFound(err) {
-		return nil, err
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword(passBytes, bcrypt.DefaultCost)
-	if err != nil {
-		return nil, domain.NewInternalError("Gagal memproses password")
-	}
-
-	now := time.Now()
-
-	member := &domain.Member{
-		NIM:          req.NIM,
-		Name:         req.Name,
-		Email:        req.Email,
-		PasswordHash: string(hashedPassword),
-		Unit:         req.Unit,
-		Phone:        req.Phone,
-		IsActive:     true,
-		CreatedAt:    now,
-		JoinedAt:     now,
-	}
-
-	if req.JoinedAt != nil {
-		member.JoinedAt = *req.JoinedAt
-	}
-
-	if err := s.memberRepo.Create(ctx, member); err != nil {
-		return nil, err
-	}
-
-	return member, nil
-}
-
-func (s *AuthService) Login(ctx context.Context, req *domain.LoginRequest) (*domain.Member, error) {
-	if req == nil {
-		return nil, domain.NewValidationError("Data login tidak boleh kosong")
-	}
-
-	identifier := strings.ToLower(strings.TrimSpace(req.Email))
 	password := req.Password
 
-	if identifier == "" || password == "" {
-		return nil, domain.NewValidationError("Email dan password wajib diisi")
+	if nim == "" || password == "" {
+		return nil, nil, "", domain.NewValidationError("NIM dan kata sandi wajib diisi")
+	}
+
+	user, err := s.userRepo.FindByNIM(ctx, nim)
+	if err != nil || user == nil {
+		return nil, nil, "", domain.NewUnauthorizedError("NIM atau kata sandi salah")
+	}
+
+	if user.Status != domain.UserStatusActive {
+		return nil, nil, "", domain.NewUnauthorizedError("Akun tidak aktif, silakan hubungi pengurus KOPMA")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		return nil, nil, "", domain.NewUnauthorizedError("NIM atau kata sandi salah")
 	}
 
 	var member *domain.Member
-	var err error
-
-	// Cari berdasarkan email; jika bukan format email atau tidak ditemukan, coba juga berdasarkan NIM
-	if strings.Contains(identifier, "@") {
-		member, err = s.memberRepo.FindByEmail(ctx, identifier)
-	} else {
-		member, err = s.memberRepo.FindByNIM(ctx, identifier)
-		if err != nil || member == nil {
-			member, err = s.memberRepo.FindByEmail(ctx, identifier)
+	if user.MemberID != nil && s.memberRepo != nil {
+		m, err := s.memberRepo.FindByID(ctx, *user.MemberID)
+		if err == nil && m != nil {
+			member = m
+		} else {
+			m2, err2 := s.memberRepo.FindByNIM(ctx, user.NIM)
+			if err2 == nil && m2 != nil {
+				member = m2
+			}
+		}
+	} else if user.Role == domain.RoleMember && s.memberRepo != nil {
+		m, err := s.memberRepo.FindByNIM(ctx, user.NIM)
+		if err == nil && m != nil {
+			member = m
 		}
 	}
 
-	if err != nil || member == nil {
-		return nil, domain.NewUnauthorizedError("Email atau password salah")
+	claims := security.JWTClaims{
+		UserID: user.ID.Hex(),
+		NIM:    user.NIM,
+		Name:   user.Name,
+		Role:   user.Role,
 	}
 
-	if err := bcrypt.CompareHashAndPassword(
-		[]byte(member.PasswordHash),
-		[]byte(password),
-	); err != nil {
-		return nil, domain.NewUnauthorizedError("Email atau password salah")
+	token, err := security.GenerateToken(s.jwtSecret, claims, s.jwtTTL)
+	if err != nil {
+		return nil, nil, "", domain.NewInternalError("Gagal membuat token autentikasi")
 	}
 
-	if !member.IsActive {
-		return nil, domain.NewUnauthorizedError("Akun tidak aktif, silakan hubungi pengurus KOPMA")
+	return user, member, token, nil
+}
+
+// GetProfile retrieves the authenticated user's profile and linked member details.
+func (s *AuthService) GetProfile(ctx context.Context, userID primitive.ObjectID, nim string) (*domain.UserProfileResponse, error) {
+	var user *domain.User
+	var err error
+
+	if !userID.IsZero() {
+		user, err = s.userRepo.FindByID(ctx, userID)
+	}
+	if (err != nil || user == nil) && nim != "" {
+		user, err = s.userRepo.FindByNIM(ctx, nim)
+	}
+	if err != nil || user == nil {
+		return nil, domain.NewNotFoundError("User tidak ditemukan")
 	}
 
-	return member, nil
+	profile := &domain.UserProfileResponse{
+		UserID: user.ID.Hex(),
+		NIM:    user.NIM,
+		Name:   user.Name,
+		Role:   user.Role,
+		Status: user.Status,
+	}
+
+	if user.MemberID != nil {
+		mIDStr := user.MemberID.Hex()
+		profile.MemberID = &mIDStr
+
+		if s.memberRepo != nil {
+			m, mErr := s.memberRepo.FindByID(ctx, *user.MemberID)
+			if mErr == nil && m != nil {
+				profile.Member = &domain.MemberInfo{
+					ID:       m.ID.Hex(),
+					NIM:      m.NIM,
+					Name:     m.Name,
+					Unit:     m.Unit,
+					Phone:    m.Phone,
+					Email:    m.Email,
+					IsActive: m.IsActive,
+				}
+			}
+		}
+	} else if s.memberRepo != nil {
+		m, mErr := s.memberRepo.FindByNIM(ctx, user.NIM)
+		if mErr == nil && m != nil {
+			mIDStr := m.ID.Hex()
+			profile.MemberID = &mIDStr
+			profile.Member = &domain.MemberInfo{
+				ID:       m.ID.Hex(),
+				NIM:      m.NIM,
+				Name:     m.Name,
+				Unit:     m.Unit,
+				Phone:    m.Phone,
+				Email:    m.Email,
+				IsActive: m.IsActive,
+			}
+		}
+	}
+
+	return profile, nil
+}
+
+// SeedInitialUsers ensures that the Admin Testing and Member Testing accounts exist idempotently.
+func (s *AuthService) SeedInitialUsers(ctx context.Context, adminNIM, adminPassword, memberNIM, memberPassword string) error {
+	now := time.Now()
+
+	// 1. Seed Admin Testing Account
+	if adminNIM != "" && adminPassword != "" {
+		existingAdmin, err := s.userRepo.FindByNIM(ctx, adminNIM)
+		if err != nil && isNotFound(err) {
+			hash, err := bcrypt.GenerateFromPassword([]byte(adminPassword), bcrypt.DefaultCost)
+			if err != nil {
+				return err
+			}
+			adminUser := &domain.User{
+				NIM:          adminNIM,
+				Name:         "Admin Testing",
+				PasswordHash: string(hash),
+				Role:         domain.RoleAdmin,
+				Status:       domain.UserStatusActive,
+				MemberID:     nil,
+				CreatedAt:    now,
+				UpdatedAt:    now,
+			}
+			if err := s.userRepo.Create(ctx, adminUser); err != nil {
+				return err
+			}
+		} else if err == nil && existingAdmin != nil {
+			// Ensure role is admin and status is active
+			if existingAdmin.Role != domain.RoleAdmin || existingAdmin.Status != domain.UserStatusActive {
+				existingAdmin.Role = domain.RoleAdmin
+				existingAdmin.Status = domain.UserStatusActive
+				_ = s.userRepo.Update(ctx, existingAdmin.ID, existingAdmin)
+			}
+		}
+	}
+
+	// 2. Seed Member Testing Account & Member Document
+	if memberNIM != "" && memberPassword != "" {
+		var memberDoc *domain.Member
+		if s.memberRepo != nil {
+			m, err := s.memberRepo.FindByNIM(ctx, memberNIM)
+			if err != nil && isNotFound(err) {
+				newM := &domain.Member{
+					NIM:       memberNIM,
+					Name:      "Member Testing",
+					Unit:      "KOPMA",
+					Phone:     "081200000002",
+					IsActive:  true,
+					JoinedAt:  now,
+					CreatedAt: now,
+				}
+				if createErr := s.memberRepo.Create(ctx, newM); createErr == nil {
+					memberDoc = newM
+				}
+			} else if err == nil && m != nil {
+				memberDoc = m
+			}
+		}
+
+		existingMemberUser, err := s.userRepo.FindByNIM(ctx, memberNIM)
+		if err != nil && isNotFound(err) {
+			hash, err := bcrypt.GenerateFromPassword([]byte(memberPassword), bcrypt.DefaultCost)
+			if err != nil {
+				return err
+			}
+			var memberID *primitive.ObjectID
+			if memberDoc != nil && !memberDoc.ID.IsZero() {
+				memberID = &memberDoc.ID
+			}
+
+			memberUser := &domain.User{
+				NIM:          memberNIM,
+				Name:         "Member Testing",
+				PasswordHash: string(hash),
+				Role:         domain.RoleMember,
+				Status:       domain.UserStatusActive,
+				MemberID:     memberID,
+				CreatedAt:    now,
+				UpdatedAt:    now,
+			}
+			if err := s.userRepo.Create(ctx, memberUser); err != nil {
+				return err
+			}
+		} else if err == nil && existingMemberUser != nil {
+			needsUpdate := false
+			if existingMemberUser.Role != domain.RoleMember {
+				existingMemberUser.Role = domain.RoleMember
+				needsUpdate = true
+			}
+			if existingMemberUser.Status != domain.UserStatusActive {
+				existingMemberUser.Status = domain.UserStatusActive
+				needsUpdate = true
+			}
+			if existingMemberUser.MemberID == nil && memberDoc != nil && !memberDoc.ID.IsZero() {
+				existingMemberUser.MemberID = &memberDoc.ID
+				needsUpdate = true
+			}
+			if needsUpdate {
+				_ = s.userRepo.Update(ctx, existingMemberUser.ID, existingMemberUser)
+			}
+		}
+	}
+
+	return nil
 }

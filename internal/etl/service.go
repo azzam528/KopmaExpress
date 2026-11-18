@@ -55,7 +55,7 @@ func (s *Service) StartImport(ctx context.Context, fileName string, fileBytes []
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrInvalidWorkbook, err)
 	}
-	if _, ok := FindSheet(wb, SheetProducts); !ok {
+	if _, ok := FindProductSheet(wb); !ok {
 		_ = wb.Close()
 		return nil, ErrMissingSheet
 	}
