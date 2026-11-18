@@ -58,6 +58,17 @@ func (r *ForecastRepo) UpsertForecasts(ctx context.Context, results []domain.For
 	if err != nil {
 		return fmt.Errorf("bulk upsert forecast results: %w", err)
 	}
+
+		codes := make([]string, 0, len(results))
+	for _, result := range results {
+		codes = append(codes, result.ProductCode)
+	}
+	if _, err := r.db.Collection("forecast_results").DeleteMany(ctx, bson.M{
+		"target_month": results[0].TargetMonth,
+		"product_code": bson.M{"$nin": codes},
+	}); err != nil {
+		return fmt.Errorf("remove stale forecast results: %w", err)
+	}
 	return nil
 }
 

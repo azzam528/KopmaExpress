@@ -1,3 +1,4 @@
+
 package domain
 
 import (
@@ -21,7 +22,7 @@ type ForecastResult struct {
 	ID              primitive.ObjectID `bson:"_id,omitempty"    json:"id"`
 	ProductCode     string             `bson:"product_code"     json:"kode_barang"`
 	ProductName     string             `bson:"product_name"     json:"nama_barang"`
-	TargetMonth     string             `bson:"target_month"     json:"bulan_target"` // e.g. "2026-12"
+	TargetMonth     string             `bson:"target_month"     json:"bulan_target"`
 	CurrentStock    int64              `bson:"current_stock"    json:"stok_saat_ini"`
 	WMA             float64            `bson:"wma"              json:"wma"`
 	LinearTrend     float64            `bson:"linear_trend"     json:"regresi_linear"`
@@ -34,8 +35,7 @@ type ForecastResult struct {
 	CalculatedAt    time.Time          `bson:"calculated_at"    json:"calculated_at"`
 }
 
-// ForecastDetail combines the latest forecast with the historical monthly
-// observations used as its input, so the client can render the trend chart.
+// ForecastDetail combines the latest forecast with historical monthly observations.
 type ForecastDetail struct {
 	ForecastResult
 	History []MonthlySalesHistory `json:"riwayat_bulanan"`
@@ -65,6 +65,7 @@ type ForecastRepository interface {
 
 type ForecastService interface {
 	Recalculate(ctx context.Context) error
+	EnsureFresh(ctx context.Context, maxAge time.Duration) error
 	List(ctx context.Context, filter ForecastFilter) ([]ForecastResult, int64, error)
 	GetByProductCode(ctx context.Context, code string) (*ForecastDetail, error)
 	GetSummary(ctx context.Context) (map[RestockStatus]int64, error)

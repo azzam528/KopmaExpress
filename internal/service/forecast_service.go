@@ -19,6 +19,9 @@ type ForecastService struct {
 	repo         domain.ForecastRepository
 	workers      int
 	topStockSize int
+
+	mu      sync.Mutex
+	lastRun time.Time
 }
 
 func NewForecastService(repo domain.ForecastRepository, workers, topStockSize int) *ForecastService {
@@ -106,6 +109,22 @@ func (s *ForecastService) Recalculate(ctx context.Context) error {
 	if err := s.repo.UpsertForecasts(ctx, resultsList); err != nil {
 		return fmt.Errorf("persist forecast results: %w", err)
 	}
+	return nil
+}
+
+// EnsureFresh menghitung ulang forecast jika hasil terakhir lebih tua dari maxAge.
+// Mutex membuat request bersamaan (summary + list dari dashboard) hanya memicu satu hitungan.
+func (s *ForecastService) EnsureFresh(ctx context.Context, maxAge time.Duration) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if !s.lastRun.IsZero() && time.Since(s.lastRun) < maxAge {
+		return nil
+	}
+	if err := s.Recalculate(ctx); err != nil {
+		return err
+	}
+	s.lastRun = time.Now()
 	return nil
 }
 

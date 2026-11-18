@@ -2,7 +2,9 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"strings"
+	"time"
 
 	"smartcoop/internal/domain"
 	"smartcoop/internal/httpx"
@@ -12,6 +14,15 @@ import (
 
 type ForecastHandler struct {
 	service domain.ForecastService
+}
+
+// Hasil forecast dianggap segar selama < 5 detik; lebih lama dari itu dihitung ulang.
+const forecastMaxAge = 5 * time.Second
+
+func (h *ForecastHandler) refreshSnapshot(c *fiber.Ctx) {
+	if err := h.service.EnsureFresh(c.UserContext(), forecastMaxAge); err != nil {
+		log.Printf("[FORECAST] auto-refresh gagal, memakai data tersimpan: %v", err)
+	}
 }
 
 func NewForecastHandler(service domain.ForecastService) *ForecastHandler {
@@ -39,6 +50,7 @@ func (h *ForecastHandler) Recalculate(c *fiber.Ctx) error {
 }
 
 func (h *ForecastHandler) List(c *fiber.Ctx) error {
+	h.refreshSnapshot(c)
 	filter := domain.ForecastFilter{
 		Status: domain.RestockStatus(strings.ToUpper(strings.TrimSpace(c.Query("status")))),
 		Query:  strings.TrimSpace(c.Query("q")),
@@ -65,6 +77,7 @@ func (h *ForecastHandler) List(c *fiber.Ctx) error {
 }
 
 func (h *ForecastHandler) GetSummary(c *fiber.Ctx) error {
+	h.refreshSnapshot(c)
 	result, err := h.service.GetSummary(c.UserContext())
 	if err != nil {
 		return writeHandlerError(c, err)
@@ -73,6 +86,7 @@ func (h *ForecastHandler) GetSummary(c *fiber.Ctx) error {
 }
 
 func (h *ForecastHandler) GetByProductCode(c *fiber.Ctx) error {
+	h.refreshSnapshot(c)
 	result, err := h.service.GetByProductCode(c.UserContext(), strings.TrimSpace(c.Params("code")))
 	if err != nil {
 		return writeHandlerError(c, err)
