@@ -67,6 +67,65 @@ func (r *AnalyticsRepo) GetTopSelling(
 	if err != nil {
 		return nil, fmt.Errorf("aggregate top selling products: %w", err)
 	}
+	return decodeTopSelling(ctx, cursor)
+}
+
+// GetTopSellingOrders menghitung barang terlaris dari pesanan COMPLETED pada
+// rentang waktu [from, to). Pesanan CANCELLED tidak dihitung.
+func (r *AnalyticsRepo) GetTopSellingOrders(
+	ctx context.Context,
+	from, to time.Time,
+	limit int,
+) ([]domain.TopSellingProduct, error) {
+	if limit <= 0 {
+		limit = 10
+	}
+	if limit > 50 {
+		limit = 50
+	}
+
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: bson.M{
+			"status":     domain.OrderCompleted,
+			"created_at": bson.M{"$gte": from, "$lt": to},
+		}}},
+		bson.D{{Key: "$unwind", Value: "$items"}},
+		bson.D{{Key: "$group", Value: bson.D{
+			{Key: "_id", Value: "$items.product_code"},
+			{Key: "order_name", Value: bson.D{{Key: "$first", Value: "$items.product_name"}}},
+			{Key: "total_qty", Value: bson.D{{Key: "$sum", Value: "$items.qty"}}},
+			{Key: "total_omzet", Value: bson.D{{Key: "$sum", Value: "$items.subtotal"}}},
+		}}},
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "products"},
+			{Key: "localField", Value: "_id"},
+			{Key: "foreignField", Value: "kode_barang"},
+			{Key: "as", Value: "product"},
+		}}},
+		bson.D{{Key: "$unwind", Value: bson.D{
+			{Key: "path", Value: "$product"},
+			{Key: "preserveNullAndEmptyArrays", Value: true},
+		}}},
+		bson.D{{Key: "$sort", Value: bson.D{{Key: "total_qty", Value: -1}, {Key: "_id", Value: 1}}}},
+		bson.D{{Key: "$limit", Value: int64(limit)}},
+		bson.D{{Key: "$project", Value: bson.D{
+			{Key: "_id", Value: 0},
+			{Key: "product_code", Value: "$_id"},
+			{Key: "product_name", Value: bson.D{{Key: "$ifNull", Value: bson.A{"$product.name", "$order_name"}}}},
+			{Key: "category", Value: "$product.category"},
+			{Key: "total_qty", Value: 1},
+			{Key: "total_omzet", Value: 1},
+		}}},
+	}
+
+	cursor, err := r.db.Collection("orders").Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, fmt.Errorf("aggregate top selling products from orders: %w", err)
+	}
+	return decodeTopSelling(ctx, cursor)
+}
+
+func decodeTopSelling(ctx context.Context, cursor *mongo.Cursor) ([]domain.TopSellingProduct, error) {
 	defer cursor.Close(ctx)
 
 	var rows []struct {

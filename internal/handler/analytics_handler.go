@@ -48,8 +48,19 @@ func (h *AnalyticsHandler) GetTopSelling(c *fiber.Ctx) error {
 		meta = fiber.Map{"from": from, "to": to, "limit": boundedLimit(limit, 10, 50)}
 	} else {
 		period := c.Query("period", "6m")
-		results, err = h.service.GetTopSelling(c.UserContext(), period, limit)
-		meta = fiber.Map{"period": period, "limit": boundedLimit(limit, 10, 50)}
+		switch period {
+		case "daily", "weekly", "monthly", "yearly":
+			var window *domain.TopSellingWindow
+			results, window, err = h.service.GetTopSellingByPeriod(
+				c.UserContext(), period, c.Query("date"), c.Query("month"), limit)
+			meta = fiber.Map{"period": period, "limit": boundedLimit(limit, 10, 50)}
+			if window != nil {
+				meta["from"], meta["to"] = window.From, window.To
+			}
+		default:
+			results, err = h.service.GetTopSelling(c.UserContext(), period, limit)
+			meta = fiber.Map{"period": period, "limit": boundedLimit(limit, 10, 50)}
+		}
 	}
 	if err != nil {
 		return writeHandlerError(c, err)

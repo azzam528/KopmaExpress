@@ -28,6 +28,14 @@ type TopSellingProduct struct {
 	TotalOmzet  int64  `json:"total_omzet"`
 }
 
+// TopSellingWindow menjelaskan rentang tanggal (inklusif, format YYYY-MM-DD,
+// zona waktu WIB) yang dipakai untuk satu query barang terlaris.
+type TopSellingWindow struct {
+	Period string `json:"period"`
+	From   string `json:"from"`
+	To     string `json:"to"`
+}
+
 type TopStockProduct struct {
 	Rank        int    `json:"rank"`
 	ProductCode string `json:"kode_barang"`
@@ -64,6 +72,10 @@ type HistoryRepository interface {
 
 type AnalyticsRepository interface {
 	GetTopSelling(ctx context.Context, fromYear, fromMonth, toYear, toMonth, limit int) ([]TopSellingProduct, error)
+	// GetTopSellingOrders menghitung barang terlaris langsung dari pesanan
+	// COMPLETED pada rentang [from, to). Dipakai untuk periode harian/mingguan
+	// karena monthly_sales_history hanya menyimpan agregasi bulanan.
+	GetTopSellingOrders(ctx context.Context, from, to time.Time, limit int) ([]TopSellingProduct, error)
 	GetTopStock(ctx context.Context, limit int) ([]TopStockProduct, int64, error)
 	GetSummary(ctx context.Context) (*DashboardSummary, error)
 	GetMonthlyTrend(ctx context.Context, productCode string) ([]MonthlyTrendItem, error)
@@ -72,6 +84,10 @@ type AnalyticsRepository interface {
 type AnalyticsService interface {
 	GetTopSelling(ctx context.Context, period string, limit int) ([]TopSellingProduct, error)
 	GetTopSellingRange(ctx context.Context, from, to string, limit int) ([]TopSellingProduct, error)
+	// GetTopSellingByPeriod mendukung period daily|weekly|monthly|yearly.
+	// date (YYYY-MM-DD) dipakai untuk daily, month (YYYY-MM) untuk monthly;
+	// keduanya opsional dan default ke hari/bulan berjalan.
+	GetTopSellingByPeriod(ctx context.Context, period, date, month string, limit int) ([]TopSellingProduct, *TopSellingWindow, error)
 	GetTopStock(ctx context.Context, limit int) ([]TopStockProduct, int64, error)
 	GetSummary(ctx context.Context) (*DashboardSummary, error)
 	GetMonthlyTrend(ctx context.Context, productCode string) ([]MonthlyTrendItem, error)
