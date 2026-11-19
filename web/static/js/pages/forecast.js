@@ -20,6 +20,7 @@
     productOptions: [],         // + baru
     activeIndex: -1,            // + baru
     selectedLabel: '',
+    autoSelect: false,          // true hanya saat card status diklik
     listRequestId: 0,
     detailRequestId: 0,
   };
@@ -213,13 +214,17 @@
     if (!input) return;
     input.disabled = false;
 
-    if (!state.selectedCode && state.rows.length) {
-      state.selectedCode = state.rows[0].kode_barang; // default: produk teratas
+    // Produk hanya dipilih otomatis setelah card status diklik.
+    // Saat halaman baru dibuka, kotak dibiarkan kosong.
+    if (!state.selectedCode && state.autoSelect && state.rows.length) {
+      state.selectedCode = state.rows[0].kode_barang;
     }
+    state.autoSelect = false;
+
     if (!state.selectedCode) {
       input.value = '';
       state.selectedLabel = '';
-      input.placeholder = 'Tidak ada produk';
+      input.placeholder = state.rows.length ? 'Cari kode / nama barang...' : 'Tidak ada produk';
     } else {
       input.placeholder = 'Cari kode / nama barang...';
     }
@@ -520,8 +525,8 @@
     }
   }
 
-  function renderEmptyDetail() {
-    setText('forecastProductName', 'Belum ada data produk');
+  function renderEmptyDetail(idle = false) {
+    setText('forecastProductName', idle ? 'Cari dan pilih produk untuk melihat analisis' : 'Belum ada data produk');
     setText('forecastProductStatusBadge', 'NO DATA');
     setText('forecastMetricWma', '—');
     setText('forecastMetricSlope', '—');
@@ -561,7 +566,9 @@
     const fallback = $('forecastChartFallback');
     if (fallback) {
       fallback.hidden = false;
-      fallback.textContent = 'Belum ada hasil forecast untuk ditampilkan.';
+      fallback.textContent = idle
+        ? 'Ketik kode atau nama barang di kotak pencarian, lalu pilih produknya.'
+        : 'Belum ada hasil forecast untuk ditampilkan.';
     }
   }
 
@@ -615,7 +622,7 @@
       if (state.selectedCode) {
         await loadDetail(state.selectedCode);
       } else {
-        renderEmptyDetail();
+        renderEmptyDetail(state.rows.length > 0);
       }
       return true;
     } catch (error) {
@@ -640,6 +647,7 @@
     state.page = 1;
     state.selectedCode = '';   // pilih ulang produk teratas sesuai status baru
     state.selectedLabel = '';
+    state.autoSelect = true;   // card diklik -> tampilkan produk teratas status itu
     loadDashboard();
   }
 
