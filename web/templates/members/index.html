@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Master Anggota — KOPMA Express</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+
+  <!-- Global & Page CSS -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <link rel="stylesheet" href="/static/css/pages/members.css" />
+
+  <!-- Tailwind CSS CDN + Centralized Theme Configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+
+  <!-- Libraries & Shared Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="/static/js/components/api.js"></script>
+  <script src="/static/js/main.js"></script>
+</head>
+
+<body class="bg-canvas-bg font-body-md text-on-surface antialiased">
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebarBackdrop"
+    class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
+
+  <!-- Standard Sidebar Navigation (Responsive on Mobile) -->
+  <aside
+    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
+    <div class="flex flex-col gap-space-lg">
+      <div class="flex items-center justify-between px-space-sm pt-space-xs">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm shrink-0">
+            <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span></div>
+          <div class="flex flex-col"><span
+              class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span><span
+              class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
+              Analytics</span></div>
+        </div>
+        <button id="sidebarClose" type="button" aria-label="Tutup Menu"
+          class="lg:hidden p-1.5 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-sidebar-hover transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <nav class="flex flex-col gap-1"
+        data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="dashboard" href="/"><span class="material-symbols-outlined text-[20px]">grid_view</span><span
+            class="font-label-lg text-label-lg">Dashboard</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-barang" href="/products"><span
+            class="material-symbols-outlined text-[20px]">inventory_2</span><span
+            class="font-label-lg text-label-lg">Master Barang</span></a><a aria-current="page"
+          class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"
+          data-path="master-anggota" href="/members"><span
+            class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Master
+            Anggota</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="import-excel-etl" href="/import"><span
+            class="material-symbols-outlined text-[20px]">upload_file</span><span
+            class="font-label-lg text-label-lg">Import Excel ETL</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="form-pesanan" href="/orders"><span
+            class="material-symbols-outlined text-[20px]">shopping_cart</span><span
+            class="font-label-lg text-label-lg">Form Pesanan</span></a><a
+          class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="forecast-restock" href="/forecast"><span
+            class="material-symbols-outlined text-[20px]">insights</span><span
+            class="font-label-lg text-label-lg">Forecast &amp; Restock</span></a></nav>
+    </div>
+  </aside>
+  <div class="pl-0 lg:pl-72 flex flex-col min-h-screen bg-canvas-bg transition-[padding] duration-300">
+    <header
+      class="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-md sm:px-space-lg flex items-center justify-between gap-space-sm sm:gap-space-md transition-[left] duration-300">
+      <div class="flex items-center gap-space-sm">
+        <button id="sidebarToggle" type="button" aria-label="Buka Menu"
+          class="lg:hidden p-2 rounded-xl text-on-surface hover:bg-surface-container-low transition-colors shrink-0">
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+        <div class="flex items-center gap-2 text-on-surface-variant">
+          <span class="material-symbols-outlined text-primary">group</span>
+          <span class="font-title-md text-title-md">Master Anggota</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-xs sm:gap-space-md"><button aria-label="Notifikasi"
+          class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
+          type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span
+            class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button>
+        <div class="h-8 w-px bg-surface-container"></div>
+        <div class="flex items-center gap-space-sm pl-space-xs">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span
+              class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+          <div class="flex flex-col text-left hidden sm:flex"><span id="userProfileName"
+              class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span><span
+              id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span></div>
+        </div>
+        <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar"
+          class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors ml-1">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </button>
+      </div>
+    </header>
+    <main class="w-full pt-16 px-space-md sm:px-space-lg pb-space-2xl bg-canvas-bg">
+      <div class="flex flex-col w-full">
+
+        <!-- Header -->
+        <div class="flex flex-wrap items-center justify-between gap-space-md mb-space-lg">
+          <div>
+            <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Master Anggota</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Kelola data anggota koperasi: tambah,
+              ubah, dan nonaktifkan.</p>
+          </div>
+          <button id="btn-add" type="button"
+            class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-xl bg-primary text-on-primary shadow-sm hover:bg-primary-container font-label-lg text-label-lg transition-all">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            <span>Tambah Anggota</span>
+          </button>
+        </div>
+
+        <!-- Notifikasi (diisi lewat textContent) -->
+        <div id="notice" role="status" class="hidden"></div>
+
+        <!-- Ringkasan -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md mb-space-lg">
+          <div class="bg-card-bg p-space-md rounded-2xl shadow-sm">
+            <span class="font-label-md text-label-md text-outline block mb-1">Total anggota</span>
+            <span id="sum-total" class="font-metric-display text-metric-display text-on-surface">-</span>
+          </div>
+          <div class="bg-card-bg p-space-md rounded-2xl shadow-sm">
+            <span class="font-label-md text-label-md text-outline block mb-1">Anggota aktif</span>
+            <span id="sum-active" class="font-metric-display text-metric-display text-on-surface">-</span><span
+              id="sum-buyers" class="block mt-1 font-body-sm text-body-sm text-on-surface-variant">&nbsp;</span>
+          </div>
+          <div class="bg-card-bg p-space-md rounded-2xl shadow-sm">
+            <span class="font-label-md text-label-md text-outline block mb-1">Nonaktif</span>
+            <span id="sum-inactive" class="font-metric-display text-metric-display text-on-surface">-</span>
+          </div>
+        </div>
+
+        <!-- Pencarian & filter -->
+        <div class="bg-card-bg rounded-2xl shadow-sm p-space-md mb-space-md flex flex-wrap items-center gap-space-md">
+          <div class="relative flex-1 min-w-[16rem]">
+            <span
+              class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-outline text-[20px] pointer-events-none">search</span>
+            <input id="q" type="search" autocomplete="off" placeholder="Cari NIM atau nama..."
+              class="w-full px-space-md py-2.5 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline border border-surface-container focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all pl-11" />
+          </div>
+          <select id="status"
+            class="px-space-md py-2.5 bg-surface-bright rounded-xl border border-surface-container text-on-surface font-body-md text-body-md focus:outline-none focus:border-primary">
+            <option value="">Semua status</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Nonaktif</option>
+          </select>
+          <span id="range" class="font-body-sm text-body-sm text-on-surface-variant ml-auto"></span>
+        </div>
+
+        <!-- Tabel -->
+        <div class="bg-card-bg rounded-2xl shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr
+                  class="bg-surface-container-low text-on-surface-variant font-label-md text-label-md uppercase tracking-wide">
+                  <th class="px-space-md py-space-sm">NIM</th>
+                  <th class="px-space-md py-space-sm">Nama</th>
+                  <th class="px-space-md py-space-sm">Prodi / Unit</th>
+                  <th class="px-space-md py-space-sm">Telepon</th>
+                  <th class="px-space-md py-space-sm">Status</th>
+                  <th class="px-space-md py-space-sm text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+          <div class="flex items-center justify-between px-space-md py-space-sm border-t border-surface-container">
+            <button id="prev" type="button"
+              class="px-space-md py-1.5 rounded-xl bg-surface-container-low text-on-surface font-label-lg text-label-lg hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed">Sebelumnya</button>
+            <span id="page-info" class="font-body-sm text-body-sm text-on-surface-variant"></span>
+            <button id="next" type="button"
+              class="px-space-md py-1.5 rounded-xl bg-surface-container-low text-on-surface font-label-lg text-label-lg hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed">Berikutnya</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal tambah / ubah -->
+  <div id="form-modal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-space-md">
+    <div class="bg-card-bg rounded-2xl shadow-xl w-full max-w-md p-space-lg">
+      <div class="flex items-center justify-between mb-space-md">
+        <h2 id="form-title" class="font-title-lg text-title-lg text-on-surface">Tambah Anggota</h2>
+        <button id="btn-close-form" type="button" aria-label="Tutup"
+          class="p-1 rounded-lg text-outline hover:bg-surface-container-low"><span
+            class="material-symbols-outlined">close</span></button>
+      </div>
+      <div id="form-error"
+        class="hidden mb-space-md p-space-sm rounded-xl bg-status-critical-bg text-status-critical-text font-label-md text-label-md">
+      </div>
+      <form id="member-form" novalidate class="flex flex-col gap-space-md">
+        <div>
+          <label for="f-nim" class="block mb-1 font-label-md text-label-md text-on-surface-variant">NIM / NIP <span
+              class="text-status-critical-text">*</span></label>
+          <input id="f-nim" type="text" maxlength="20" autocomplete="off"
+            class="w-full px-space-md py-2.5 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline border border-surface-container focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all" />
+          <p id="h-nim" class="hidden mt-1 text-label-sm font-label-sm text-on-surface-variant">Mengubah NIM juga
+            memperbarui NIM pada seluruh riwayat pesanan anggota ini.</p>
+          <p id="e-nim" class="hidden mt-1 text-label-sm font-label-sm text-status-critical-text"></p>
+        </div>
+        <div>
+          <label for="f-nama" class="block mb-1 font-label-md text-label-md text-on-surface-variant">Nama lengkap <span
+              class="text-status-critical-text">*</span></label>
+          <input id="f-nama" type="text" maxlength="120" autocomplete="off"
+            class="w-full px-space-md py-2.5 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline border border-surface-container focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all" />
+          <p id="e-nama" class="hidden mt-1 text-label-sm font-label-sm text-status-critical-text"></p>
+        </div>
+        <div>
+          <label for="f-unit" class="block mb-1 font-label-md text-label-md text-on-surface-variant">Prodi / Unit /
+            Angkatan</label>
+          <input id="f-unit" type="text" maxlength="100" autocomplete="off"
+            placeholder="Contoh: Teknik Informatika 2022"
+            class="w-full px-space-md py-2.5 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline border border-surface-container focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all" />
+          <p id="e-unit" class="hidden mt-1 text-label-sm font-label-sm text-status-critical-text"></p>
+        </div>
+        <div>
+          <label for="f-telepon" class="block mb-1 font-label-md text-label-md text-on-surface-variant">Telepon</label>
+          <input id="f-telepon" type="tel" autocomplete="off" placeholder="Contoh: 0812-3456-7890"
+            class="w-full px-space-md py-2.5 bg-surface-bright rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline border border-surface-container focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all" />
+          <p id="e-telepon" class="hidden mt-1 text-label-sm font-label-sm text-status-critical-text"></p>
+        </div>
+        <div class="flex justify-end gap-space-sm mt-space-xs">
+          <button id="btn-cancel" type="button"
+            class="px-space-md py-2.5 rounded-xl bg-surface-container-low text-on-surface font-label-lg text-label-lg hover:bg-surface-container">Batal</button>
+          <button id="btn-save" type="submit"
+            class="px-space-lg py-2.5 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container disabled:opacity-60">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal detail + 5 pesanan terakhir -->
+  <div id="detail-modal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-space-md">
+    <div class="bg-card-bg rounded-2xl shadow-xl w-full max-w-lg p-space-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between mb-space-md">
+        <div>
+          <h2 id="d-nama" class="font-title-lg text-title-lg text-on-surface"></h2>
+          <p id="d-nim" class="font-body-sm text-body-sm text-outline"></p>
+        </div>
+        <button id="btn-close-detail" type="button" aria-label="Tutup"
+          class="p-1 rounded-lg text-outline hover:bg-surface-container-low"><span
+            class="material-symbols-outlined">close</span></button>
+      </div>
+      <dl class="grid grid-cols-2 gap-x-space-md gap-y-space-sm mb-space-lg font-body-md text-body-md">
+        <div>
+          <dt class="font-label-md text-label-md text-outline">Prodi / Unit</dt>
+          <dd id="d-unit" class="text-on-surface"></dd>
+        </div>
+        <div>
+          <dt class="font-label-md text-label-md text-outline">Telepon</dt>
+          <dd id="d-telepon" class="text-on-surface"></dd>
+        </div>
+        <div>
+          <dt class="font-label-md text-label-md text-outline">Bergabung</dt>
+          <dd id="d-bergabung" class="text-on-surface"></dd>
+        </div>
+        <div>
+          <dt class="font-label-md text-label-md text-outline">Status</dt>
+          <dd id="d-status" class="text-on-surface"></dd>
+        </div>
+      </dl>
+      <h3 class="font-title-md text-title-md text-on-surface mb-space-sm">5 pesanan terakhir</h3>
+      <ul id="d-orders" class="flex flex-col"></ul>
+    </div>
+  </div>
+
+  <script src="/static/js/pages/members.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Belanja — KOPMA Express</title>
+
+  <!-- Google Fonts & Material Symbols (Matching Dashboard) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+
+  <!-- Global Stylesheet (Matching Dashboard) -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+
+  <!-- Tailwind CSS CDN + Centralized Theme Configuration (Matching Dashboard) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-display,
+    .font-brand {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-canvas-bg font-body-md text-on-surface antialiased min-h-screen flex flex-col">
+  <!-- Header Bar Simpel & Responsif -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-0 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2 shrink-0">
+        <div
+          class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-teal-800 flex items-center justify-center text-white shadow-sm shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="2"></path>
+          </svg>
+        </div>
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <div class="font-title-lg text-title-lg font-bold text-teal-950 tracking-tight leading-none">
+            KOPMA<span class="text-secondary-container font-extrabold ml-0.5">Express</span>
+          </div>
+          <span
+            class="hidden sm:inline-flex font-label-sm text-label-sm font-semibold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200/60">
+            Portal Mahasiswa
+          </span>
+        </div>
+      </div>
+
+      <!-- Quick Nav (Pesanan & Keranjang) Compact di Mobile -->
+      <nav aria-label="Navigasi Cepat" class="flex items-center gap-1.5 sm:gap-2">
+        <a class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 font-label-sm text-label-sm font-semibold text-slate-700 hover:text-teal-900 bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-200 rounded-lg transition"
+          href="#cart-section">
+          <svg class="w-4 h-4 text-teal-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <path
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="hidden sm:inline">Keranjang</span>
+          <span id="top-cart-badge"
+            class="px-1.5 py-0.2 bg-amber-100 text-amber-800 text-[10px] font-bold rounded-full font-mono">0</span>
+        </a>
+        <a class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 font-label-sm text-label-sm font-semibold text-slate-700 hover:text-teal-900 bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-200 rounded-lg transition"
+          href="#orders-section">
+          <svg class="w-4 h-4 text-teal-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+          <span class="hidden sm:inline">Pesanan</span>
+          <span id="top-orders-badge"
+            class="px-1.5 py-0.2 bg-teal-100 text-teal-800 text-[10px] font-bold rounded-full font-mono">0</span>
+        </a>
+      </nav>
+
+      <!-- Profil & Keluar: Teks nama disembunyikan di HP agar muat 1 baris ramping -->
+      <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+        <div class="flex items-center gap-2">
+          <div id="who-avatar" aria-label="Avatar Anggota"
+            class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-teal-800 text-white flex items-center justify-center font-bold text-xs shadow-sm ring-2 ring-teal-100 ring-offset-1 select-none shrink-0 font-label-sm">
+            --
+          </div>
+          <div class="text-right hidden sm:block">
+            <div class="font-label-md text-label-md font-semibold text-slate-800 leading-tight" id="who-name">Memuat...
+            </div>
+            <div class="font-label-sm text-label-sm text-slate-500 font-mono" id="who-nim">NIM: -</div>
+          </div>
+        </div>
+        <button
+          class="font-label-sm text-label-sm font-semibold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 px-2.5 sm:px-3 py-1.5 rounded-lg transition active:scale-95 shrink-0 cursor-pointer"
+          id="logout" type="button">
+          Keluar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Konten Utama Wrap -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6 flex-1 w-full">
+    <!-- Feedback Alert Box -->
+    <div
+      class="mb-5 hidden p-3.5 rounded-xl font-body-sm text-body-sm bg-teal-50 border border-teal-200 text-teal-900 flex items-center justify-between shadow-xs"
+      id="msg"></div>
+
+    <!-- Grid 3 Kolom Responsif: Belanja (6 col), Keranjang Checkout (3 col), Pesanan Saya (3 col) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+      <!-- Area Belanja (Main Shop) - Full di mobile, 6 Kolom di Desktop -->
+      <section id="shop-section"
+        class="order-1 md:col-span-2 lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+        <div>
+          <h1 class="font-headline-lg text-headline-lg font-bold text-slate-900 tracking-tight">Belanja</h1>
+          <p class="font-body-sm text-body-sm text-slate-500 mt-0.5">Cari barang kebutuhan kuliah atau kantin, masukkan
+            keranjang, lalu selesaikan pesanan.</p>
+        </div>
+
+        <!-- Search Bar Simpel -->
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="2"></path>
+            </svg>
+          </span>
+          <input
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-body-md text-body-md placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:bg-white transition"
+            id="q" placeholder="Cari nama atau kode barang (contoh: Kopi, Kertas, Pulpen)..." type="search" />
+        </div>
+
+        <!-- List Barang Dinamis -->
+        <ul class="divide-y divide-slate-100 min-h-[140px]" id="products"></ul>
+
+        <!-- Tombol More -->
+        <button
+          class="w-full py-2.5 font-label-md text-label-md font-semibold text-teal-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition hidden cursor-pointer"
+          id="more" type="button">
+          Tampilkan lebih banyak barang
+        </button>
+      </section>
+
+      <!-- Area Pesanan Saya (Orders) - 3 Kolom di Desktop, 1 Kolom di Tablet -->
+      <section id="orders-section"
+        class="order-3 md:order-3 md:col-span-1 lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="font-title-md text-title-md font-bold text-slate-900 tracking-tight">Pesanan saya</h2>
+          <span id="orders-count-badge"
+            class="font-label-sm text-label-sm font-semibold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
+            Aktif (0)
+          </span>
+        </div>
+        <ul class="space-y-3 min-h-[80px]" id="orders"></ul>
+      </section>
+
+      <!-- Aside Keranjang (Cart & Checkout) - 3 Kolom di Desktop, 1 Kolom di Tablet -->
+      <aside id="cart-section"
+        class="order-2 md:order-2 md:col-span-1 lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="font-title-md text-title-md font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-teal-800" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span>Keranjang</span>
+          </h2>
+          <span id="cart-count-badge" class="font-label-sm text-label-sm text-slate-400 font-mono">0 item</span>
+        </div>
+
+        <!-- List Cart Items -->
+        <ul class="divide-y divide-slate-100 max-h-56 overflow-y-auto pr-1" id="cart"></ul>
+
+        <!-- Total Subtotal -->
+        <div class="p-3 bg-teal-50/70 border border-teal-100 rounded-xl flex items-center justify-between">
+          <span class="font-label-md text-label-md font-semibold text-teal-900">Total Tagihan</span>
+          <span class="font-title-lg text-title-lg font-extrabold text-teal-900" id="total">Rp 0</span>
+        </div>
+
+        <!-- Metode Pembayaran Radio -->
+        <div aria-label="Metode pembayaran" class="space-y-1.5" role="radiogroup">
+          <span class="font-label-sm text-label-sm font-bold text-slate-500 uppercase tracking-wider block">Metode
+            Pembayaran</span>
+          <div class="grid grid-cols-2 gap-2">
+            <label id="label-pay-qris"
+              class="flex items-center justify-center gap-2 p-2.5 border-2 border-teal-700 bg-teal-50/30 rounded-xl cursor-pointer font-label-sm text-label-sm font-semibold text-teal-900 transition">
+              <input checked="" class="text-teal-700 focus:ring-teal-500" name="pay" type="radio" value="QRIS" />
+              <span>QRIS</span>
+            </label>
+            <label id="label-pay-transfer"
+              class="flex items-center justify-center gap-2 p-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl cursor-pointer font-label-sm text-label-sm font-medium text-slate-700 transition">
+              <input class="text-teal-700 focus:ring-teal-500" name="pay" type="radio" value="TRANSFER" />
+              <span>Transfer</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Checkout Button -->
+        <button
+          class="w-full py-2.5 bg-teal-800 hover:bg-teal-700 text-white font-label-lg text-label-lg font-bold rounded-xl shadow-xs transition active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2 cursor-pointer"
+          id="checkout" type="button" disabled>
+          Bayar &amp; Pesan
+        </button>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Konfirmasi Pembayaran Modal (Simulasi) Sesuai Kode Asli -->
+  <div class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden"
+    id="modal">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="text-center space-y-1">
+        <div
+          class="w-12 h-12 bg-teal-100 text-teal-800 rounded-full flex items-center justify-center mx-auto shadow-xs">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+              stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </div>
+        <h2 class="font-title-lg text-title-lg font-bold text-slate-900 tracking-tight">Konfirmasi Pembayaran</h2>
+        <p class="font-body-sm text-body-sm text-slate-500">Periksa detail pesanan Anda sebelum melanjutkan.</p>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-center space-y-1">
+        <div class="font-label-sm text-label-sm text-slate-500" id="modal-method">Metode: <b class="text-slate-800">QRIS
+            Instan</b></div>
+        <div class="font-metric-display text-metric-display font-black text-teal-900" id="modal-total">Rp 0</div>
+      </div>
+      <p
+        class="font-label-sm text-label-sm text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200/70 text-center">
+        ⚠️ Pembayaran masih simulasi. Tidak ada saldo uang yang dipotong.
+      </p>
+      <div class="flex gap-2.5 pt-1">
+        <button
+          class="flex-1 py-2.5 font-label-md text-label-md font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-xl transition cursor-pointer"
+          id="modal-cancel" type="button">
+          Batal
+        </button>
+        <button
+          class="flex-1 py-2.5 font-label-md text-label-md font-bold text-white bg-teal-800 hover:bg-teal-700 rounded-xl shadow-xs transition cursor-pointer"
+          id="modal-pay" type="button">
+          Bayar Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-auto border-t border-slate-200/70 py-4 px-4 text-center font-label-sm text-label-sm text-slate-400">
+    © 2025 KOPMA Express • Portal Mandiri Belanja Mahasiswa
+  </footer>
+
+  <script src="/static/js/components/api.js"></script>
+  <script src="/static/js/pages/shop.js"></script>
+</body>
+
+</html>

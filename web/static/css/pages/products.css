@@ -1,0 +1,5 @@
+/* Page Specific Styles: Products */
+.product-image-preview {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}

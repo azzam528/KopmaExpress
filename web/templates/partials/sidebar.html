@@ -1,0 +1,48 @@
+<!-- Mobile Backdrop Overlay -->
+<div id="sidebarBackdrop" class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
+
+<!-- Sidebar Navigation Component -->
+<aside class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
+  <div class="flex flex-col gap-space-lg">
+    <div class="flex items-center justify-between px-space-sm pt-space-xs">
+      <div class="flex items-center gap-space-sm">
+        <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm shrink-0">
+          <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span>
+          <span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data Analytics</span>
+        </div>
+      </div>
+      <button id="sidebarClose" type="button" aria-label="Tutup Menu" class="lg:hidden p-1.5 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-sidebar-hover transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <nav class="flex flex-col gap-1" data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl">
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="dashboard" href="/">
+        <span class="material-symbols-outlined text-[20px]">grid_view</span>
+        <span class="font-label-lg text-label-lg">Dashboard</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-barang" href="/products">
+        <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+        <span class="font-label-lg text-label-lg">Master Barang</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="master-anggota" href="/members">
+        <span class="material-symbols-outlined text-[20px]">group</span>
+        <span class="font-label-lg text-label-lg">Master Anggota</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="import-excel-etl" href="/import">
+        <span class="material-symbols-outlined text-[20px]">upload_file</span>
+        <span class="font-label-lg text-label-lg">Import Excel ETL</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="form-pesanan" href="/orders">
+        <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+        <span class="font-label-lg text-label-lg">Form Pesanan</span>
+      </a>
+      <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200" data-path="forecast-restock" href="/forecast">
+        <span class="material-symbols-outlined text-[20px]">insights</span>
+        <span class="font-label-lg text-label-lg">Forecast &amp; Restock</span>
+      </a>
+    </nav>
+  </div>
+</aside>

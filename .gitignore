@@ -1,0 +1,31 @@
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+*.test
+*.out
+coverage.html
+
+# Environment variables
+.env
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS specific
+Thumbs.db
+.DS_Store
+
+# Temporary uploads
+tmp/
+uploads/
+
+docker-compose.override.yml

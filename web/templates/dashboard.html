@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Dashboard Analitik — KOPMA Express</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+
+  <!-- Global & Page CSS -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <link rel="stylesheet" href="/static/css/pages/dashboard.css" />
+
+  <!-- Tailwind CSS CDN + Centralized Theme Configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+
+  <!-- Libraries & Shared Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/js/components/api.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script defer src="/static/js/pages/dashboard.js"></script>
+</head>
+
+<body class="bg-canvas-bg font-body-md text-on-surface antialiased">
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebarBackdrop"
+    class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
+
+  <!-- Standard Sidebar Navigation (Responsive on Mobile) -->
+  <aside
+    class="fixed left-0 top-0 h-full w-72 bg-sidebar-teal z-50 flex flex-col p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
+    <div class="flex flex-col gap-space-lg">
+      <div class="flex items-center justify-between px-space-sm pt-space-xs">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center shadow-sm shrink-0">
+            <span class="material-symbols-outlined text-sidebar-dark font-bold text-[22px]">storefront</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-title-lg text-title-lg text-on-primary tracking-tight leading-none">KOPMA Express</span>
+            <span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider mt-1">Big Data
+              Analytics</span>
+          </div>
+        </div>
+        <button id="sidebarClose" type="button" aria-label="Tutup Menu"
+          class="lg:hidden p-1.5 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-sidebar-hover transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <nav class="flex flex-col gap-1"
+        data-active-classes="bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl">
+        <a aria-current="page"
+          class="flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-canvas-bg text-primary font-title-md shadow-sm rounded-xl"
+          data-path="dashboard" href="/">
+          <span class="material-symbols-outlined text-[20px]">grid_view</span>
+          <span class="font-label-lg text-label-lg">Dashboard</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-barang" href="/products">
+          <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+          <span class="font-label-lg text-label-lg">Master Barang</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="master-anggota" href="/members">
+          <span class="material-symbols-outlined text-[20px]">group</span>
+          <span class="font-label-lg text-label-lg">Master Anggota</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="import-excel-etl" href="/import">
+          <span class="material-symbols-outlined text-[20px]">upload_file</span>
+          <span class="font-label-lg text-label-lg">Import Excel ETL</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="form-pesanan" href="/orders">
+          <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+          <span class="font-label-lg text-label-lg">Form Pesanan</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-primary/80 hover:bg-sidebar-hover hover:text-on-primary transition-all duration-200"
+          data-path="forecast-restock" href="/forecast">
+          <span class="material-symbols-outlined text-[20px]">insights</span>
+          <span class="font-label-lg text-label-lg">Forecast &amp; Restock</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper aligned with other pages -->
+  <div class="pl-0 lg:pl-72 flex flex-col min-h-screen bg-canvas-bg transition-[padding] duration-300">
+    <!-- Top Navigation Bar aligned with other pages -->
+    <header
+      class="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-md sm:px-space-lg flex items-center justify-between gap-space-sm sm:gap-space-md transition-[left] duration-300">
+      <div class="flex items-center gap-space-sm">
+        <!-- Hamburger button for mobile (HP) -->
+        <button id="sidebarToggle" type="button" aria-label="Buka Menu"
+          class="lg:hidden p-2 rounded-xl text-on-surface hover:bg-surface-container-low transition-colors shrink-0">
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+        <div class="flex items-center gap-2 text-on-surface-variant">
+          <span class="material-symbols-outlined text-primary">grid_view</span>
+          <span class="font-title-md text-title-md">Dashboard</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-xs sm:gap-space-md">
+        <!-- Database status indicator matching theme -->
+        <div
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm"
+          id="backendStatus" data-state="checking">
+          <span class="dashboard-status-dot"></span>
+          <span id="backendStatusText" class="hidden sm:inline">Memeriksa koneksi</span>
+        </div>
+
+        <!-- Refresh button matching theme -->
+        <button id="refreshDashboard" type="button" aria-label="Perbarui Dashboard"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-primary hover:bg-surface-container-low font-label-md text-label-md transition-colors shadow-2xs">
+          <span class="material-symbols-outlined text-[18px]">refresh</span>
+          <span class="hidden sm:inline font-semibold">Perbarui</span>
+        </button>
+
+        <button aria-label="Notifikasi"
+          class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
+          type="button">
+          <span class="material-symbols-outlined text-[22px]">notifications</span>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span>
+        </button>
+
+        <div class="h-8 w-px bg-surface-container"></div>
+
+        <div class="flex items-center gap-space-sm pl-space-xs">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+          <div class="flex flex-col text-left hidden sm:flex">
+            <span id="userProfileName"
+              class="font-title-md text-title-md text-on-surface leading-tight">Memuat...</span>
+            <span id="userProfileRole" class="font-label-sm text-label-sm text-outline">...</span>
+          </div>
+        </div>
+
+        <button id="logoutBtn" title="Keluar dari akun" aria-label="Keluar"
+          class="flex items-center justify-center p-2 rounded-xl text-outline hover:text-error hover:bg-error-container/20 transition-colors ml-1">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="w-full pt-16 px-space-md sm:px-space-lg pb-space-2xl bg-canvas-bg">
+      <div class="flex flex-col w-full gap-space-lg">
+        <!-- Page Header Section -->
+        <section class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pt-2">
+          <div class="flex flex-col">
+            <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Dashboard Analitik</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Ringkasan koperasi: ikhtisar produk,
+              anggota, transaksi, dan kondisi persediaan.</p>
+          </div>
+          <div class="flex items-center gap-space-sm">
+            <span class="font-label-sm text-label-sm text-outline" id="lastUpdated">Memuat data...</span>
+          </div>
+        </section>
+
+        <!-- 5 KPI Cards Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md"
+          aria-label="Indikator utama koperasi">
+          <!-- KPI 1: Total Barang Aktif -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">SKU
+                Aktif</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Total Barang Aktif</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block"
+                id="kpiTotalProduk">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">SKU aktif terdaftar</span>
+            </div>
+          </article>
+
+          <!-- KPI 2: Total Anggota -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+                <span class="material-symbols-outlined text-[20px]">groups</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold">Aktif</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Total Anggota</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block"
+                id="kpiTotalAnggota">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">Anggota terdaftar</span>
+            </div>
+          </article>
+
+          <!-- KPI 3: Pesanan Bulan Ini -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div
+                class="w-10 h-10 rounded-xl bg-status-warning-bg flex items-center justify-center text-status-warning-text">
+                <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">Bulan
+                Ini</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Pesanan Bulan Ini</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block"
+                id="kpiTotalPesanan">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block truncate"
+                id="currentMonthOrdersCaption">Pesanan selesai</span>
+            </div>
+          </article>
+
+          <!-- KPI 4: Omzet Bulan Ini -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div
+                class="w-10 h-10 rounded-xl bg-status-success-bg flex items-center justify-center text-status-success-text">
+                <span class="material-symbols-outlined text-[20px]">payments</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-bright text-outline font-label-sm text-label-sm font-medium">Realisasi</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Omzet Bulan Ini</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block truncate"
+                id="kpiOmzet">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">Dari pesanan selesai</span>
+            </div>
+          </article>
+
+          <!-- KPI 5: Valuasi Gudang -->
+          <article
+            class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <div
+                class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">Aset
+                Stok</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-outline block">Valuasi Gudang</span>
+              <strong class="font-metric-display text-metric-display text-on-surface mt-0.5 block truncate"
+                id="kpiValuasi">—</strong>
+              <span class="font-body-sm text-body-sm text-outline mt-1 block">Stok aktif × harga barang</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- Top Selling & Top Stock Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg" aria-label="Analitik produk">
+          <!-- Panel: Barang Terlaris -->
+          <article
+            class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Barang Terlaris</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Produk dengan kuantitas penjualan tertinggi.
+                </p>
+              </div>
+              <div class="inline-flex items-center bg-canvas-bg rounded-xl p-1 shadow-sm gap-1" role="group"
+                aria-label="Periode Top Selling">
+                <button type="button" data-period="3m" aria-pressed="true"
+                  class="px-3 py-1 rounded-lg text-primary bg-surface-container-lowest font-title-md text-title-md shadow-xs transition-all text-xs">3
+                  Bulan</button>
+                <button type="button" data-period="6m" aria-pressed="false"
+                  class="px-3 py-1 rounded-lg text-outline hover:text-on-surface font-label-lg text-label-lg transition-all text-xs">6
+                  Bulan</button>
+                <button type="button" data-period="all" aria-pressed="false"
+                  class="px-3 py-1 rounded-lg text-outline hover:text-on-surface font-label-lg text-label-lg transition-all text-xs">Semua</button>
+              </div>
+            </div>
+
+            <div class="dashboard-chart-wrap">
+              <canvas id="topSellingChart" aria-label="Grafik sepuluh barang terlaris" role="img"></canvas>
+              <p class="dashboard-chart-state" id="topSellingChartState">Memuat data barang terlaris...</p>
+            </div>
+
+            <div class="overflow-x-auto border-t border-surface-container pt-2">
+              <table class="w-full text-left font-body-sm text-body-sm">
+                <thead>
+                  <tr class="border-b border-surface-container">
+                    <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Produk
+                    </th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Terjual</th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Omzet</th>
+                  </tr>
+                </thead>
+                <tbody id="topSellingRows" class="divide-y divide-surface-container">
+                  <tr>
+                    <td colspan="3" class="py-6 text-center text-outline font-body-sm text-body-sm">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="font-body-sm text-body-sm text-outline mt-auto pt-1" id="topSellingPeriodNote">Periode: 3 bulan
+              terakhir</p>
+          </article>
+
+          <!-- Panel: Stok Terbanyak -->
+          <article
+            class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Stok Terbanyak</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Produk dengan jumlah stok aktif tertinggi.</p>
+              </div>
+              <span
+                class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold">Top
+                10</span>
+            </div>
+
+            <div class="dashboard-chart-wrap">
+              <canvas id="topStockChart" aria-label="Grafik sepuluh produk dengan stok terbanyak" role="img"></canvas>
+              <p class="dashboard-chart-state" id="topStockChartState">Memuat data stok...</p>
+            </div>
+
+            <div class="overflow-x-auto border-t border-surface-container pt-2">
+              <table class="w-full text-left font-body-sm text-body-sm">
+                <thead>
+                  <tr class="border-b border-surface-container">
+                    <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Produk
+                    </th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Stok</th>
+                    <th
+                      class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                      Nilai Aset</th>
+                  </tr>
+                </thead>
+                <tbody id="topStockRows" class="divide-y divide-surface-container">
+                  <tr>
+                    <td colspan="3" class="py-6 text-center text-outline font-body-sm text-body-sm">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="font-body-sm text-body-sm text-outline mt-auto pt-1" id="topStockValuationNote">Menghitung valuasi
+              gudang...</p>
+          </article>
+        </section>
+
+        <!-- Monthly Trend & Forecast Summary Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg"
+          aria-label="Tren penjualan dan status persediaan">
+          <!-- Panel: Tren Penjualan Produk (7 cols) -->
+          <article
+            class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Tren Penjualan Produk</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Pergerakan kuantitas penjualan per bulan.</p>
+              </div>
+              <label class="flex items-center gap-2 font-label-sm text-label-sm text-outline" for="trendProductSelect">
+                <span>Produk</span>
+                <select id="trendProductSelect" disabled
+                  class="px-3 py-1.5 bg-surface-bright rounded-xl text-on-surface font-body-sm text-body-sm border border-outline-variant/50 focus:outline-none focus:bg-surface-container-lowest max-w-[210px]">
+                  <option value="">Menunggu daftar produk...</option>
+                </select>
+              </label>
+            </div>
+            <div class="dashboard-chart-wrap dashboard-trend-chart-wrap">
+              <canvas id="monthlyTrendChart" aria-label="Grafik tren penjualan bulanan" role="img"></canvas>
+              <p class="dashboard-chart-state" id="monthlyTrendState">Memuat tren penjualan...</p>
+            </div>
+          </article>
+
+          <!-- Panel: Status Forecast & Restock (5 cols) -->
+          <article
+            class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between gap-space-md">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Status Forecast &amp; Restock</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-0.5">Distribusi hasil klasifikasi persediaan.</p>
+              </div>
+              <a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary hover:text-primary-container font-semibold transition-colors"
+                href="/forecast">
+                <span>Buka Forecast</span>
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <div class="dashboard-forecast-summary">
+              <div class="dashboard-donut-wrap">
+                <canvas id="forecastStatusChart" aria-label="Diagram status forecast" role="img"></canvas>
+                <p class="dashboard-chart-state" id="forecastStatusState">Memuat status forecast...</p>
+              </div>
+              <div class="dashboard-forecast-legend" id="forecastStatusLegend">
+                <p class="py-4 text-center text-outline font-body-sm text-body-sm">Memuat status...</p>
+              </div>
+            </div>
+
+            <div
+              class="flex items-center justify-between p-space-md rounded-xl bg-status-critical-bg text-status-critical-text">
+              <span class="font-label-md text-label-md font-medium">Produk berstatus Critical</span>
+              <strong id="criticalCount"
+                class="font-metric-display text-metric-display font-bold text-status-critical-text">—</strong>
+            </div>
+          </article>
+        </section>
+
+        <!-- Panel: Prioritas Restock -->
+        <section
+          class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-space-md"
+          aria-label="Prioritas restock">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h2 class="font-headline-md text-headline-md text-on-surface">Prioritas Restock</h2>
+              <p class="font-body-sm text-body-sm text-outline mt-0.5">Lima produk Critical dengan kebutuhan restock
+                tertinggi.</p>
+            </div>
+            <a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary hover:text-primary-container font-semibold transition-colors"
+              href="/forecast">
+              <span>Lihat semua</span>
+              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </a>
+          </div>
+          <div class="overflow-x-auto border-t border-surface-container pt-2">
+            <table class="w-full text-left font-body-sm text-body-sm">
+              <thead>
+                <tr class="border-b border-surface-container">
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Produk</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                    Stok Saat Ini</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                    Prediksi Permintaan</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">
+                    Rekomendasi Restock</th>
+                  <th class="py-2.5 px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody id="criticalRows" class="divide-y divide-surface-container">
+                <tr>
+                  <td colspan="5" class="py-6 text-center text-outline font-body-sm text-body-sm">Memuat prioritas
+                    restock...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="font-body-sm text-body-sm text-outline mt-auto pt-1" id="criticalListNote">Sumber: Forecast API.</p>
+        </section>
+
+        <!-- Error Banner -->
+        <div
+          class="p-4 rounded-xl border border-error-container bg-error-container/20 text-error font-body-sm text-body-sm"
+          id="dashboardError" role="status" hidden></div>
+      </div>
+    </main>
+  </div>
+</body>
+
+</html>
