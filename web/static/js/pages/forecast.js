@@ -15,6 +15,12 @@
     selectedCode: '',
     chart: null,
     searchTimer: null,
+    productSearchTimer: null,   // + baru
+    productSearchId: 0,         // + baru
+    productOptions: [],         // + baru
+    activeIndex: -1,            // + baru
+    selectedLabel: '',
+    autoSelect: false,          // true hanya saat card status diklik
     listRequestId: 0,
     detailRequestId: 0,
   };
@@ -204,32 +210,118 @@
   }
 
   function renderProductOptions() {
-    const select = $('forecastProductSelect');
-    if (!select) return;
-    const previousCode = state.selectedCode;
-    select.replaceChildren();
+    const input = $('forecastProductSearch');
+    if (!input) return;
+    input.disabled = false;
 
-    if (!state.rows.length) {
-      const option = document.createElement('option');
-      option.value = '';
-      option.textContent = 'Tidak ada produk';
-      select.append(option);
-      select.disabled = true;
-      state.selectedCode = '';
-      return;
+    // Produk hanya dipilih otomatis setelah card status diklik.
+    // Saat halaman baru dibuka, kotak dibiarkan kosong.
+    if (!state.selectedCode && state.autoSelect && state.rows.length) {
+      state.selectedCode = state.rows[0].kode_barang;
     }
+    state.autoSelect = false;
 
-    select.disabled = false;
-    state.rows.forEach((item) => {
-      const option = document.createElement('option');
-      option.value = item.kode_barang;
-      option.textContent = `${item.nama_barang || item.kode_barang} (${item.kode_barang})`;
-      select.append(option);
+    if (!state.selectedCode) {
+      input.value = '';
+      state.selectedLabel = '';
+      input.placeholder = state.rows.length ? 'Cari kode / nama barang...' : 'Tidak ada produk';
+    } else {
+      input.placeholder = 'Cari kode / nama barang...';
+    }
+  }
+
+  function setProductInput(detail) {
+    const input = $('forecastProductSearch');
+    state.selectedLabel = `${detail.nama_barang || detail.kode_barang} (${detail.kode_barang})`;
+    if (input && document.activeElement !== input) input.value = state.selectedLabel;
+  }
+
+  function openProductList(open) {
+    const list = $('forecastProductList');
+    const input = $('forecastProductSearch');
+    if (list) list.hidden = !open;
+    if (input) input.setAttribute('aria-expanded', String(open));
+  }
+
+  function closeProductList(restore = true) {
+    openProductList(false);
+    state.activeIndex = -1;
+    const input = $('forecastProductSearch');
+    if (restore && input) input.value = state.selectedLabel;
+  }
+
+  function setActiveOption(index) {
+    const list = $('forecastProductList');
+    const input = $('forecastProductSearch');
+    if (!list || !state.productOptions.length) return;
+    const count = state.productOptions.length;
+    state.activeIndex = (index + count) % count;
+    list.querySelectorAll('li[data-code]').forEach((li, i) => {
+      const active = i === state.activeIndex;
+      li.classList.toggle('bg-surface-container-low', active);
+      li.setAttribute('aria-selected', String(active));
+      if (active) {
+        li.scrollIntoView({ block: 'nearest' });
+        input?.setAttribute('aria-activedescendant', li.id);
+      }
     });
+  }
 
-    const stillAvailable = state.rows.some((item) => item.kode_barang === previousCode);
-    state.selectedCode = stillAvailable ? previousCode : state.rows[0].kode_barang;
-    select.value = state.selectedCode;
+  function renderProductList(items, message) {
+    const list = $('forecastProductList');
+    if (!list) return;
+    list.replaceChildren();
+    state.productOptions = items;
+    state.activeIndex = -1;
+
+    if (message || !items.length) {
+      const li = document.createElement('li');
+      li.className = 'px-space-md py-2 text-sm text-outline';
+      li.textContent = message || 'Produk tidak ditemukan';
+      list.append(li);
+    } else {
+      items.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.id = `forecastProductOption-${index}`;
+        li.setAttribute('role', 'option');
+        li.dataset.code = item.kode_barang;
+        li.className = 'px-space-md py-2 cursor-pointer hover:bg-surface-container-low flex flex-col';
+        const name = document.createElement('span');
+        name.className = 'font-title-md text-title-md text-on-surface';
+        name.textContent = item.nama_barang || item.kode_barang;
+        const code = document.createElement('span');
+        code.className = 'font-mono text-label-md text-outline';
+        code.textContent = item.kode_barang;
+        li.append(name, code);
+        list.append(li);
+      });
+    }
+    openProductList(true);
+  }
+
+  async function searchProducts(q) {
+    if (!window.apiClient) return;
+    const requestId = ++state.productSearchId;
+    renderProductList([], 'Mencari...');
+    try {
+      const params = { page: 1, limit: 10, sort: 'restock_qty' };
+      if (state.status) params.status = state.status;   // ikut filter card status
+      if (q) params.q = q;
+      const response = await window.apiClient.get('/forecast', params);
+      if (requestId !== state.productSearchId) return;
+      renderProductList(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      if (requestId !== state.productSearchId) return;
+      renderProductList([], 'Gagal memuat produk');
+    }
+  }
+
+  function selectProduct(code) {
+    if (!code) return;
+    state.selectedCode = code;
+    closeProductList(false);
+    $('forecastProductSearch')?.blur();
+    loadDetail(code);
   }
 
   function renderPaginationMeta(meta) {
@@ -238,6 +330,7 @@
   }
 
   function renderDetailMetrics(detail) {
+    setProductInput(detail);
     setText('forecastProductName', detail.nama_barang || detail.kode_barang);
     setText('forecastProductStatusBadge', STATUS_LABELS[detail.status] || detail.status);
     setText('forecastMetricWma', number(detail.wma, 1));
@@ -283,8 +376,8 @@
       restockCard.querySelectorAll('[data-forecast-status-color]').forEach((element) => {
         ['text-status-critical-text', 'text-status-warning-text', 'text-status-success-text', 'text-on-surface-variant',
           'text-status-critical-text/80'].forEach((className) => {
-          element.classList.remove(className);
-        });
+            element.classList.remove(className);
+          });
         element.classList.add(colors[element.dataset.forecastStatusColor] || colors.main);
       });
     }
@@ -432,8 +525,8 @@
     }
   }
 
-  function renderEmptyDetail() {
-    setText('forecastProductName', 'Belum ada data produk');
+  function renderEmptyDetail(idle = false) {
+    setText('forecastProductName', idle ? 'Cari dan pilih produk untuk melihat analisis' : 'Belum ada data produk');
     setText('forecastProductStatusBadge', 'NO DATA');
     setText('forecastMetricWma', '—');
     setText('forecastMetricSlope', '—');
@@ -473,7 +566,9 @@
     const fallback = $('forecastChartFallback');
     if (fallback) {
       fallback.hidden = false;
-      fallback.textContent = 'Belum ada hasil forecast untuk ditampilkan.';
+      fallback.textContent = idle
+        ? 'Ketik kode atau nama barang di kotak pencarian, lalu pilih produknya.'
+        : 'Belum ada hasil forecast untuk ditampilkan.';
     }
   }
 
@@ -527,7 +622,7 @@
       if (state.selectedCode) {
         await loadDetail(state.selectedCode);
       } else {
-        renderEmptyDetail();
+        renderEmptyDetail(state.rows.length > 0);
       }
       return true;
     } catch (error) {
@@ -550,6 +645,9 @@
   function updateFilter(status) {
     state.status = status === 'ALL' ? '' : status;
     state.page = 1;
+    state.selectedCode = '';   // pilih ulang produk teratas sesuai status baru
+    state.selectedLabel = '';
+    state.autoSelect = true;   // card diklik -> tampilkan produk teratas status itu
     loadDashboard();
   }
 
@@ -633,11 +731,39 @@
       });
     }
 
-    const productSelect = $('forecastProductSelect');
-    if (productSelect) {
-      productSelect.addEventListener('change', () => {
-        state.selectedCode = productSelect.value;
-        loadDetail(state.selectedCode);
+    const productInput = $('forecastProductSearch');
+    const productList = $('forecastProductList');
+    if (productInput && productList) {
+      productInput.addEventListener('focus', () => {
+        productInput.select();
+        searchProducts('');
+      });
+      productInput.addEventListener('input', () => {
+        window.clearTimeout(state.productSearchTimer);
+        state.productSearchTimer = window.setTimeout(() => {
+          searchProducts(productInput.value.trim());
+        }, 250);
+      });
+      productInput.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          if (productList.hidden) { searchProducts(''); return; }
+          setActiveOption(state.activeIndex + (event.key === 'ArrowDown' ? 1 : -1));
+        } else if (event.key === 'Enter') {
+          event.preventDefault();
+          const options = state.productOptions;
+          const item = options[state.activeIndex] || (options.length === 1 ? options[0] : null);
+          if (item) selectProduct(item.kode_barang);
+        } else if (event.key === 'Escape') {
+          closeProductList();
+        }
+      });
+      productInput.addEventListener('blur', () => closeProductList());
+      // mousedown (bukan click) + preventDefault supaya input tidak blur sebelum item terpilih
+      productList.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+        const li = event.target.closest('li[data-code]');
+        if (li) selectProduct(li.dataset.code);
       });
     }
 
@@ -647,7 +773,6 @@
         const code = row?.dataset.forecastCode;
         if (!code) return;
         state.selectedCode = code;
-        if (productSelect) productSelect.value = code;
         loadDetail(code);
         $('forecastProductName')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       };
